@@ -1,5 +1,5 @@
-const CACHE_NAME = "svelte-app-cache-v1";
-const urlsToCache = ["/", "/index.html", "/global.css", "/build/bundle.js"];
+const CACHE_NAME = "app-cache-v1";
+const urlsToCache = ["/"];
 
 // Install event
 self.addEventListener("install", (event) => {
