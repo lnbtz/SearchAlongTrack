@@ -10,7 +10,7 @@
             
             const map = new maplibregl.Map({
                 container: mapContainer,
-                style: 'https://demotiles.maplibre.org/style.json',
+                style: `https://api.maptiler.com/maps/openstreetmap/style.json?key=${import.meta.env.VITE_MAPTILER_API_KEY}`,
                 center: [longitude, latitude],
                 zoom: 14
             });
