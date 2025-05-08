@@ -16,13 +16,20 @@
             });
             
             new maplibregl.Marker().setLngLat([longitude, latitude]).addTo(map);
-        });
+        },
+        (err) => {
+            console.error("Geolocation error:", err.message);
+            alert("Unable to access your location. Please enable location services.");
+        },
+    );
     });
+    
 </script>
 <style>
   #map {
     height: 100vh;
     width: 100%;
+    position: relative;
   }
 </style>
 

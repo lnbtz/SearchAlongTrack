@@ -2,9 +2,16 @@ import tailwindcss from '@tailwindcss/vite';
 import { svelteTesting } from '@testing-library/svelte/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
+import fs from 'fs';
 
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit()],
+	server: {
+		https: {
+			key: fs.readFileSync('./localhost-key.pem'),
+            cert: fs.readFileSync('./localhost.pem')
+		}
+	},
 	test: {
 		workspace: [
 			{
