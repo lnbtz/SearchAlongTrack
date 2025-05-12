@@ -2,6 +2,10 @@
 	import Map from './Map.svelte';
     import welcome from '$lib/images/svelte-welcome.webp';
     import welcomeFallback from '$lib/images/svelte-welcome.png';
+	import FileLoader from './loaders/FileLoader.svelte';
+	import KomootLoader from './loaders/KomootLoader.svelte';
+	import StravaLoader from './loaders/StravaLoader.svelte';
+
 </script>
 
 <svelte:head>
@@ -9,15 +13,10 @@
     <meta name="description" content="Search along GPS Track" />
 </svelte:head>
 
+
 <section>
     <h1>
-        <span class="welcome">
-			<picture>
-				<source srcset={welcome} type="image/webp" />
-				<img src={welcomeFallback} alt="Welcome" />
-			</picture>
-		</span>
-        <br />Search along GPS Track app
+        Search along GPS Track app
     </h1>
     <Map />
 </section>
