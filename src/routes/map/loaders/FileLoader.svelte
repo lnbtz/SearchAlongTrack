@@ -1,9 +1,9 @@
 <script lang="ts">
-	import toGeoJSON from '@mapbox/togeojson';
-	import type { FeatureCollection, Geometry, GeoJsonProperties } from 'geojson';
 
-	export let onLoaded: (geojson: FeatureCollection<Geometry, GeoJsonProperties>) => void;
-  
+	import toGeoJSON from '@mapbox/togeojson';
+	import { gpxTrackStore } from '$lib/stores';
+	import { calculateTrackLength } from '$lib/util';
+
 	function handleChange(e: Event) {
 	  const file = (e.target as HTMLInputElement).files?.[0];
 	  if (!file) return;
@@ -12,7 +12,8 @@
 	  reader.onload = () => {
 		const xml = new DOMParser().parseFromString(reader.result as string, 'application/xml');
 		const geojson = toGeoJSON.gpx(xml);
-		onLoaded(geojson);
+		gpxTrackStore.set(geojson);
+		calculateTrackLength();
 	  };
 	  reader.readAsText(file);
 	}
