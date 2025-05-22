@@ -10,7 +10,6 @@
 </svelte:head>
 
 <section>
-	<h1>Search along GPS Track app</h1>
 
 	<FileLoader />
 	<br />

@@ -9,3 +9,6 @@ export const selectedStartRangeStore = writable<number>(0); // Store to hold the
 export const selectedEndRangeStore = writable<number>(0); // Store to hold the selected range along the track
 export const selectedRadiusStore = writable<number>(0); // Store to hold the selected radius for Overpass API query
 export const totalTrackLengthStore = writable<number>(0); // Store to hold the total length of the track
+export const selectedPointsStoreAlongTrackStore= writable<FeatureCollection<Geometry, GeoJsonProperties>>(); // Store to hold the coordinates along the selected track
+export const selectedCoordinatesAlongTrackStore = writable<number[][]>(); // Store to hold the coordinates along the selected track
+export const bboxAroundSelectedTrackStore = writable<FeatureCollection<Geometry, GeoJsonProperties>>(); // Store to hold the bounding box around the selected track

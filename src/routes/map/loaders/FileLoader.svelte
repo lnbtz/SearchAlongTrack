@@ -7,7 +7,7 @@
 	function handleChange(e: Event) {
 	  const file = (e.target as HTMLInputElement).files?.[0];
 	  if (!file) return;
-  
+
 	  const reader = new FileReader();
 	  reader.onload = () => {
 		const xml = new DOMParser().parseFromString(reader.result as string, 'application/xml');

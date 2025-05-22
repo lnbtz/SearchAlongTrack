@@ -7,12 +7,13 @@
 		selectedRadiusStore,
 		totalTrackLengthStore
 	} from '$lib/stores';
-
+	import { bboxAroundSelectedTrack, calculateSelectedRangeTrackStore } from '$lib/util';
 	let selectedCategories: string[] = [];
 
 	function setSelectedCategories() {
 		selectedCategoriesStore.set(selectedCategories);
-		searchAlongTrack();
+		bboxAroundSelectedTrack();
+		// searchAlongTrack();
 	}
 </script>
 
@@ -39,6 +40,7 @@
 		max={$totalTrackLengthStore}
 		step="1"
 		bind:value={$selectedStartRangeStore}
+		onchange={calculateSelectedRangeTrackStore}
 	/>
 	<span>{$selectedStartRangeStore} km</span>
 </div>
@@ -52,6 +54,7 @@
 		max={$totalTrackLengthStore}
 		step="1"
 		bind:value={$selectedEndRangeStore}
+		onchange={calculateSelectedRangeTrackStore}
 	/>
 	<span>{$selectedEndRangeStore} km</span>
 </div>
