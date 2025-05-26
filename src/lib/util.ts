@@ -76,7 +76,7 @@ export function getCoordinatesAlongSelectedTrack() {
     const selectedRangeGpxTrack: FeatureCollection<Geometry, GeoJsonProperties> | null = get(selectedRangeTrackStore);
     const radius: number = get(selectedRadiusStore); // in meters, for example
 
-    if (!selectedRangeGpxTrack || selectedRangeGpxTrack.features[0].geometry.type !== 'LineString') {
+    if (!selectedRangeGpxTrack || selectedRangeGpxTrack.features[0].geometry.type !== 'LineString' || radius <= 0) {
         return [];
     }
 

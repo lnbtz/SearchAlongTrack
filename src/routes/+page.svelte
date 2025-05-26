@@ -1,8 +1,22 @@
 <script lang="ts">
-	import Map from "./map/Map.svelte";
+	import Map from './Map.svelte';
+    import FileLoader from './loaders/FileLoader.svelte';
+    import SearchBox from './SearchBox.svelte';
+	import Results from './Results.svelte';
 </script>
 
-<section>
-	<h1>Search along GPS Track app</h1>
-</section>
+<svelte:head>
+	<title>Map</title>
+	<meta name="description" content="Search along GPS Track" />
+</svelte:head>
 
+<section>
+
+	<FileLoader />
+	<br />
+	<SearchBox />
+	<br />
+	<Map />
+	<br />
+	<Results />
+</section>

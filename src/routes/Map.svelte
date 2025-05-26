@@ -18,8 +18,6 @@
 					center: [longitude, latitude],
 					zoom: 14
 				});
-
-				new maplibregl.Marker().setLngLat([longitude, latitude]).addTo(map);
 			},
 			(err) => {
 				console.error('Geolocation error:', err.message);
@@ -111,7 +109,6 @@
 
 	bboxAroundSelectedTrackStore.subscribe((bbox) => {
 		if (bbox) {
-			console.log('bbox', bbox);
 			if (!map.getSource('bbox')) {
 				map.addSource('bbox', {
 					type: 'geojson',

@@ -13,7 +13,7 @@
 	function setSelectedCategories() {
 		selectedCategoriesStore.set(selectedCategories);
 		bboxAroundSelectedTrack();
-		// searchAlongTrack();
+		searchAlongTrack();
 	}
 </script>
 
