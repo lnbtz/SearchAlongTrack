@@ -58,8 +58,14 @@
 	/>
 	<span>{$selectedEndRangeStore} km</span>
 </div>
-
+<!-- add new categories here -->
 <div>
+	<label>
+		<input type="checkbox" bind:group={selectedCategories} value="vending-machines" />
+		Vending Machines
+	<label>
+		<input type="checkbox" bind:group={selectedCategories} value="gas-stations" />
+		Gas Stations
 	<label>
 		<input type="checkbox" bind:group={selectedCategories} value="supermarkets" />
 		Supermarkets

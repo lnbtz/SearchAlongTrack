@@ -157,3 +157,10 @@ export function bboxAroundSelectedTrack() {
     };
     bboxAroundSelectedTrackStore.set(cornerPoints);
 }
+
+
+export function buildTableData() {
+
+
+    return [];
+}

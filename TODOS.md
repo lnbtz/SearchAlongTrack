@@ -1,0 +1,4 @@
+- [ ] Check queries like "shelter" for sleepable shelters
+- [ ] Get supermarkets along the track
+- [ ] Get distances from GPX track to points of interest
+- [ ] Build a table from the collected data
