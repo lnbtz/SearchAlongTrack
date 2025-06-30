@@ -3,6 +3,18 @@
     import FileLoader from './loaders/FileLoader.svelte';
     import SearchBox from './SearchBox.svelte';
 	import Results from './Results.svelte';
+	import { tableDataStore } from '$lib/stores';
+	import type { TableRow } from '$lib/results';
+
+	
+	let tableData: TableRow[] = [];
+	tableDataStore.subscribe((content) => {
+		if (content) {
+			tableData = content;
+		} else {
+			tableData = [];
+		}
+	});
 </script>
 
 <svelte:head>
@@ -18,5 +30,8 @@
 	<br />
 	<Map />
 	<br />
-	<Results />
+	<br />
+	{#if tableData}
+		<Results {tableData} />
+	{/if}
 </section>

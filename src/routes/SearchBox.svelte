@@ -1,19 +1,20 @@
 <script lang="ts">
 	import { searchAlongTrack } from '$lib/api';
 	import {
-		selectedCategoriesStore,
 		selectedEndRangeStore,
 		selectedStartRangeStore,
 		selectedRadiusStore,
 		totalTrackLengthStore
 	} from '$lib/stores';
-	import { bboxAroundSelectedTrack, calculateSelectedRangeTrackStore } from '$lib/util';
-	let selectedCategories: string[] = [];
+	import { bboxAroundSelectedTrack, calculateSelectedRangeTrackStore } from '$lib/distances';
+	import { buildTableData } from '$lib/results';
 
-	function setSelectedCategories() {
-		selectedCategoriesStore.set(selectedCategories);
+
+	function search() {
 		bboxAroundSelectedTrack();
-		searchAlongTrack();
+		searchAlongTrack().then(() => {
+			buildTableData();
+		});
 	}
 </script>
 
@@ -22,9 +23,9 @@
 	<input
 		id="range-slider"
 		type="range"
-		min="0"
+		min="10"
 		max="10000"
-		step="500"
+		step="10"
 		bind:value={$selectedRadiusStore}
 	/>
 	<span>{$selectedRadiusStore} m</span>
@@ -58,24 +59,9 @@
 	/>
 	<span>{$selectedEndRangeStore} km</span>
 </div>
-<!-- add new categories here -->
+
 <div>
-	<label>
-		<input type="checkbox" bind:group={selectedCategories} value="vending-machines" />
-		Vending Machines
-	<label>
-		<input type="checkbox" bind:group={selectedCategories} value="gas-stations" />
-		Gas Stations
-	<label>
-		<input type="checkbox" bind:group={selectedCategories} value="supermarkets" />
-		Supermarkets
-	</label>
-	<label>
-		<input type="checkbox" bind:group={selectedCategories} value="shelters" />
-		Shelters
-	</label>
-	<br />
-	<button onclick={setSelectedCategories}> Search </button>
+	<button onclick={search}> Search </button>
 </div>
 
 <style>

@@ -16,7 +16,8 @@
 					container: mapContainer,
 					style: `https://api.maptiler.com/maps/openstreetmap/style.json?key=${import.meta.env.VITE_MAPTILER_API_KEY}`,
 					center: [longitude, latitude],
-					zoom: 14
+					zoom: 14,
+					attributionControl: false
 				});
 			},
 			(err) => {
@@ -80,57 +81,57 @@
 			}
 		}
 	});
-	/* TODO: show circles around coordinates from query range */
 
-	selectedPointsStoreAlongTrackStore.subscribe((coordinates) => {
-		if (coordinates) {
-			if (!map.getSource('coordinates')) {
-				map.addSource('coordinates', {
-					type: 'geojson',
-					data: coordinates
-				});
+	// selectedPointsStoreAlongTrackStore.subscribe((coordinates) => {
+	// 	if (coordinates) {
+	// 		if (!map.getSource('coordinates')) {
+	// 			map.addSource('coordinates', {
+	// 				type: 'geojson',
+	// 				data: coordinates
+	// 			});
 				
-				map.addLayer({
-					id: 'coordinates-circle',
-					type: 'circle',
-					source: 'coordinates',
-					paint: {
-						'circle-radius': 4,
-						'circle-color': '#0000ff', // Blue color for the coordinates
-						'circle-opacity': 0.8
-					}
-				});
-			} else {
-				const source = map.getSource('coordinates') as maplibregl.GeoJSONSource;
-				source.setData(coordinates);
-			}
-		}
-	});
-
-	bboxAroundSelectedTrackStore.subscribe((bbox) => {
-		if (bbox) {
-			if (!map.getSource('bbox')) {
-				map.addSource('bbox', {
-					type: 'geojson',
-					data: bbox
-				});
+	// 			map.addLayer({
+	// 				id: 'coordinates-circle',
+	// 				type: 'circle',
+	// 				source: 'coordinates',
+	// 				paint: {
+	// 					'circle-radius': 4,
+	// 					'circle-color': '#0000ff', // Blue color for the coordinates
+	// 					'circle-opacity': 0.8
+	// 				}
+	// 			});
+	// 		} else {
+	// 			const source = map.getSource('coordinates') as maplibregl.GeoJSONSource;
+	// 			source.setData(coordinates);
+	// 		}
+	// 	}
+	// });
+// searchBbox
+	// bboxAroundSelectedTrackStore.subscribe((bbox) => {
+	// 	if (bbox) {
+	// 		if (!map.getSource('bbox')) {
+	// 			map.addSource('bbox', {
+	// 				type: 'geojson',
+	// 				data: bbox
+	// 			});
 				
-				map.addLayer({
-					id: 'bbox-circle',
-					type: 'circle',
-					source: 'bbox',
-					paint: {
-						'circle-radius': 4,
-						'circle-color': '#0000ff', // Blue color for the coordinates
-						'circle-opacity': 0.8
-					}
-				});
-			} else {
-				const source = map.getSource('bbox') as maplibregl.GeoJSONSource;
-				source.setData(bbox);
-			}
-		}
-	});
+	// 			map.addLayer({
+	// 				id: 'bbox-circle',
+	// 				type: 'circle',
+	// 				source: 'bbox',
+	// 				paint: {
+	// 					'circle-radius': 4,
+	// 					'circle-color': '#0000ff', // Blue color for the coordinates
+	// 					'circle-opacity': 0.8
+	// 				}
+	// 			});
+	// 		} else {
+	// 			const source = map.getSource('bbox') as maplibregl.GeoJSONSource;
+	// 			source.setData(bbox);
+	// 		}
+	// 	}
+	// }
+	// );
 		
 </script>
 

@@ -8,10 +8,13 @@ import {
     selectedRangeTrackStore,
     selectedCoordinatesAlongTrackStore,
     bboxAroundSelectedTrackStore,
+
 } from "./stores";
 import { get } from "svelte/store";
 import type { FeatureCollection, GeoJsonProperties, Geometry, LineString } from "geojson";
 import { lineSliceAlong, length, along } from '@turf/turf';
+
+
 
 
 export function calculateTrackLength() {
@@ -156,11 +159,4 @@ export function bboxAroundSelectedTrack() {
         ]
     };
     bboxAroundSelectedTrackStore.set(cornerPoints);
-}
-
-
-export function buildTableData() {
-
-
-    return [];
 }

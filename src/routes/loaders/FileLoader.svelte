@@ -2,7 +2,7 @@
 
 	import toGeoJSON from '@mapbox/togeojson';
 	import { gpxTrackStore } from '$lib/stores';
-	import { calculateTrackLength } from '$lib/util';
+	import { calculateTrackLength } from '$lib/distances';
 
 	function handleChange(e: Event) {
 	  const file = (e.target as HTMLInputElement).files?.[0];
