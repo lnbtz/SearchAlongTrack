@@ -1,34 +1,27 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import maplibregl from 'maplibre-gl';
-	import { gpxTrackStore, selectedRangeTrackStore, selectedPointsStoreAlongTrackStore, selectedRadiusStore, bboxAroundSelectedTrackStore } from '$lib/stores';
-
+	import {
+		gpxTrackStore,
+		selectedRangeTrackStore,
+		selectedPointsStoreAlongTrackStore,
+		selectedRadiusStore,
+		bboxAroundSelectedTrackStore
+	} from '$lib/stores';
 
 	let mapContainer: HTMLDivElement;
 	let map: maplibregl.Map;
 
 	onMount(() => {
-		navigator.geolocation.getCurrentPosition(
-			(pos) => {
-				const { latitude, longitude } = pos.coords;
-
-				map = new maplibregl.Map({
-					container: mapContainer,
-					style: `https://api.maptiler.com/maps/openstreetmap/style.json?key=${import.meta.env.VITE_MAPTILER_API_KEY}`,
-					center: [longitude, latitude],
-					zoom: 14,
-					attributionControl: false
-				});
-			},
-			(err) => {
-				console.error('Geolocation error:', err.message);
-				alert('Unable to access your location. Please enable location services.');
-			}
-		);
+		map = new maplibregl.Map({
+			container: mapContainer,
+			style: `https://api.maptiler.com/maps/openstreetmap/style.json?key=${import.meta.env.VITE_MAPTILER_API_KEY}`,
+			zoom: 14,
+			attributionControl: false
+		});
 	});
-
 	gpxTrackStore.subscribe((geojson) => {
-		if (geojson) {
+		if (map && geojson) {
 			if (!map.getSource('gpx-track')) {
 				map.addSource('gpx-track', {
 					type: 'geojson',
@@ -52,10 +45,35 @@
 				const source = map.getSource('gpx-track') as maplibregl.GeoJSONSource;
 				source.setData(geojson);
 			}
+			const geometry = geojson.features[0].geometry;
+			let bbox: number[] | undefined = undefined;
+			if (geometry.type === 'LineString' && Array.isArray((geometry as any).coordinates)) {
+				bbox = (geometry as { coordinates: number[][] }).coordinates.reduce(
+					(acc: number[], coord: number[]) => {
+						acc[0] = Math.min(acc[0], coord[0]);
+						acc[1] = Math.min(acc[1], coord[1]);
+						acc[2] = Math.max(acc[2], coord[0]);
+						acc[3] = Math.max(acc[3], coord[1]);
+						return acc;
+					},
+					[Infinity, Infinity, -Infinity, -Infinity]
+				);
+			}
+			if (bbox) {
+				map.fitBounds(
+					[
+						[bbox[0], bbox[1]],
+						[bbox[2], bbox[3]]
+					],
+					{
+						padding: { top: 20, bottom: 20, left: 20, right: 20 }
+					}
+				);
+			}
 		}
 	});
 	selectedRangeTrackStore.subscribe((geojson) => {
-		if (geojson) {
+		if (map && geojson) {
 			if (!map.getSource('selected-range-track')) {
 				map.addSource('selected-range-track', {
 					type: 'geojson',
@@ -89,7 +107,7 @@
 	// 				type: 'geojson',
 	// 				data: coordinates
 	// 			});
-				
+
 	// 			map.addLayer({
 	// 				id: 'coordinates-circle',
 	// 				type: 'circle',
@@ -106,7 +124,7 @@
 	// 		}
 	// 	}
 	// });
-// searchBbox
+	// searchBbox
 	// bboxAroundSelectedTrackStore.subscribe((bbox) => {
 	// 	if (bbox) {
 	// 		if (!map.getSource('bbox')) {
@@ -114,7 +132,7 @@
 	// 				type: 'geojson',
 	// 				data: bbox
 	// 			});
-				
+
 	// 			map.addLayer({
 	// 				id: 'bbox-circle',
 	// 				type: 'circle',
@@ -132,7 +150,6 @@
 	// 	}
 	// }
 	// );
-		
 </script>
 
 <div bind:this={mapContainer} id="map"></div>

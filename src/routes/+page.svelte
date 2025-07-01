@@ -29,8 +29,6 @@
 	<SearchBox />
 	<br />
 	<Map />
-	<br />
-	<br />
 	{#if tableData}
 		<Results {tableData} />
 	{/if}
