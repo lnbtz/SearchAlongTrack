@@ -8,16 +8,35 @@ import {
     selectedRangeTrackStore,
     selectedCoordinatesAlongTrackStore,
     bboxAroundSelectedTrackStore,
-
+    simplifiedGpxTrackStore,
+    polyAroundTrackStore
 } from "./stores";
 import { get } from "svelte/store";
 import type { FeatureCollection, GeoJsonProperties, Geometry, LineString } from "geojson";
-import { lineSliceAlong, length, along } from '@turf/turf';
+import { lineSliceAlong, length, along, simplify, buffer } from '@turf/turf';
+import { SEARCH_CORRIDOR_RADIUS } from "./osm-constants";
 
+export function handleGpxTrack() {
+    setTrackLengthStore();
+    simplifyGpxTrack();
+    polyAroundTrack();
+}
 
+export function centerOnCoords(map: maplibregl.Map | undefined, location: { lon: number; lat: number }) {
+    if (map && location.lon !== undefined && location.lat !== undefined) {
+        map.flyTo({
+            center: [location.lon, location.lat],
+            zoom: 14,
+            speed: 1.2,
+            curve: 1,
+            easing(t) {
+                return t;
+            }
+        });
+    }
+}
 
-
-export function calculateTrackLength() {
+function setTrackLengthStore() {
     // calculate the length of the track in meters
     const gpxTrack: FeatureCollection<Geometry, GeoJsonProperties> | null = get(gpxTrackStore);
     if (!gpxTrack || gpxTrack.features[0].geometry.type !== 'LineString') {
@@ -108,6 +127,23 @@ export function getCoordinatesAlongSelectedTrack() {
     selectedPointsStoreAlongTrackStore.set(points);
 }
 
+export function polyAroundTrack() {
+    const simplifiedGpxTrack: LineString | null = get(simplifiedGpxTrackStore);
+    if (!simplifiedGpxTrack) {
+        console.error('No simplified GPX track available');
+        return;
+    }
+    const buffered = buffer(simplifiedGpxTrack, SEARCH_CORRIDOR_RADIUS, { units: 'meters' });
+    if (buffered) {
+        const simplifiedBuffer = simplify(buffered, { tolerance: 0.01, highQuality: false, mutate: true });
+        polyAroundTrackStore.set(simplifiedBuffer);
+        console.log('Buffered polygon around track created:', simplifiedBuffer);
+    } else {
+        console.error('Buffer polygon is undefined');
+    }
+}
+
+
 export function bboxAroundSelectedTrack() {
     const selectedRangeTrack: FeatureCollection<Geometry, GeoJsonProperties> | null = get(selectedRangeTrackStore);
     if (!selectedRangeTrack || selectedRangeTrack.features[0].geometry.type !== 'LineString') {
@@ -159,4 +195,14 @@ export function bboxAroundSelectedTrack() {
         ]
     };
     bboxAroundSelectedTrackStore.set(cornerPoints);
+}
+
+function simplifyGpxTrack() {
+    const gpxTrack: FeatureCollection<Geometry, GeoJsonProperties> | null = get(gpxTrackStore);
+    if (!gpxTrack || gpxTrack.features[0].geometry.type !== 'LineString') {
+        console.error('Invalid GPX track data');
+        return;
+    }
+    const simplified = simplify(gpxTrack.features[0].geometry, { tolerance: 0.0001, highQuality: true });
+    simplifiedGpxTrackStore.set(simplified);
 }

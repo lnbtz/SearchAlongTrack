@@ -6,12 +6,10 @@
 		selectedRadiusStore,
 		totalTrackLengthStore
 	} from '$lib/stores';
-	import { bboxAroundSelectedTrack, calculateSelectedRangeTrackStore } from '$lib/distances';
+	import { calculateSelectedRangeTrackStore } from '$lib/util';
 	import { buildTableData } from '$lib/results';
 
-
 	function search() {
-		bboxAroundSelectedTrack();
 		searchAlongTrack().then(() => {
 			buildTableData();
 		});
@@ -23,9 +21,9 @@
 	<input
 		id="range-slider"
 		type="range"
-		min="10"
-		max="10000"
-		step="10"
+		min="100"
+		max="5000"
+		step="100"
 		bind:value={$selectedRadiusStore}
 	/>
 	<span>{$selectedRadiusStore} m</span>

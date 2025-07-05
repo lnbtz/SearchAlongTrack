@@ -2,7 +2,7 @@
 
 	import toGeoJSON from '@mapbox/togeojson';
 	import { gpxTrackStore } from '$lib/stores';
-	import { calculateTrackLength } from '$lib/distances';
+	import {  handleGpxTrack } from '$lib/util';
 
 	function handleChange(e: Event) {
 	  const file = (e.target as HTMLInputElement).files?.[0];
@@ -13,7 +13,7 @@
 		const xml = new DOMParser().parseFromString(reader.result as string, 'application/xml');
 		const geojson = toGeoJSON.gpx(xml);
 		gpxTrackStore.set(geojson);
-		calculateTrackLength();
+		handleGpxTrack();
 	  };
 	  reader.readAsText(file);
 	}

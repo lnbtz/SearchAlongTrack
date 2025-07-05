@@ -4,9 +4,8 @@
 	import {
 		gpxTrackStore,
 		selectedRangeTrackStore,
-		selectedPointsStoreAlongTrackStore,
-		selectedRadiusStore,
-		bboxAroundSelectedTrackStore
+		tableDataDisplay,
+		mapInstanceStore
 	} from '$lib/stores';
 
 	let mapContainer: HTMLDivElement;
@@ -19,6 +18,7 @@
 			zoom: 14,
 			attributionControl: false
 		});
+		mapInstanceStore.set(map);
 	});
 	gpxTrackStore.subscribe((geojson) => {
 		if (map && geojson) {
@@ -99,6 +99,34 @@
 			}
 		}
 	});
+	tableDataDisplay.subscribe((row) => {
+		if(map && row) {
+			
+		}
+	})
+	// polyAroundTrackStore.subscribe((polygon) => {
+	// 	if (map && polygon) {
+	// 		if (!map.getSource('poly-around-track')) {
+	// 			map.addSource('poly-around-track', {
+	// 				type: 'geojson',
+	// 				data: polygon
+	// 			});
+
+	// 			map.addLayer({
+	// 				id: 'poly-around-track-fill',
+	// 				type: 'fill',
+	// 				source: 'poly-around-track',
+	// 				paint: {
+	// 					'fill-color': '#0000ff', // Blue color for the polygon around the track
+	// 					'fill-opacity': 0.3
+	// 				}
+	// 			});
+	// 		} else {
+	// 			const source = map.getSource('poly-around-track') as maplibregl.GeoJSONSource;
+	// 			source.setData(polygon);
+	// 		}
+	// 	}
+	// });
 
 	// selectedPointsStoreAlongTrackStore.subscribe((coordinates) => {
 	// 	if (coordinates) {
@@ -150,6 +178,8 @@
 	// 	}
 	// }
 	// );
+
+
 </script>
 
 <div bind:this={mapContainer} id="map"></div>

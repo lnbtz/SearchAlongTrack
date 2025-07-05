@@ -1,12 +1,12 @@
 
-import { lastQueryHashStore, selectedRangeTrackStore, searchResultsCacheStore, bboxAroundSelectedTrackStore } from './stores';
+import { lastQueryHashStore, searchResultsCacheStore, bboxAroundSelectedTrackStore, polyAroundTrackStore } from './stores';
 import { get } from 'svelte/store';
 import type { OverpassJson } from "overpass-ts";
 import { overpass } from "overpass-ts";
-import { bboxAroundSelectedTrack } from './distances';
-import { QueryBodies } from './osm-constants';
-import type { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson';
-import { OverpassMixedResults } from './osm-constants'; // Import the test response
+
+import { OverpassAllCategories2, QueryBodies } from './osm-constants';
+
+
 
 
 const queryHeader: string = `[out:json];
@@ -21,53 +21,47 @@ let query: string;
 
 export async function searchAlongTrack() {
 
-    const selectedRangeTrack: FeatureCollection<Geometry, GeoJsonProperties> | null = get(selectedRangeTrackStore);
-    queryBody = ``;
-    if (selectedRangeTrack && selectedRangeTrack.features[0].geometry.type === 'LineString') {
 
-        bboxAroundSelectedTrack();
-        buildBboxQueryBody();
+    buildPolyQueryBody();
 
-        // optimize query to be as small as possible
-        query = `${queryHeader}${queryBody}${queryFooter}`;
-        console.log('Overpass query:', query);
-        // check if query is already in cache
-        const queryHash = await createQueryHash(query);
-        const searchResultsCache: Map<string, OverpassJson> = get(searchResultsCacheStore);
-        if (searchResultsCache.has(queryHash)) {
-            console.log('Query already in cache');
-            const cachedResponse: OverpassJson = searchResultsCache.get(queryHash) as OverpassJson;
-            console.log('Cached response:', cachedResponse);
-            // do something with the cached response
-            // this updates the last search query store and triggers the UI to update
-            lastQueryHashStore.set(queryHash);
-            return;
-        }
-        // inject test response here
-        if (testingQuery()) {
-            const testResponse: OverpassJson = OverpassMixedResults;
-            searchResultsCache.set(queryHash, testResponse);
-            searchResultsCacheStore.set(searchResultsCache);
-            lastQueryHashStore.set(queryHash);
-        }
-        // for testing purposes, use the test response instead of the actual query
-
-        // execute query
-        // overpass(query)
-        //     .then((response) => response.json())
-        //     .then((json) => {
-        //         json = json as OverpassJson;
-        //         // cache the response
-        //         searchResultsCache.set(queryHash, json);
-        //         searchResultsCacheStore.set(searchResultsCache);
-        //         // update the last search query store
-        //         // this triggers the UI to update
-        //         lastQueryHashStore.set(queryHash);
-        //         console.log('Overpass JSON:', json);
-        //     })
-    } else {
-        console.log('No categories selected');
+    // optimize query to be as small as possible
+    query = `${queryHeader}${queryBody}${queryFooter}`;
+    console.log('Overpass query:', query);
+    // check if query is already in cache
+    const queryHash = await createQueryHash(query);
+    const searchResultsCache: Map<string, OverpassJson> = get(searchResultsCacheStore);
+    if (searchResultsCache.has(queryHash)) {
+        console.log('Query already in cache');
+        const cachedResponse: OverpassJson = searchResultsCache.get(queryHash) as OverpassJson;
+        console.log('Cached response:', cachedResponse);
+        // do something with the cached response
+        // this updates the last search query store and triggers the UI to update
+        lastQueryHashStore.set(queryHash);
+        return;
     }
+    // inject test response here
+    if (testingQuery()) {
+        const testResponse: OverpassJson = OverpassAllCategories2;
+        searchResultsCache.set(queryHash, testResponse);
+        searchResultsCacheStore.set(searchResultsCache);
+        lastQueryHashStore.set(queryHash);
+    }
+    // for testing purposes, use the test response instead of the actual query
+
+    // execute query
+    // overpass(query)
+    //     .then((response) => response.json())
+    //     .then((json) => {
+    //         json = json as OverpassJson;
+    //         // cache the response
+    //         searchResultsCache.set(queryHash, json);
+    //         searchResultsCacheStore.set(searchResultsCache);
+    //         // update the last search query store
+    //         // this triggers the UI to update
+    //         lastQueryHashStore.set(queryHash);
+    //         console.log('Overpass JSON:', json);
+    //     })
+
 }
 
 
@@ -87,6 +81,22 @@ function buildBboxQueryBody() {
     QueryBodies.forEach((queryBodyPart) => {
         queryBody += `
                 nwr${queryBodyPart.query}(${minLat}, ${minLon}, ${maxLat}, ${maxLon});
+                `;
+    });
+}
+
+function buildPolyQueryBody() {
+    queryBody = ''; // reset query body
+    const polyAroundTrack = get(polyAroundTrackStore);
+    if (!polyAroundTrack || polyAroundTrack.geometry.coordinates.length === 0) {
+        console.error('No polygon around selected track');
+        return;
+    }
+    const coords = polyAroundTrack.geometry.coordinates[0]; // Array of [lon, lat]
+    const polyString = coords.map(([lon, lat]) => `${lat} ${lon}`).join(' ');
+    QueryBodies.forEach((queryBodyPart) => {
+        queryBody += `
+                nwr${queryBodyPart.query}(poly:"${polyString}");
                 `;
     });
 }
