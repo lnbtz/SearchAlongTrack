@@ -1,7 +1,15 @@
 <script lang="ts">
 	import { type TableRow } from '$lib/results';
 	import { OSMCategories, OSMCategoriesMap } from '$lib/osm-constants';
-	import { mapInstanceStore, selectedCategoriesStore, selectedEndRangeStore, selectedRadiusStore, selectedStartRangeStore, tableDataStore } from '$lib/stores';
+	import {
+		mapInstanceStore,
+		selectedCategoriesStore,
+		selectedEndRangeStore,
+		selectedRadiusStore,
+		selectedStartRangeStore,
+		tableDataDisplayStore,
+		tableDataStore
+	} from '$lib/stores';
 	import { get } from 'svelte/store';
 	import { centerOnCoords } from '$lib/util';
 	export let tableData: TableRow[];
@@ -23,7 +31,13 @@
 		centerOnCoords(map, row.location ? row.location : { lat: 0, lon: 0 });
 	}
 
-	function filterTableData(selectedCategories: string[], tableData: TableRow[], selectedRadius: number, selectedStartRange: number, selectedEndRange: number): TableRow[] {
+	function filterTableData(
+		selectedCategories: string[],
+		tableData: TableRow[],
+		selectedRadius: number,
+		selectedStartRange: number,
+		selectedEndRange: number
+	): TableRow[] {
 		let types: string[] = [];
 		OSMCategoriesMap.forEach((values, key) => {
 			if (selectedCategories.includes(key)) {
@@ -31,16 +45,22 @@
 			}
 		});
 		console.log('types ', types);
-		return tableData.filter((row) => {
-			return types.includes(row.type) &&
-				row.distanceOnRoute <= selectedEndRange &&
-				row.distanceOnRoute >= selectedStartRange &&
-				row.distanceFromRoute <= selectedRadius;
-		}).sort((a, b) => {
-			if (a.distanceOnRoute < b.distanceOnRoute) return -1;
-			if (a.distanceOnRoute > b.distanceOnRoute) return 1;
-			return 0;
-		});
+		const tableDataDisplay = tableData
+			.filter((row) => {
+				return (
+					types.includes(row.type) &&
+					row.distanceOnRoute <= selectedEndRange &&
+					row.distanceOnRoute >= selectedStartRange &&
+					row.distanceFromRoute <= selectedRadius
+				);
+			})
+			.sort((a, b) => {
+				if (a.distanceOnRoute < b.distanceOnRoute) return -1;
+				if (a.distanceOnRoute > b.distanceOnRoute) return 1;
+				return 0;
+			});
+		tableDataDisplayStore.set(tableDataDisplay);
+		return tableDataDisplay;
 	}
 </script>
 
@@ -206,6 +226,7 @@
 				<th>Distance to Track</th>
 				<th>Distance on Route</th>
 				<th>Location (Lat, Lon)</th>
+				<th>Further Details</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -293,9 +314,14 @@
 					</td>
 					<td>
 						{#if row.openingHours}
-							{#each row.openingHours.split(';') as segment, i}
-								{segment.trim()}{#if i < row.openingHours.split(';').length - 1}<br />{/if}
-							{/each}
+							<details>
+								<summary class="clickable"> Show Opening Hours </summary>
+								<div class="info-box">
+									{#each row.openingHours.split(';') as segment, i}
+										{segment.trim()}{#if i < row.openingHours.split(';').length - 1}<br />{/if}
+									{/each}
+								</div>
+							</details>
 						{:else}
 							-
 						{/if}
@@ -481,6 +507,18 @@
 							</svg>
 						</button>
 					</td>
+					<td>
+						{#if row.description}
+							<details>
+								<summary class="clickable"> Show Further Details </summary>
+								<div class="info-box">
+									{row.description}
+								</div>
+							</details>
+						{:else}
+							-
+						{/if}
+					</td>
 				</tr>
 			{/each}
 		</tbody>
@@ -489,9 +527,34 @@
 
 <style>
 	.clickable {
+		font-size: small;
 		cursor: pointer;
 		color: #2563eb;
 		text-decoration: underline;
+	}
+	td {
+		position: relative;
+	}
+
+	.info-box {
+		font-size: small;
+		white-space: pre-wrap;
+		background: #f3f4f6;
+		border-radius: 0.5rem;
+		padding: 0.5rem;
+		min-width: 200px;
+		max-width: 350px;
+		position: absolute;
+		z-index: 10;
+		top: 100%;
+		left: 0;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+		margin-top: 0.25em;
+	}
+
+	/* Optional: Add a transition for smoothness */
+	.info-box {
+		transition: opacity 0.2s;
 	}
 
 	table {
@@ -501,7 +564,7 @@
 		background: #fff;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 		border-radius: 8px;
-		overflow: hidden;
+		overflow: auto;
 	}
 
 	th,

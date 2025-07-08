@@ -2,8 +2,7 @@ import {
     searchResultsCacheStore,
     lastQueryHashStore,
     tableDataStore,
-    selectedStartRangeStore,
-    selectedRangeTrackStore,
+    simplifiedGpxTrackStore,
 } from '$lib/stores';
 import { get } from 'svelte/store';
 // import { OverpassJsonExample } from '$lib/osm-constants';
@@ -11,9 +10,9 @@ import { get } from 'svelte/store';
 
 
 import type { OverpassNode, OverpassWay, OverpassRelation, OverpassArea, OverpassTimeline, OverpassCount, OverpassJson } from 'overpass-ts';
-import type { FeatureCollection, GeoJsonProperties, Geometry, LineString } from 'geojson';
-import { nearestPointOnLine, simplify } from '@turf/turf';
-import { SEARCH_CORRIDOR_RADIUS } from './osm-constants';
+import type { LineString } from 'geojson';
+import { nearestPointOnLine } from '@turf/turf';
+import { OSMCategoriesMap, SEARCH_CORRIDOR_RADIUS } from './osm-constants';
 
 
 
@@ -22,20 +21,16 @@ export function buildTableData() {
     const lastQueryHash = get(lastQueryHashStore);
     const queryResults = searchResultsCache.get(lastQueryHash);
     const selectedRadius = SEARCH_CORRIDOR_RADIUS;
-    const selectedStartRange = get(selectedStartRangeStore);
-    const gpxTrack: FeatureCollection<Geometry, GeoJsonProperties> | null = get(selectedRangeTrackStore);
-    let lineString = gpxTrack?.features[0].geometry as LineString;
-    lineString = simplify(lineString, { tolerance: 0.0001, highQuality: true });
-    
+    const selectedStartRange = 0;
+    const simplifiedGpxTrack: LineString = get(simplifiedGpxTrackStore) as LineString;
     const rows: TableRow[] = [];
     // build location map for faster lookup where key is the element id and value is the lat/lon
     const locationMap = new Map<number, { lat: number; lon: number }>();
     if (queryResults) {
-        console.log('Using cached results for query hash:', lastQueryHash);
         buildLocationMap(queryResults, locationMap);
         console.time('Building table rows from cache');
         queryResults.elements.forEach((element) => {
-            buildTableRow(element, rows, locationMap, selectedRadius, selectedStartRange, lineString);
+            buildTableRow(element, rows, locationMap, selectedRadius, selectedStartRange, simplifiedGpxTrack);
         });
         console.timeEnd('Building table rows from cache');
         console.log('Table rows built from cache:', rows.length);
@@ -46,6 +41,8 @@ export function buildTableData() {
 
 export interface TableRow {
     type: string; // e.g., 'vending_machine', 'supermarket', 'restaurant'
+    category?: string; // e.g., 'vending_machine', 'shop', 'amenity', 'tourism'
+    description?: string; // e.g., 'A vending machine for snacks'
     name?: string; // e.g., 'Imkerei Automat'
     website?: string;
     phoneNumber?: string;
@@ -58,17 +55,19 @@ export interface TableRow {
 
 
 function buildTableRow(element: OverpassNode | OverpassWay | OverpassRelation | OverpassArea | OverpassTimeline | OverpassCount, rows: TableRow[], locationMap: Map<number, { lat: number; lon: number; }>, selectedRadius: number, selectedStartRange: number, lineString: LineString) {
-    let type: string | undefined;
+    let type: string;
+    let category: string | undefined;
+    let description: string | undefined;
     let name: string | undefined;
     let website: string | undefined;
     let phoneNumber: string | undefined;
     let openingHours: string | undefined;
-    let distanceFromRoute: number;
-    let distanceOnRoute: number;
-    let indexOfRoute: number | undefined;
-    
+
+
     if (element.tags && (element.type === 'node' || element.type === 'way' || element.type === 'relation')) {
         type = element.tags.amenity || element.tags.shop || element.tags.tourism;
+        category = Array.from(OSMCategoriesMap.keys()).find(key => OSMCategoriesMap.get(key)?.includes(type));
+        description = element.tags.description;
         name = element.tags.name;
         website = element.tags.website;
         phoneNumber = element.tags.phone;
@@ -82,15 +81,15 @@ function buildTableRow(element: OverpassNode | OverpassWay | OverpassRelation | 
     }
 
     const result = nearestPointOnLine(lineString, [location.lon, location.lat], { units: 'meters' });
-    if (selectedRadius > result.properties.dist) {
-        distanceFromRoute = Number(result.properties.dist.toFixed(0));
-        distanceOnRoute = Number((result.properties.location / 1000 + selectedStartRange).toFixed(2));
-        indexOfRoute = result.properties.index;
-    } else {
-        return;
-    }
+
+    const distanceFromRoute = Number(result.properties.dist.toFixed(0));
+    const distanceOnRoute = Number((result.properties.location / 1000 + selectedStartRange).toFixed(2));
+    const indexOfRoute = result.properties.index;
+
     const tableRow: TableRow = {
         type,
+        category,
+        description,
         name,
         website,
         phoneNumber,

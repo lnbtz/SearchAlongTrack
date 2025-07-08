@@ -52,7 +52,7 @@
 		"@mapbox/togeojson": "^0.16.2",
 		"@turf/turf": "^7.2.0",
 		"dotenv": "^16.5.0",
-		"maplibre-gl": "^5.4.0",
+		"maplibre-gl": "^5.6.1",
 		"overpass-ts": "^4.3.8"
 	}
 }

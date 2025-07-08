@@ -20,4 +20,4 @@ export const bboxAroundSelectedTrackStore = writable<FeatureCollection<Geometry,
 export const searchResultsCacheStore = writable<Map<string, OverpassJson>>(new Map()); // Store to cache search results from Overpass API
 export const lastQueryHashStore = writable<string>(''); // Store to hold the last search query
 export const tableDataStore = writable<TableRow[]>([]); // Store to hold the table data for displaying search results
-export const tableDataDisplay = writable<TableRow[]>([]); // Store the table data that should be currently displayed
+export const tableDataDisplayStore = writable<TableRow[]>([]); // Store the table data that should be currently displayed

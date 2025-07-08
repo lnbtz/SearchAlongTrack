@@ -1,12 +1,10 @@
 
-import { lastQueryHashStore, searchResultsCacheStore, bboxAroundSelectedTrackStore, polyAroundTrackStore } from './stores';
+import { lastQueryHashStore, searchResultsCacheStore, polyAroundTrackStore } from './stores';
 import { get } from 'svelte/store';
 import type { OverpassJson } from "overpass-ts";
 import { overpass } from "overpass-ts";
 
-import { OverpassAllCategories2, QueryBodies } from './osm-constants';
-
-
+import { OverpassAllButVending, QueryBodies } from './osm-constants';
 
 
 const queryHeader: string = `[out:json];
@@ -41,7 +39,7 @@ export async function searchAlongTrack() {
     }
     // inject test response here
     if (testingQuery()) {
-        const testResponse: OverpassJson = OverpassAllCategories2;
+        const testResponse: OverpassJson = OverpassAllButVending;
         searchResultsCache.set(queryHash, testResponse);
         searchResultsCacheStore.set(searchResultsCache);
         lastQueryHashStore.set(queryHash);
@@ -65,25 +63,25 @@ export async function searchAlongTrack() {
 }
 
 
-function buildBboxQueryBody() {
-    const bbox = get(bboxAroundSelectedTrackStore);
-    console.log('Bounding box:', bbox);
-    if (!bbox || bbox.features.length === 0 || bbox.features[0].geometry.type !== 'Point'
-        || bbox.features[2].geometry.type !== 'Point' || bbox.features.length < 4
-    ) {
-        console.error('No bounding box around selected track');
-        return;
-    }
-    const minLat = bbox.features[0].geometry.coordinates[1];
-    const minLon = bbox.features[0].geometry.coordinates[0];
-    const maxLat = bbox.features[2].geometry.coordinates[1];
-    const maxLon = bbox.features[2].geometry.coordinates[0];
-    QueryBodies.forEach((queryBodyPart) => {
-        queryBody += `
-                nwr${queryBodyPart.query}(${minLat}, ${minLon}, ${maxLat}, ${maxLon});
-                `;
-    });
-}
+// function buildBboxQueryBody() {
+//     const bbox = get(bboxAroundSelectedTrackStore);
+//     console.log('Bounding box:', bbox);
+//     if (!bbox || bbox.features.length === 0 || bbox.features[0].geometry.type !== 'Point'
+//         || bbox.features[2].geometry.type !== 'Point' || bbox.features.length < 4
+//     ) {
+//         console.error('No bounding box around selected track');
+//         return;
+//     }
+//     const minLat = bbox.features[0].geometry.coordinates[1];
+//     const minLon = bbox.features[0].geometry.coordinates[0];
+//     const maxLat = bbox.features[2].geometry.coordinates[1];
+//     const maxLon = bbox.features[2].geometry.coordinates[0];
+//     QueryBodies.forEach((queryBodyPart) => {
+//         queryBody += `
+//                 nwr${queryBodyPart.query}(${minLat}, ${minLon}, ${maxLat}, ${maxLon});
+//                 `;
+//     });
+// }
 
 function buildPolyQueryBody() {
     queryBody = ''; // reset query body

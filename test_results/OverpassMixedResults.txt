@@ -1,0 +1,3264 @@
+
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.7 375dc00a",
+  "osm3s": {
+    "timestamp_osm_base": "2025-06-30T12:04:45Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "node",
+  "id": 336255002,
+  "lat": 47.6359290,
+  "lon": 8.2812708,
+  "tags": {
+    "addr:city": "Waldshut-Tiengen",
+    "addr:housenumber": "4",
+    "addr:postcode": "79761",
+    "addr:street": "Breitenfelder Straße",
+    "brand": "Penny",
+    "brand:wikidata": "Q284688",
+    "brand:wikipedia": "en:Penny (supermarket)",
+    "name": "Penny",
+    "opening_hours": "Mo-Sa 07:30-21:00",
+    "operator": "REWE",
+    "shop": "supermarket",
+    "website": "https://www.penny.de/",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 343808174,
+  "lat": 47.6477397,
+  "lon": 8.5653279,
+  "tags": {
+    "addr:city": "Jestetten",
+    "addr:country": "DE",
+    "addr:housenumber": "17",
+    "addr:postcode": "79798",
+    "addr:street": "Waldshuter Straße",
+    "brand": "EDEKA",
+    "brand:wikidata": "Q701755",
+    "brand:wikipedia": "en:Edeka",
+    "check_date": "2024-08-11",
+    "name": "Edeka",
+    "opening_hours": "Mo-Sa 08:00-21:00",
+    "phone": "+49 7745 926880",
+    "shop": "supermarket",
+    "website": "https://www.edeka.de/eh/s%C3%BCdwest/e-neukauf-jestetten-waldshuter-stra%C3%9Fe-17/index.jsp"
+  }
+},
+{
+  "type": "node",
+  "id": 343808175,
+  "lat": 47.6541883,
+  "lon": 8.5749157,
+  "tags": {
+    "addr:city": "Jestetten",
+    "addr:country": "DE",
+    "addr:housenumber": "29",
+    "addr:postcode": "79798",
+    "addr:street": "Schaffhauser Straße",
+    "brand": "Aldi Süd",
+    "brand:wikidata": "Q41171672",
+    "brand:wikipedia": "hu:Aldi Süd",
+    "name": "Aldi Süd",
+    "opening_hours": "Mo-Sa 08:00-21:00",
+    "payment:cash": "yes",
+    "payment:maestro": "yes",
+    "payment:mastercard": "yes",
+    "payment:visa": "yes",
+    "shop": "supermarket",
+    "website": "https://filialen.aldi-sued.de/baden-wuerttemberg/jestetten/schaffhauser-strasse-29"
+  }
+},
+{
+  "type": "node",
+  "id": 344334614,
+  "lat": 47.6493798,
+  "lon": 8.5680281,
+  "tags": {
+    "name": "Bäckerei Jünger",
+    "shop": "bakery"
+  }
+},
+{
+  "type": "node",
+  "id": 765318111,
+  "lat": 47.6898472,
+  "lon": 8.5271996,
+  "tags": {
+    "name": "Flugplatz Schmerlat",
+    "opening_hours": "\"bei Flugbetrieb\"",
+    "shop": "kiosk",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 1229524035,
+  "lat": 47.6589593,
+  "lon": 8.4312898,
+  "tags": {
+    "addr:city": "Klettgau",
+    "addr:country": "DE",
+    "addr:housenumber": "8a",
+    "addr:postcode": "79771",
+    "addr:street": "Am Güterbahnhof",
+    "addr:suburb": "Erzingen",
+    "brand": "Penny",
+    "brand:wikidata": "Q284688",
+    "brand:wikipedia": "en:Penny (supermarket)",
+    "name": "Penny",
+    "opening_hours": "Mo-Sa 07:30-21:30; Su,PH off",
+    "shop": "supermarket"
+  }
+},
+{
+  "type": "node",
+  "id": 1229524738,
+  "lat": 47.6587445,
+  "lon": 8.4310117,
+  "tags": {
+    "addr:city": "Klettgau",
+    "addr:country": "DE",
+    "addr:housenumber": "8",
+    "addr:postcode": "79771",
+    "addr:street": "Am Güterbahnhof",
+    "addr:suburb": "Erzingen",
+    "brand": "Edeka",
+    "brand:wikidata": "Q701755",
+    "brand:wikipedia": "de:Edeka",
+    "name": "Edeka",
+    "opening_hours": "Mo-Fr 08:00-20:00; Sa 07:30-20:00; Su,PH off",
+    "shop": "supermarket",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 1240357142,
+  "lat": 47.7078952,
+  "lon": 8.3243850,
+  "tags": {
+    "amenity": "shelter",
+    "bench": "yes",
+    "lit": "no",
+    "name": "Herrmansschau",
+    "shelter_type": "gazebo"
+  }
+},
+{
+  "type": "node",
+  "id": 1258136128,
+  "lat": 47.6548147,
+  "lon": 8.2914894,
+  "tags": {
+    "amenity": "shelter"
+  }
+},
+{
+  "type": "node",
+  "id": 1309747939,
+  "lat": 47.7557451,
+  "lon": 8.4684209,
+  "tags": {
+    "amenity": "shelter",
+    "fireplace": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 1314580362,
+  "lat": 47.7471910,
+  "lon": 8.4608269,
+  "tags": {
+    "access": "yes",
+    "amenity": "shelter",
+    "bench": "yes",
+    "bin": "no",
+    "description": "Kleine Schutzhütte von circa 2x2 m. Wände halboffen, deshalb nicht für Übernachtungen geeignet.",
+    "lockable": "no",
+    "locked": "no",
+    "noname": "yes",
+    "picnic_table": "no",
+    "shelter_type": "weather_shelter",
+    "surface": "dirt",
+    "table": "no",
+    "wall": "partial"
+  }
+},
+{
+  "type": "node",
+  "id": 1422994646,
+  "lat": 47.7312682,
+  "lon": 8.5246824,
+  "tags": {
+    "amenity": "shelter",
+    "fireplace": "yes",
+    "shelter_type": "lean_to"
+  }
+},
+{
+  "type": "node",
+  "id": 1422994650,
+  "lat": 47.7440141,
+  "lon": 8.5185543,
+  "tags": {
+    "amenity": "shelter",
+    "shelter_type": "lean_to"
+  }
+},
+{
+  "type": "node",
+  "id": 1444390993,
+  "lat": 47.6494918,
+  "lon": 8.3481606,
+  "tags": {
+    "name": "Bäckerei Café Müller",
+    "shop": "bakery"
+  }
+},
+{
+  "type": "node",
+  "id": 1626019340,
+  "lat": 47.7466660,
+  "lon": 8.4806615,
+  "tags": {
+    "addr:city": "Schleitheim",
+    "addr:housenumber": "3",
+    "addr:postcode": "8226",
+    "addr:street": "Schaffhauserstrasse",
+    "alt_name": "Coop Schleitheim",
+    "branch": "Schleitheim",
+    "brand": "Coop",
+    "brand:wikidata": "Q432564",
+    "name": "Coop",
+    "operator": "Coop Genossenschaft",
+    "shop": "supermarket",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 1700246587,
+  "lat": 47.6314676,
+  "lon": 8.2991026,
+  "tags": {
+    "addr:city": "Lauchringen",
+    "addr:country": "DE",
+    "addr:housenumber": "77",
+    "addr:postcode": "79787",
+    "addr:street": "Hauptstraße",
+    "name": "Roters",
+    "opening_hours": "Tu-Fr 06:00-18:00; Sa 06:00-13:00",
+    "phone": "+49 7741 2090",
+    "shop": "bakery",
+    "toilets:wheelchair": "no",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 1706425596,
+  "lat": 47.6224707,
+  "lon": 8.3259983,
+  "tags": {
+    "addr:city": "Lauchringen",
+    "addr:country": "DE",
+    "addr:housenumber": "22",
+    "addr:postcode": "79787",
+    "addr:street": "Klettgaustraße",
+    "name": "Dörflinger",
+    "opening_hours": "Mo-Sa 06:30-12:00",
+    "shop": "bakery"
+  }
+},
+{
+  "type": "node",
+  "id": 1741799607,
+  "lat": 47.6570056,
+  "lon": 8.3837766,
+  "tags": {
+    "amenity": "shelter",
+    "name": "Rastplatz Wutöschingen",
+    "shelter_type": "picnic_shelter"
+  }
+},
+{
+  "type": "node",
+  "id": 1795813573,
+  "lat": 47.6252985,
+  "lon": 8.4141377,
+  "tags": {
+    "name": "Markant",
+    "shop": "supermarket"
+  }
+},
+{
+  "type": "node",
+  "id": 1842339337,
+  "lat": 47.6318867,
+  "lon": 8.2982576,
+  "tags": {
+    "name": "Krachenfels Bäckerei",
+    "shop": "bakery",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 1842339361,
+  "lat": 47.6313525,
+  "lon": 8.3012208,
+  "tags": {
+    "check_date:opening_hours": "2021-02-28",
+    "name": "BackKUltur",
+    "opening_hours": "Mo-Sa 07:00-20:30; Su 08:00-11:00",
+    "operator": "K&U Bäckerei",
+    "shop": "bakery",
+    "toilets:wheelchair": "no",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 1867354818,
+  "lat": 47.7571445,
+  "lon": 8.3225270,
+  "tags": {
+    "amenity": "shelter",
+    "shelter_type": "weather_shelter"
+  }
+},
+{
+  "type": "node",
+  "id": 2283218841,
+  "lat": 47.6261340,
+  "lon": 8.4136460,
+  "tags": {
+    "addr:city": "Klettgau",
+    "addr:housenumber": "16",
+    "addr:postcode": "79771",
+    "addr:street": "Marktstraße",
+    "addr:suburb": "Grießen",
+    "shop": "bakery"
+  }
+},
+{
+  "type": "node",
+  "id": 2287345095,
+  "lat": 47.6268716,
+  "lon": 8.5725312,
+  "tags": {
+    "addr:city": "Lottstetten",
+    "addr:country": "DE",
+    "addr:housenumber": "45",
+    "addr:postcode": "79807",
+    "addr:street": "Hauptstraße",
+    "check_date": "2023-10-20",
+    "email": "info@barismarkt.de",
+    "name": "Baris Markt",
+    "opening_hours": "Mo-Sa 08:00-20:00",
+    "phone": "+49 7745 927 26 30",
+    "shop": "supermarket",
+    "website": "http://barismarkt.de"
+  }
+},
+{
+  "type": "node",
+  "id": 2316483448,
+  "lat": 47.7244422,
+  "lon": 8.3674900,
+  "tags": {
+    "amenity": "shelter",
+    "fireplace": "yes",
+    "name": "Berghaus Rastplatz"
+  }
+},
+{
+  "type": "node",
+  "id": 2961444440,
+  "lat": 47.7012019,
+  "lon": 8.5526567,
+  "tags": {
+    "addr:city": "Löhningen",
+    "addr:housenumber": "35",
+    "addr:postcode": "8224",
+    "addr:street": "Hauptstrasse",
+    "brand": "Volg",
+    "brand:wikidata": "Q2530746",
+    "name": "Volg Löhningen",
+    "phone": "+41 52 685 19 45",
+    "shop": "supermarket",
+    "website": "https://www.volg.ch/standorte-oeffnungszeiten/detail/volg-loehningen/"
+  }
+},
+{
+  "type": "node",
+  "id": 3298124978,
+  "lat": 47.6579454,
+  "lon": 8.4291975,
+  "tags": {
+    "brand": "Netto Marken-Discount",
+    "brand:wikidata": "Q879858",
+    "brand:wikipedia": "de:Netto Marken-Discount",
+    "name": "Netto Marken-Discount",
+    "opening_hours": "Mo-Sa 07:00-21:00; Su,PH off",
+    "shop": "supermarket",
+    "website": "https://www.netto-online.de/filialen/Klettgau-Erzingen/Weisweiler-Str-6/5394/"
+  }
+},
+{
+  "type": "node",
+  "id": 3810523826,
+  "lat": 47.7485766,
+  "lon": 8.4839908,
+  "tags": {
+    "name": "Müller Beck",
+    "shop": "bakery",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4194674821,
+  "lat": 47.6271909,
+  "lon": 8.5715830,
+  "tags": {
+    "check_date": "2023-10-20",
+    "name": "Gutaj & Söhne",
+    "opening_hours": "Mo-Fr 06:00-18:00; Sa 06:00-13:00; Su 08:00-11:00",
+    "shop": "bakery",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4194681413,
+  "lat": 47.6511469,
+  "lon": 8.5697272,
+  "tags": {
+    "name": "Backcafe Jünger",
+    "opening_hours": "Mo-Fr 05:30-18:00; Sa 05:30-17:00",
+    "shop": "bakery",
+    "toilets:wheelchair": "yes",
+    "website": "https://backcafe-juenger.de/",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5018905924,
+  "lat": 47.6975627,
+  "lon": 8.3927145,
+  "tags": {
+    "addr:city": "Eggingen",
+    "addr:country": "DE",
+    "addr:housenumber": "12",
+    "addr:postcode": "79805",
+    "addr:street": "Bonndorfer Straße",
+    "contact:email": "info@egginger-landmarkt.de",
+    "contact:phone": "+49 7746 928251",
+    "contact:website": "http://www.egginger-landmarkt.de/",
+    "name": "Egginger Landmarkt",
+    "opening_hours": "Mo-Fr 07:30-13:00,14:00-18:30; Sa 07:30-13:00",
+    "shop": "supermarket"
+  }
+},
+{
+  "type": "node",
+  "id": 5171891175,
+  "lat": 47.7169556,
+  "lon": 8.5483742,
+  "tags": {
+    "amenity": "shelter"
+  }
+},
+{
+  "type": "node",
+  "id": 5706814970,
+  "lat": 47.6961421,
+  "lon": 8.5758711,
+  "tags": {
+    "addr:housenumber": "2",
+    "addr:street": "Schaffhauserstrasse",
+    "branch": "Beringen",
+    "brand": "Coop",
+    "brand:wikidata": "Q432564",
+    "brand:wikipedia": "de:Coop (Schweiz)",
+    "check_date:opening_hours": "2023-06-07",
+    "name": "Coop",
+    "opening_hours": "Mo-Fr 07:30-20:00; Sa 07:30-19:00",
+    "operator": "Coop Genossenschaft",
+    "shop": "supermarket"
+  }
+},
+{
+  "type": "node",
+  "id": 6957870932,
+  "lat": 47.6572569,
+  "lon": 8.3503181,
+  "tags": {
+    "amenity": "shelter",
+    "shelter_type": "gazebo"
+  }
+},
+{
+  "type": "node",
+  "id": 7072323683,
+  "lat": 47.7018757,
+  "lon": 8.4978441,
+  "tags": {
+    "addr:housenumber": "2",
+    "addr:postcode": "8214",
+    "addr:street": "Im Chloster",
+    "brand": "Volg",
+    "brand:wikidata": "Q2530746",
+    "brand:wikipedia": "de:Volg",
+    "name": "Volg",
+    "opening_hours": "Mo-Sa 06:30-19:00",
+    "phone": "+41 52 681 15 90",
+    "shop": "supermarket",
+    "website": "https://www.volg.ch",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 7386070273,
+  "lat": 47.6978789,
+  "lon": 8.4605652,
+  "tags": {
+    "branch": "Hallau",
+    "brand": "Coop",
+    "brand:wikidata": "Q432564",
+    "brand:wikipedia": "de:Coop (Schweiz)",
+    "name": "Coop",
+    "opening_hours": "Mo-Fr 07:30-19:00; Sa 07:30-17:00",
+    "operator": "Coop Genossenschaft",
+    "shop": "supermarket",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 7707482193,
+  "lat": 47.6665232,
+  "lon": 8.4361938,
+  "tags": {
+    "addr:city": "Trasadingen",
+    "addr:housenumber": "6",
+    "addr:postcode": "8219",
+    "addr:street": "Zollstrasse",
+    "alt_name": "Migrol Shop Trasadingen",
+    "branch": "Trasadingen",
+    "brand": "Migrol",
+    "name": "Migrol Shop",
+    "opening_hours": "Mo-Sa 06:00-21:00, Su 07:00-21:00",
+    "operator": "Migrol",
+    "shop": "kiosk",
+    "website": "https://www.migrol.ch/de/"
+  }
+},
+{
+  "type": "node",
+  "id": 9022009896,
+  "lat": 47.6333688,
+  "lon": 8.4414717,
+  "tags": {
+    "amenity": "shelter",
+    "shelter_type": "weather_shelter"
+  }
+},
+{
+  "type": "node",
+  "id": 9165327746,
+  "lat": 47.7192540,
+  "lon": 8.3222790,
+  "tags": {
+    "amenity": "shelter"
+  }
+},
+{
+  "type": "node",
+  "id": 9698117145,
+  "lat": 47.7640717,
+  "lon": 8.4036643,
+  "tags": {
+    "amenity": "shelter",
+    "name": "Dornhauhütte"
+  }
+},
+{
+  "type": "node",
+  "id": 10768281216,
+  "lat": 47.7545039,
+  "lon": 8.4803533,
+  "tags": {
+    "amenity": "shelter",
+    "bench": "yes",
+    "name": "Traubenhütte",
+    "shelter_type": "weather_shelter",
+    "source": "local knowledge"
+  }
+},
+{
+  "type": "node",
+  "id": 10798105863,
+  "lat": 47.6898269,
+  "lon": 8.5272119,
+  "tags": {
+    "opening_hours": "Apr 01-Sep 30: 10:00-18:00",
+    "operator": "Segelflugruppe Schaffhausen",
+    "shop": "kiosk",
+    "website": "https://schmerlat.ch/kiosk/"
+  }
+},
+{
+  "type": "node",
+  "id": 10822799710,
+  "lat": 47.7190992,
+  "lon": 8.3164310,
+  "tags": {
+    "addr:city": "Ühlingen-Birkendorf",
+    "addr:housenumber": "2",
+    "addr:postcode": "79777",
+    "addr:street": "Lindenplatz",
+    "email": "backgenussgamp@gmail.com",
+    "name": "Backgenuss Gamp",
+    "opening_hours": "Mo,We,Fr 07:00-12:30,15:00-18:00; ",
+    "phone": "+49 173 2713429",
+    "shop": "bakery"
+  }
+},
+{
+  "type": "node",
+  "id": 10942148305,
+  "lat": 47.6271774,
+  "lon": 8.3484714,
+  "tags": {
+    "amenity": "shelter"
+  }
+},
+{
+  "type": "node",
+  "id": 10964029219,
+  "lat": 47.7197017,
+  "lon": 8.3190675,
+  "tags": {
+    "addr:city": "Ühlingen",
+    "addr:housenumber": "23",
+    "addr:postcode": "79777",
+    "addr:street": "Hauptstraße",
+    "brand": "EDEKA",
+    "brand:wikidata": "Q701755",
+    "name": "Fechtig",
+    "operator": "EDEKA Südwest Stiftung & Co. KG",
+    "payment:cash": "yes",
+    "phone": "+49 7743 91033",
+    "shop": "supermarket"
+  }
+},
+{
+  "type": "node",
+  "id": 11034745387,
+  "lat": 47.7207590,
+  "lon": 8.3185196,
+  "tags": {
+    "addr:city": "Ühlingen-Birkendorf",
+    "addr:housenumber": "8",
+    "addr:postcode": "79777",
+    "addr:street": "Hauptstraße",
+    "email": "elkegralow@web.de",
+    "name": "Elke's Stehcafé und Imbiss",
+    "note": "Bitte Typ des Café's genauer bestimmen. (Warenangebot)",
+    "opening_hours": "Mo off; Tu-Fr 06:15-12:00; Sa 06:15-10:00; Su 08:00-10:00; PH off",
+    "phone": "+49 7743 9337635",
+    "shop": "bakery"
+  }
+},
+{
+  "type": "node",
+  "id": 11536616881,
+  "lat": 47.6296135,
+  "lon": 8.3118438,
+  "tags": {
+    "addr:city": "Lauchringen",
+    "addr:housenumber": "5a",
+    "addr:place": "Bertold-Schmidt-Platz",
+    "addr:postcode": "79787",
+    "amenity": "cafe",
+    "name": "FeinSinn Bäckerei - Cafe - Bistro",
+    "shop": "bakery;bistro",
+    "toilets:wheelchair": "no",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 58717630,
+  "nodes": [
+    727622307,
+    727622344,
+    727622295,
+    727622325,
+    727622307
+  ],
+  "tags": {
+    "amenity": "shelter",
+    "amenity_1": "bench",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 58719730,
+  "nodes": [
+    727646434,
+    727646404,
+    727646423,
+    727646429,
+    727646434
+  ],
+  "tags": {
+    "access": "yes",
+    "alt_name": "Ziegelhütte",
+    "amenity": "shelter",
+    "bench": "yes",
+    "building": "hut",
+    "building:levels": "1",
+    "description": "Schutzhütte, die zum Übernachten geeignet ist.",
+    "ele": "868",
+    "height": "4",
+    "lockable": "no",
+    "locked": "no",
+    "name": "Zelgli",
+    "picnic_table": "no",
+    "roof:height": "1.5",
+    "roof:shape": "gabled",
+    "shelter_type": "lean_to",
+    "surface": "dirt",
+    "table": "yes",
+    "wall": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 60575230,
+  "nodes": [
+    756863586,
+    756863587,
+    756863592,
+    756863590,
+    756863586
+  ],
+  "tags": {
+    "amenity": "shelter",
+    "name": "Zwölferhütte"
+  }
+},
+{
+  "type": "way",
+  "id": 88004323,
+  "nodes": [
+    1022953990,
+    1022956479,
+    1022953783,
+    1022954631,
+    1022953990
+  ],
+  "tags": {
+    "amenity": "shelter",
+    "building": "yes",
+    "name": "Laendlihütte"
+  }
+},
+{
+  "type": "way",
+  "id": 119020416,
+  "nodes": [
+    1338024779,
+    4693386034,
+    1338024735,
+    4693386048,
+    4693386047,
+    10089570162,
+    4693386049,
+    4693386046,
+    1338024784,
+    1338024745,
+    1338024787,
+    1338024756,
+    1338024779
+  ],
+  "tags": {
+    "addr:city": "Lauchringen",
+    "addr:country": "DE",
+    "addr:housenumber": "18",
+    "addr:postcode": "79787",
+    "addr:street": "Riedstraße",
+    "brand": "Aldi Süd",
+    "brand:wikidata": "Q41171672",
+    "brand:wikipedia": "en:Aldi",
+    "building": "retail",
+    "name": "Aldi Süd",
+    "opening_hours": "Mo-Sa 08:00-21:00",
+    "shop": "supermarket",
+    "source": "Bing",
+    "website": "https://filialen.aldi-sued.de/baden-wuerttemberg/lauchringen/riedstrasse-18",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 157771650,
+  "nodes": [
+    1700300658,
+    10089744722,
+    1700300677,
+    10089744724,
+    1700300678,
+    1700300675,
+    1700300654,
+    10089744720,
+    1700300658
+  ],
+  "tags": {
+    "addr:city": "Lauchringen",
+    "addr:country": "DE",
+    "addr:housenumber": "30",
+    "addr:postcode": "79787",
+    "addr:street": "Martin-Luther-Straße",
+    "building": "yes",
+    "building:levels": "2",
+    "name": "ODA Markt",
+    "opening_hours": "Mo-Th 08:00-19:00; Fr 08:00-19:00; Sa 08:00-19:00",
+    "operator": "Günther Weissenrieder",
+    "roof:levels": "1",
+    "shop": "supermarket",
+    "website": "http://www.oda-markt.de/"
+  }
+},
+{
+  "type": "way",
+  "id": 157771656,
+  "nodes": [
+    1700300681,
+    1700300697,
+    1700300703,
+    4694238057,
+    4694238056,
+    1700300702,
+    4694238055,
+    4694238054,
+    1700300692,
+    1700300681
+  ],
+  "tags": {
+    "addr:city": "Lauchringen",
+    "addr:country": "DE",
+    "addr:housenumber": "11",
+    "addr:postcode": "79787",
+    "addr:street": "Riedstraße",
+    "brand": "Lidl",
+    "brand:wikidata": "Q151954",
+    "brand:wikipedia": "en:Lidl",
+    "building": "commercial",
+    "check_date:opening_hours": "2021-02-28",
+    "name": "Lidl",
+    "opening_hours": "Mo-Sa 08:00-21:00",
+    "payment:cash": "yes",
+    "payment:cryptocurrencies": "no",
+    "payment:maestro": "yes",
+    "payment:mastercard": "yes",
+    "payment:visa": "yes",
+    "shop": "supermarket",
+    "source": "survey",
+    "toilets:wheelchair": "yes",
+    "website": "https://www.lidl.de/filialen/lauchringen/riedstr-11.html",
+    "wheelchair": "yes",
+    "wheelchair:description": "Rollstuhlgerechte Toilette - Personal ansprechen!"
+  }
+},
+{
+  "type": "way",
+  "id": 196061027,
+  "nodes": [
+    2064211645,
+    2064211633,
+    2064211632,
+    2064211630,
+    2064211616,
+    2064211621,
+    2064211645
+  ],
+  "tags": {
+    "addr:city": "Stühlingen",
+    "addr:housenumber": "6",
+    "addr:street": "Lindenweg",
+    "brand": "Penny",
+    "brand:wikidata": "Q284688",
+    "building": "commercial",
+    "building:levels": "1",
+    "name": "Penny",
+    "opening_hours": "Mo-Sa 07:30-20:00",
+    "roof:levels": "0",
+    "roof:shape": "gabled",
+    "shop": "supermarket",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "way",
+  "id": 196061028,
+  "nodes": [
+    2064211681,
+    2064211686,
+    2064211685,
+    2064211675,
+    3998303411,
+    3998303412,
+    2064211681
+  ],
+  "tags": {
+    "addr:city": "Stühlingen",
+    "addr:housenumber": "2",
+    "addr:postcode": "79780",
+    "addr:street": "Lindenweg",
+    "brand": "REWE",
+    "brand:wikidata": "Q16968817",
+    "brand:wikipedia": "en:REWE",
+    "building": "commercial",
+    "name": "REWE",
+    "opening_hours": "Mo-Sa 07:00-21:00",
+    "shop": "supermarket",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "way",
+  "id": 199211174,
+  "nodes": [
+    2092342745,
+    2092342737,
+    2092342738,
+    2092342728,
+    2092342732,
+    2092342735,
+    2092342734,
+    2092342739,
+    2092342740,
+    2092342741,
+    2092342743,
+    2092342750,
+    2092342748,
+    2092342749,
+    2092342747,
+    2092342746,
+    2092342745
+  ],
+  "tags": {
+    "addr:city": "Wutöschingen",
+    "addr:country": "DE",
+    "addr:housenumber": "8",
+    "addr:postcode": "79793",
+    "addr:street": "Silberwiese",
+    "brand": "Edeka",
+    "brand:wikidata": "Q701755",
+    "brand:wikipedia": "de:Edeka",
+    "building": "retail",
+    "name": "Edeka",
+    "opening_hours": "Mo-We 08:00-20:00; Th-Sa 08:00-21:00",
+    "shop": "supermarket",
+    "source": "Bing",
+    "toilets:wheelchair": "yes",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 221049801,
+  "nodes": [
+    2301046292,
+    2301046294,
+    2301046296,
+    2301046299,
+    2301046297,
+    2301046298,
+    2301046293,
+    2301046284,
+    2301046292
+  ],
+  "tags": {
+    "addr:city": "Stühlingen",
+    "addr:housenumber": "1b",
+    "addr:postcode": "79780",
+    "addr:street": "Bundesstraße",
+    "brand": "NORMA",
+    "brand:wikidata": "Q450180",
+    "brand:wikipedia": "de:Norma (Handelskette)",
+    "building": "commercial",
+    "layer": "1",
+    "name": "NORMA",
+    "operator": "Nor­ma Le­bens­mit­tel­fi­li­al­be­trieb Stif­tung & Co. KG",
+    "shop": "supermarket"
+  }
+},
+{
+  "type": "way",
+  "id": 222147577,
+  "nodes": [
+    2311217328,
+    2311217326,
+    2311217325,
+    2311217327,
+    2311217328
+  ],
+  "tags": {
+    "amenity": "shelter",
+    "amenity_1": "bench",
+    "building": "yes",
+    "fixme": "resurvery; not visible in dtm",
+    "name": "Wannenegg",
+    "shelter_type": "picnic_shelter"
+  }
+},
+{
+  "type": "way",
+  "id": 230689977,
+  "nodes": [
+    2391558912,
+    2391559066,
+    2391559070,
+    2391558900,
+    2391558912
+  ],
+  "tags": {
+    "addr:city": "Stühlingen",
+    "addr:housenumber": "35",
+    "addr:postcode": "79780",
+    "addr:street": "Zinngärten",
+    "amenity": "shelter",
+    "building": "hut",
+    "name": "WuGlüh Hütte"
+  }
+},
+{
+  "type": "way",
+  "id": 256050439,
+  "nodes": [
+    2617484450,
+    2617484451,
+    2617484452,
+    2617484453,
+    2617484454,
+    9328149802,
+    2617484455,
+    2617484450
+  ],
+  "tags": {
+    "addr:city": "Neunkirch",
+    "addr:housenumber": "1a",
+    "addr:postcode": "8213",
+    "addr:street": "Bahnhofstrasse",
+    "branch": "Neunkirch",
+    "brand": "Coop",
+    "brand:wikidata": "Q432564",
+    "brand:wikipedia": "de:Coop (Schweiz)",
+    "building": "yes",
+    "name": "Coop",
+    "opening_hours": "Mo-Fr 08:00-19:00, Sa 08:00-18:00",
+    "operator": "Coop Genossenschaft",
+    "shop": "supermarket",
+    "toilets:wheelchair": "no",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 256088165,
+  "nodes": [
+    2617839781,
+    8205742468,
+    2617839783,
+    2617839785,
+    2617839787,
+    2617839789,
+    2617839791,
+    2617839793,
+    2617839795,
+    2617839797,
+    2617839799,
+    2617839801,
+    2617839804,
+    2617839781
+  ],
+  "tags": {
+    "addr:city": "Neunkirch",
+    "addr:housenumber": "4",
+    "addr:postcode": "8213",
+    "addr:street": "Löhningerstrasse",
+    "alt_name": "Migros Neunkirch",
+    "branch": "Neunkirch",
+    "brand": "Migros",
+    "brand:wikidata": "Q680727",
+    "building": "yes",
+    "cash_withdrawal": "migros_bank;postfinance_card",
+    "cash_withdrawal:fee": "no",
+    "cash_withdrawal:purchase_required": "no",
+    "cash_withdrawal:type": "checkout",
+    "name": "Migros",
+    "opening_hours": "Mo-Fr 08:00-20:00; Sa 08:00-18:00; PH off",
+    "operator": "Genossenschaft Migros Ostschweiz",
+    "shop": "supermarket",
+    "toilets:wheelchair": "no",
+    "website": "https://filialen.migros.ch/de/migros-supermarkt-neunkirch",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 265281026,
+  "nodes": [
+    2709474443,
+    2709474444,
+    2709474445,
+    4825878088,
+    2709474446,
+    2709474447,
+    2709474448,
+    2709474449,
+    2709474450,
+    2709474441,
+    4833289448,
+    4833289447,
+    4833289446,
+    4833289449,
+    4825878069,
+    2709474443
+  ],
+  "tags": {
+    "addr:city": "Lauchringen",
+    "addr:country": "DE",
+    "addr:housenumber": "20",
+    "addr:postcode": "79787",
+    "addr:street": "Bundesstraße",
+    "brand": "Edeka",
+    "building": "retail",
+    "building:levels": "1",
+    "check_date:opening_hours": "2024-04-24",
+    "email": "J.Prem@web.de",
+    "fax": "+49 7741 6804-20",
+    "name": "Edeka Prem",
+    "opening_hours": "Mo-Fr 08:00-20:30; Sa 07:30-20:30; PH off",
+    "operator": "Aktiv Markt Prem",
+    "phone": "+49 7741 68040",
+    "shop": "supermarket",
+    "toilets:wheelchair": "no",
+    "website": "http://mein.edeka.de/eh/de/suedwest/1269/index.jsp",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 274083161,
+  "nodes": [
+    2788557829,
+    2788557826,
+    2788557809,
+    2788557811,
+    2788557829
+  ],
+  "tags": {
+    "amenity": "shelter",
+    "building": "yes",
+    "fireplace": "yes",
+    "shelter_type": "weather_shelter",
+    "source": "Maps4BW, LGL, www.lgl-bw.de"
+  }
+},
+{
+  "type": "way",
+  "id": 281701616,
+  "nodes": [
+    2856803642,
+    2856803644,
+    2856803643,
+    10860115048,
+    2856803640,
+    2856803642
+  ],
+  "tags": {
+    "amenity": "shelter",
+    "building": "hut",
+    "building:colour": "gainsboro",
+    "building:levels": "1",
+    "building:levels:underground": "0",
+    "building:material": "plaster",
+    "fireplace": "no",
+    "height": "4.5",
+    "operator": "Gemeinde Gächlingen",
+    "roof:height": "2.5",
+    "roof:material": "roof_tiles",
+    "roof:orientation": "along",
+    "roof:shape": "gabled",
+    "shelter_type": "weather_shelter",
+    "start_date": "1910"
+  }
+},
+{
+  "type": "way",
+  "id": 297092701,
+  "nodes": [
+    3009238834,
+    3009238835,
+    12762040242,
+    3009238836,
+    3009238837,
+    3009238834
+  ],
+  "tags": {
+    "addr:city": "Jestetten",
+    "addr:housenumber": "41",
+    "addr:postcode": "79798",
+    "addr:street": "Schaffhauser Straße",
+    "brand": "Lidl",
+    "brand:wikidata": "Q151954",
+    "building": "yes",
+    "name": "Lidl",
+    "opening_hours": "Mo-Sa 07:00-21:00",
+    "operator": "Lidl",
+    "payment:credit_cards": "yes",
+    "payment:debit_cards": "yes",
+    "payment:mastercard": "yes",
+    "payment:visa": "yes",
+    "phone": "+493022005500",
+    "shop": "supermarket"
+  }
+},
+{
+  "type": "way",
+  "id": 300266627,
+  "nodes": [
+    3043628947,
+    3043628948,
+    3043628949,
+    3043628950,
+    3043628951,
+    3043628952,
+    3043628953,
+    3043628954,
+    3043628955,
+    3043628956,
+    3043628947
+  ],
+  "tags": {
+    "addr:city": "Jestetten",
+    "addr:country": "DE",
+    "addr:housenumber": "1",
+    "addr:postcode": "79798",
+    "addr:street": "Waldshuter Straße",
+    "brand": "PENNY",
+    "brand:wikidata": "Q284688",
+    "brand:wikipedia": "en:Penny (supermarket)",
+    "building": "supermarket",
+    "check_date": "2024-08-11",
+    "name": "PENNY",
+    "opening_hours": "Mo-Sa 07:30-22:00",
+    "phone": "+49 221 201 999 59",
+    "shop": "supermarket",
+    "website": "https://www.penny.de/markt/jestetten/830593/penny-jestetten-waldshuter-strasse-1"
+  }
+},
+{
+  "type": "way",
+  "id": 353794496,
+  "nodes": [
+    3596008623,
+    3596008622,
+    3596008619,
+    3596008620,
+    3596008623
+  ],
+  "tags": {
+    "amenity": "shelter",
+    "building": "yes",
+    "name": "Schutzhütte Staabil"
+  }
+},
+{
+  "type": "way",
+  "id": 397591389,
+  "nodes": [
+    4003782889,
+    4003782890,
+    4003782891,
+    4003782892,
+    4826555777,
+    4003782893,
+    4003782894,
+    418843546,
+    4623434025,
+    4003782895,
+    4003782889
+  ],
+  "tags": {
+    "addr:city": "Lauchringen",
+    "addr:housenumber": "87",
+    "addr:postcode": "79787",
+    "addr:street": "Hauptstraße",
+    "branch": "Lauchringen",
+    "brand": "REWE",
+    "brand:wikidata": "Q16968817",
+    "building": "commercial",
+    "name": "REWE",
+    "opening_hours": "Mo-Sa 07:00-22:00",
+    "operator": "REWE Markt GmbH",
+    "phone": "+49 7741 670644",
+    "shop": "supermarket",
+    "website": "https://www.rewe.de/",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 397759388,
+  "nodes": [
+    4005443200,
+    4005443201,
+    4807635816,
+    4807635817,
+    4005443202,
+    4005443203,
+    4005443200
+  ],
+  "tags": {
+    "addr:city": "Lauchringen",
+    "addr:country": "DE",
+    "addr:housenumber": "42",
+    "addr:postcode": "79787",
+    "addr:street": "Hauptstraße",
+    "building": "retail",
+    "name": "Hauser Bioladen",
+    "opening_hours": "Mo-Fr 09:00-18:30; Sa 09:00-16:00",
+    "organic": "yes",
+    "shop": "supermarket"
+  }
+},
+{
+  "type": "way",
+  "id": 406193359,
+  "nodes": [
+    4082976729,
+    4082976730,
+    4082976731,
+    4082976732,
+    4082976733,
+    4082976734,
+    4082976735,
+    4082976736,
+    4082976729
+  ],
+  "tags": {
+    "addr:city": "Wutöschingen",
+    "addr:housenumber": "20",
+    "addr:postcode": "79793",
+    "addr:street": "Altmühlenstraße",
+    "brand": "Penny",
+    "brand:wikidata": "Q284688",
+    "brand:wikipedia": "en:Penny (supermarket)",
+    "building": "retail",
+    "name": "Penny",
+    "opening_hours": "Mo-Sa 07:30-21:00",
+    "shop": "supermarket",
+    "source": "Bing"
+  }
+},
+{
+  "type": "way",
+  "id": 478707900,
+  "nodes": [
+    4719216544,
+    4719216543,
+    4719216542,
+    4719216541,
+    4719216544
+  ],
+  "tags": {
+    "amenity": "shelter",
+    "building": "yes",
+    "fireplace": "yes",
+    "name": "Galgenbuck"
+  }
+},
+{
+  "type": "way",
+  "id": 633897961,
+  "nodes": [
+    5983142958,
+    5983142959,
+    5983142960,
+    5983142961,
+    5983142958
+  ],
+  "tags": {
+    "amenity": "shelter",
+    "building": "yes",
+    "name": "Nackhütte"
+  }
+},
+{
+  "type": "way",
+  "id": 790699567,
+  "nodes": [
+    7391987061,
+    7391987060,
+    7391987059,
+    7391987058,
+    7391987061
+  ],
+  "tags": {
+    "amenity": "shelter"
+  }
+},
+{
+  "type": "way",
+  "id": 822688911,
+  "nodes": [
+    7681371323,
+    7681371324,
+    7681371325,
+    10114917806,
+    7681371326,
+    7681371323
+  ],
+  "tags": {
+    "amenity": "shelter",
+    "building": "shed",
+    "building:levels": "1",
+    "height": "3.5",
+    "ref": "487",
+    "roof:colour": "rosybrown",
+    "roof:material": "roof_tiles",
+    "roof:orientation": "along",
+    "roof:shape": "gabled",
+    "shelter_type": "picnic_shelter"
+  }
+},
+{
+  "type": "way",
+  "id": 844308311,
+  "nodes": [
+    7875844034,
+    7875844035,
+    7875844036,
+    7875844037,
+    7875844034
+  ],
+  "tags": {
+    "amenity": "shelter",
+    "building": "yes",
+    "name": "Rankackerhütte",
+    "shelter_type": "lean_to"
+  }
+},
+{
+  "type": "way",
+  "id": 871365654,
+  "nodes": [
+    8116425326,
+    8116425325,
+    8116425324,
+    8116425323,
+    8116425326
+  ],
+  "tags": {
+    "amenity": "shelter",
+    "building": "yes",
+    "fireplace": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 875361662,
+  "nodes": [
+    8147892616,
+    8147892615,
+    8147892614,
+    8147892613,
+    8147892612,
+    8147892616
+  ],
+  "tags": {
+    "amenity": "shelter",
+    "shelter_type": "weather_shelter"
+  }
+},
+{
+  "type": "way",
+  "id": 875361665,
+  "nodes": [
+    8147892637,
+    8147892636,
+    8147892635,
+    8147892634,
+    8147892637
+  ],
+  "tags": {
+    "amenity": "shelter",
+    "building": "roof",
+    "shelter_type": "weather_shelter"
+  }
+},
+{
+  "type": "way",
+  "id": 916030500,
+  "nodes": [
+    8508464874,
+    8508464873,
+    8508464872,
+    8508464871,
+    8508464874
+  ],
+  "tags": {
+    "amenity": "shelter",
+    "building": "yes",
+    "name": "Großholzhütte",
+    "shelter_type": "weather_shelter"
+  }
+},
+{
+  "type": "way",
+  "id": 939230597,
+  "nodes": [
+    8700592347,
+    8700592346,
+    8700592345,
+    8700592344,
+    8700592347
+  ],
+  "tags": {
+    "amenity": "shelter",
+    "building": "hut",
+    "fireplace": "yes",
+    "shelter_type": "lean_to"
+  }
+},
+{
+  "type": "way",
+  "id": 941841158,
+  "nodes": [
+    8721974328,
+    8721974327,
+    8721974326,
+    8721974325,
+    8721974328
+  ],
+  "tags": {
+    "amenity": "shelter",
+    "shelter_type": "weather_shelter"
+  }
+},
+{
+  "type": "way",
+  "id": 943002527,
+  "nodes": [
+    8732067218,
+    8732067217,
+    8732023416,
+    8732023415,
+    8732067218
+  ],
+  "tags": {
+    "amenity": "shelter",
+    "fireplace": "yes",
+    "shelter_type": "lean_to"
+  }
+},
+{
+  "type": "way",
+  "id": 943002529,
+  "nodes": [
+    8732067237,
+    8732067236,
+    8732067235,
+    8732067234,
+    8732067237
+  ],
+  "tags": {
+    "amenity": "shelter",
+    "name": "Rastplatz Schwerzen",
+    "shelter_type": "picnic_shelter"
+  }
+},
+{
+  "type": "way",
+  "id": 944265364,
+  "nodes": [
+    8742534679,
+    8742534678,
+    8742534677,
+    8742534676,
+    8742534675,
+    8742534674,
+    8742534673,
+    8742534672,
+    8742534679
+  ],
+  "tags": {
+    "amenity": "shelter",
+    "name": "Aussichtspavillion Wutöschingen",
+    "shelter_type": "weather_shelter"
+  }
+},
+{
+  "type": "way",
+  "id": 1014153793,
+  "nodes": [
+    1607990559,
+    9356529446,
+    9356529445,
+    9356529444,
+    1607990559
+  ],
+  "tags": {
+    "amenity": "shelter",
+    "fireplace": "yes",
+    "name": "Wiggenberghütte",
+    "shelter_type": "lean_to"
+  }
+},
+{
+  "type": "way",
+  "id": 1035824351,
+  "nodes": [
+    9543498701,
+    9543498699,
+    9543498698,
+    9543498700,
+    9543498701
+  ],
+  "tags": {
+    "amenity": "shelter",
+    "building": "hut",
+    "building:levels": "1",
+    "height": "3",
+    "roof:height": "1",
+    "roof:material": "roof_tiles",
+    "roof:shape": "gabled",
+    "shelter_type": "lean_to"
+  }
+},
+{
+  "type": "way",
+  "id": 1126163273,
+  "nodes": [
+    10297990924,
+    10297990925,
+    10298192066,
+    10298192065,
+    10297990926,
+    10298192063,
+    10298192064,
+    10297990927,
+    10297990924
+  ],
+  "tags": {
+    "amenity": "shelter",
+    "building": "cabin",
+    "building:colour": "saddlebrown",
+    "building:levels": "1",
+    "building:material": "wood",
+    "fireplace": "no",
+    "height": "3.7",
+    "name": "Hemmental",
+    "roof:colour": "darkslategray",
+    "roof:height": "1.6",
+    "roof:levels": "1",
+    "roof:material": "eternit",
+    "roof:orientation": "along",
+    "roof:shape": "gabled",
+    "shelter_type": "lean_to"
+  }
+},
+{
+  "type": "way",
+  "id": 1390528823,
+  "nodes": [
+    9328149795,
+    12871703559,
+    12871703561,
+    9328149796,
+    12871703542,
+    12871703544,
+    9328149795
+  ],
+  "tags": {
+    "amenity": "shelter"
+  }
+},
+{
+  "type": "node",
+  "id": 756863586,
+  "lat": 47.6597378,
+  "lon": 8.2830152
+},
+{
+  "type": "node",
+  "id": 756863587,
+  "lat": 47.6596695,
+  "lon": 8.2830351
+},
+{
+  "type": "node",
+  "id": 756863590,
+  "lat": 47.6597502,
+  "lon": 8.2831084
+},
+{
+  "type": "node",
+  "id": 756863592,
+  "lat": 47.6596818,
+  "lon": 8.2831283
+},
+{
+  "type": "node",
+  "id": 4005443202,
+  "lat": 47.6281058,
+  "lon": 8.3041878
+},
+{
+  "type": "node",
+  "id": 418843546,
+  "lat": 47.6319386,
+  "lon": 8.2982314
+},
+{
+  "type": "node",
+  "id": 2709474441,
+  "lat": 47.6310379,
+  "lon": 8.3008151
+},
+{
+  "type": "node",
+  "id": 2709474443,
+  "lat": 47.6315578,
+  "lon": 8.3009283
+},
+{
+  "type": "node",
+  "id": 2709474444,
+  "lat": 47.6314395,
+  "lon": 8.3011285
+},
+{
+  "type": "node",
+  "id": 2709474445,
+  "lat": 47.6314663,
+  "lon": 8.3011635
+},
+{
+  "type": "node",
+  "id": 2709474446,
+  "lat": 47.6313634,
+  "lon": 8.3013375
+},
+{
+  "type": "node",
+  "id": 2709474447,
+  "lat": 47.6313371,
+  "lon": 8.3013032
+},
+{
+  "type": "node",
+  "id": 2709474448,
+  "lat": 47.6312841,
+  "lon": 8.3013928
+},
+{
+  "type": "node",
+  "id": 2709474449,
+  "lat": 47.6310626,
+  "lon": 8.3011045
+},
+{
+  "type": "node",
+  "id": 2709474450,
+  "lat": 47.6311486,
+  "lon": 8.3009591
+},
+{
+  "type": "node",
+  "id": 4003782889,
+  "lat": 47.6314155,
+  "lon": 8.2985405
+},
+{
+  "type": "node",
+  "id": 4003782890,
+  "lat": 47.6315179,
+  "lon": 8.2986594
+},
+{
+  "type": "node",
+  "id": 4003782891,
+  "lat": 47.6315421,
+  "lon": 8.2986135
+},
+{
+  "type": "node",
+  "id": 4003782892,
+  "lat": 47.6316319,
+  "lon": 8.2987177
+},
+{
+  "type": "node",
+  "id": 4003782893,
+  "lat": 47.6317876,
+  "lon": 8.2984286
+},
+{
+  "type": "node",
+  "id": 4003782894,
+  "lat": 47.6318162,
+  "lon": 8.2984635
+},
+{
+  "type": "node",
+  "id": 4003782895,
+  "lat": 47.6317153,
+  "lon": 8.2979721
+},
+{
+  "type": "node",
+  "id": 4623434025,
+  "lat": 47.6318931,
+  "lon": 8.2981785
+},
+{
+  "type": "node",
+  "id": 4825878069,
+  "lat": 47.6313693,
+  "lon": 8.3006829
+},
+{
+  "type": "node",
+  "id": 4825878088,
+  "lat": 47.6314133,
+  "lon": 8.3012531
+},
+{
+  "type": "node",
+  "id": 4826555777,
+  "lat": 47.6316475,
+  "lon": 8.2986821
+},
+{
+  "type": "node",
+  "id": 4833289446,
+  "lat": 47.6312174,
+  "lon": 8.3005840
+},
+{
+  "type": "node",
+  "id": 4833289447,
+  "lat": 47.6311931,
+  "lon": 8.3005524
+},
+{
+  "type": "node",
+  "id": 4833289448,
+  "lat": 47.6310759,
+  "lon": 8.3007507
+},
+{
+  "type": "node",
+  "id": 4833289449,
+  "lat": 47.6312504,
+  "lon": 8.3005282
+},
+{
+  "type": "node",
+  "id": 1700300654,
+  "lat": 47.6293480,
+  "lon": 8.3078755
+},
+{
+  "type": "node",
+  "id": 1700300658,
+  "lat": 47.6293930,
+  "lon": 8.3075989
+},
+{
+  "type": "node",
+  "id": 1700300675,
+  "lat": 47.6295462,
+  "lon": 8.3079465
+},
+{
+  "type": "node",
+  "id": 1700300677,
+  "lat": 47.6295647,
+  "lon": 8.3076604
+},
+{
+  "type": "node",
+  "id": 1700300678,
+  "lat": 47.6295851,
+  "lon": 8.3077073
+},
+{
+  "type": "node",
+  "id": 4005443200,
+  "lat": 47.6287430,
+  "lon": 8.3042938
+},
+{
+  "type": "node",
+  "id": 4005443201,
+  "lat": 47.6284655,
+  "lon": 8.3040072
+},
+{
+  "type": "node",
+  "id": 4005443203,
+  "lat": 47.6285626,
+  "lon": 8.3047975
+},
+{
+  "type": "node",
+  "id": 4807635816,
+  "lat": 47.6284080,
+  "lon": 8.3040849
+},
+{
+  "type": "node",
+  "id": 4807635817,
+  "lat": 47.6283447,
+  "lon": 8.3039991
+},
+{
+  "type": "node",
+  "id": 10089744720,
+  "lat": 47.6293725,
+  "lon": 8.3077247
+},
+{
+  "type": "node",
+  "id": 10089744722,
+  "lat": 47.6294698,
+  "lon": 8.3076264
+},
+{
+  "type": "node",
+  "id": 10089744724,
+  "lat": 47.6295754,
+  "lon": 8.3076849
+},
+{
+  "type": "node",
+  "id": 1338024735,
+  "lat": 47.6304080,
+  "lon": 8.3157853
+},
+{
+  "type": "node",
+  "id": 1338024745,
+  "lat": 47.6300780,
+  "lon": 8.3163796
+},
+{
+  "type": "node",
+  "id": 1338024756,
+  "lat": 47.6299589,
+  "lon": 8.3164356
+},
+{
+  "type": "node",
+  "id": 1338024779,
+  "lat": 47.6301625,
+  "lon": 8.3156425
+},
+{
+  "type": "node",
+  "id": 1338024784,
+  "lat": 47.6302181,
+  "lon": 8.3164623
+},
+{
+  "type": "node",
+  "id": 1338024787,
+  "lat": 47.6300493,
+  "lon": 8.3164867
+},
+{
+  "type": "node",
+  "id": 1700300681,
+  "lat": 47.6299724,
+  "lon": 8.3138045
+},
+{
+  "type": "node",
+  "id": 1700300692,
+  "lat": 47.6300256,
+  "lon": 8.3138353
+},
+{
+  "type": "node",
+  "id": 1700300697,
+  "lat": 47.6300713,
+  "lon": 8.3134283
+},
+{
+  "type": "node",
+  "id": 1700300702,
+  "lat": 47.6304400,
+  "lon": 8.3140144
+},
+{
+  "type": "node",
+  "id": 1700300703,
+  "lat": 47.6305637,
+  "lon": 8.3137132
+},
+{
+  "type": "node",
+  "id": 4693386034,
+  "lat": 47.6303759,
+  "lon": 8.3157666
+},
+{
+  "type": "node",
+  "id": 4693386046,
+  "lat": 47.6302847,
+  "lon": 8.3162140
+},
+{
+  "type": "node",
+  "id": 4693386047,
+  "lat": 47.6304098,
+  "lon": 8.3158898
+},
+{
+  "type": "node",
+  "id": 4693386048,
+  "lat": 47.6303840,
+  "lon": 8.3158746
+},
+{
+  "type": "node",
+  "id": 4693386049,
+  "lat": 47.6303177,
+  "lon": 8.3162335
+},
+{
+  "type": "node",
+  "id": 4694238054,
+  "lat": 47.6301476,
+  "lon": 8.3139059
+},
+{
+  "type": "node",
+  "id": 4694238055,
+  "lat": 47.6301615,
+  "lon": 8.3138532
+},
+{
+  "type": "node",
+  "id": 4694238056,
+  "lat": 47.6304975,
+  "lon": 8.3137957
+},
+{
+  "type": "node",
+  "id": 4694238057,
+  "lat": 47.6305361,
+  "lon": 8.3138181
+},
+{
+  "type": "node",
+  "id": 10089570162,
+  "lat": 47.6303388,
+  "lon": 8.3161546
+},
+{
+  "type": "node",
+  "id": 1607990559,
+  "lat": 47.6372759,
+  "lon": 8.3138288
+},
+{
+  "type": "node",
+  "id": 9356529444,
+  "lat": 47.6371647,
+  "lon": 8.3138146
+},
+{
+  "type": "node",
+  "id": 9356529445,
+  "lat": 47.6371596,
+  "lon": 8.3139013
+},
+{
+  "type": "node",
+  "id": 9356529446,
+  "lat": 47.6372708,
+  "lon": 8.3139156
+},
+{
+  "type": "node",
+  "id": 4719216541,
+  "lat": 47.6219315,
+  "lon": 8.3388758
+},
+{
+  "type": "node",
+  "id": 4719216542,
+  "lat": 47.6218392,
+  "lon": 8.3388076
+},
+{
+  "type": "node",
+  "id": 4719216543,
+  "lat": 47.6217938,
+  "lon": 8.3389430
+},
+{
+  "type": "node",
+  "id": 4719216544,
+  "lat": 47.6218861,
+  "lon": 8.3390111
+},
+{
+  "type": "node",
+  "id": 8732023415,
+  "lat": 47.6424192,
+  "lon": 8.3377466
+},
+{
+  "type": "node",
+  "id": 8732023416,
+  "lat": 47.6424885,
+  "lon": 8.3378164
+},
+{
+  "type": "node",
+  "id": 8732067217,
+  "lat": 47.6424528,
+  "lon": 8.3378945
+},
+{
+  "type": "node",
+  "id": 8732067218,
+  "lat": 47.6423835,
+  "lon": 8.3378248
+},
+{
+  "type": "node",
+  "id": 8732067234,
+  "lat": 47.6412219,
+  "lon": 8.3709822
+},
+{
+  "type": "node",
+  "id": 8732067235,
+  "lat": 47.6412807,
+  "lon": 8.3709761
+},
+{
+  "type": "node",
+  "id": 8732067236,
+  "lat": 47.6412757,
+  "lon": 8.3708716
+},
+{
+  "type": "node",
+  "id": 8732067237,
+  "lat": 47.6412170,
+  "lon": 8.3708777
+},
+{
+  "type": "node",
+  "id": 2092342728,
+  "lat": 47.6668938,
+  "lon": 8.3748641
+},
+{
+  "type": "node",
+  "id": 2092342732,
+  "lat": 47.6670450,
+  "lon": 8.3753305
+},
+{
+  "type": "node",
+  "id": 2092342734,
+  "lat": 47.6672956,
+  "lon": 8.3751167
+},
+{
+  "type": "node",
+  "id": 2092342735,
+  "lat": 47.6673114,
+  "lon": 8.3751718
+},
+{
+  "type": "node",
+  "id": 2092342737,
+  "lat": 47.6673846,
+  "lon": 8.3744815
+},
+{
+  "type": "node",
+  "id": 2092342738,
+  "lat": 47.6674008,
+  "lon": 8.3745376
+},
+{
+  "type": "node",
+  "id": 2092342739,
+  "lat": 47.6673958,
+  "lon": 8.3750532
+},
+{
+  "type": "node",
+  "id": 2092342740,
+  "lat": 47.6674042,
+  "lon": 8.3750824
+},
+{
+  "type": "node",
+  "id": 2092342741,
+  "lat": 47.6674502,
+  "lon": 8.3750533
+},
+{
+  "type": "node",
+  "id": 2092342743,
+  "lat": 47.6674743,
+  "lon": 8.3751370
+},
+{
+  "type": "node",
+  "id": 2092342745,
+  "lat": 47.6675308,
+  "lon": 8.3743768
+},
+{
+  "type": "node",
+  "id": 2092342746,
+  "lat": 47.6675486,
+  "lon": 8.3744413
+},
+{
+  "type": "node",
+  "id": 2092342747,
+  "lat": 47.6676087,
+  "lon": 8.3744032
+},
+{
+  "type": "node",
+  "id": 4082976729,
+  "lat": 47.6657676,
+  "lon": 8.3749728
+},
+{
+  "type": "node",
+  "id": 4082976730,
+  "lat": 47.6659910,
+  "lon": 8.3751905
+},
+{
+  "type": "node",
+  "id": 4082976735,
+  "lat": 47.6657267,
+  "lon": 8.3751639
+},
+{
+  "type": "node",
+  "id": 4082976736,
+  "lat": 47.6656962,
+  "lon": 8.3751343
+},
+{
+  "type": "node",
+  "id": 2092342748,
+  "lat": 47.6676763,
+  "lon": 8.3748748
+},
+{
+  "type": "node",
+  "id": 2092342749,
+  "lat": 47.6677338,
+  "lon": 8.3748384
+},
+{
+  "type": "node",
+  "id": 2092342750,
+  "lat": 47.6677089,
+  "lon": 8.3749883
+},
+{
+  "type": "node",
+  "id": 4082976731,
+  "lat": 47.6657301,
+  "lon": 8.3757812
+},
+{
+  "type": "node",
+  "id": 4082976732,
+  "lat": 47.6656593,
+  "lon": 8.3757123
+},
+{
+  "type": "node",
+  "id": 4082976733,
+  "lat": 47.6656891,
+  "lon": 8.3756451
+},
+{
+  "type": "node",
+  "id": 4082976734,
+  "lat": 47.6655668,
+  "lon": 8.3755259
+},
+{
+  "type": "node",
+  "id": 8742534672,
+  "lat": 47.6623769,
+  "lon": 8.3795502
+},
+{
+  "type": "node",
+  "id": 8742534673,
+  "lat": 47.6623530,
+  "lon": 8.3795691
+},
+{
+  "type": "node",
+  "id": 8742534674,
+  "lat": 47.6623451,
+  "lon": 8.3796077
+},
+{
+  "type": "node",
+  "id": 8742534675,
+  "lat": 47.6623578,
+  "lon": 8.3796432
+},
+{
+  "type": "node",
+  "id": 8742534676,
+  "lat": 47.6623838,
+  "lon": 8.3796550
+},
+{
+  "type": "node",
+  "id": 8742534677,
+  "lat": 47.6624077,
+  "lon": 8.3796360
+},
+{
+  "type": "node",
+  "id": 8742534678,
+  "lat": 47.6624156,
+  "lon": 8.3795975
+},
+{
+  "type": "node",
+  "id": 8742534679,
+  "lat": 47.6624029,
+  "lon": 8.3795619
+},
+{
+  "type": "node",
+  "id": 7391987058,
+  "lat": 47.6810066,
+  "lon": 8.3668927
+},
+{
+  "type": "node",
+  "id": 7391987059,
+  "lat": 47.6810108,
+  "lon": 8.3669713
+},
+{
+  "type": "node",
+  "id": 7391987060,
+  "lat": 47.6810541,
+  "lon": 8.3669661
+},
+{
+  "type": "node",
+  "id": 7391987061,
+  "lat": 47.6810498,
+  "lon": 8.3668875
+},
+{
+  "type": "node",
+  "id": 2788557809,
+  "lat": 47.7513127,
+  "lon": 8.3497246
+},
+{
+  "type": "node",
+  "id": 2788557811,
+  "lat": 47.7513183,
+  "lon": 8.3495909
+},
+{
+  "type": "node",
+  "id": 2788557826,
+  "lat": 47.7513721,
+  "lon": 8.3497301
+},
+{
+  "type": "node",
+  "id": 2788557829,
+  "lat": 47.7513778,
+  "lon": 8.3495964
+},
+{
+  "type": "node",
+  "id": 8508464871,
+  "lat": 47.7408770,
+  "lon": 8.3644504
+},
+{
+  "type": "node",
+  "id": 8508464872,
+  "lat": 47.7409601,
+  "lon": 8.3643587
+},
+{
+  "type": "node",
+  "id": 8508464873,
+  "lat": 47.7410409,
+  "lon": 8.3645207
+},
+{
+  "type": "node",
+  "id": 8508464874,
+  "lat": 47.7409578,
+  "lon": 8.3646124
+},
+{
+  "type": "node",
+  "id": 7875844034,
+  "lat": 47.6665629,
+  "lon": 8.3954159
+},
+{
+  "type": "node",
+  "id": 7875844035,
+  "lat": 47.6665143,
+  "lon": 8.3954784
+},
+{
+  "type": "node",
+  "id": 7875844036,
+  "lat": 47.6665456,
+  "lon": 8.3955320
+},
+{
+  "type": "node",
+  "id": 7875844037,
+  "lat": 47.6665942,
+  "lon": 8.3954695
+},
+{
+  "type": "node",
+  "id": 7681371323,
+  "lat": 47.6913989,
+  "lon": 8.4376290
+},
+{
+  "type": "node",
+  "id": 7681371324,
+  "lat": 47.6913776,
+  "lon": 8.4375744
+},
+{
+  "type": "node",
+  "id": 7681371325,
+  "lat": 47.6913332,
+  "lon": 8.4376126
+},
+{
+  "type": "node",
+  "id": 7681371326,
+  "lat": 47.6913544,
+  "lon": 8.4376671
+},
+{
+  "type": "node",
+  "id": 10114917806,
+  "lat": 47.6913441,
+  "lon": 8.4376405
+},
+{
+  "type": "node",
+  "id": 8116425323,
+  "lat": 47.7213480,
+  "lon": 8.4021443
+},
+{
+  "type": "node",
+  "id": 8116425324,
+  "lat": 47.7213994,
+  "lon": 8.4020803
+},
+{
+  "type": "node",
+  "id": 8116425325,
+  "lat": 47.7213590,
+  "lon": 8.4020085
+},
+{
+  "type": "node",
+  "id": 8116425326,
+  "lat": 47.7213076,
+  "lon": 8.4020725
+},
+{
+  "type": "node",
+  "id": 8147892634,
+  "lat": 47.7206796,
+  "lon": 8.4138416
+},
+{
+  "type": "node",
+  "id": 8147892635,
+  "lat": 47.7207037,
+  "lon": 8.4138734
+},
+{
+  "type": "node",
+  "id": 8147892636,
+  "lat": 47.7206904,
+  "lon": 8.4138958
+},
+{
+  "type": "node",
+  "id": 8147892637,
+  "lat": 47.7206662,
+  "lon": 8.4138640
+},
+{
+  "type": "node",
+  "id": 8147892612,
+  "lat": 47.7199380,
+  "lon": 8.4264063
+},
+{
+  "type": "node",
+  "id": 8147892613,
+  "lat": 47.7199636,
+  "lon": 8.4263566
+},
+{
+  "type": "node",
+  "id": 8147892614,
+  "lat": 47.7199818,
+  "lon": 8.4263774
+},
+{
+  "type": "node",
+  "id": 8147892615,
+  "lat": 47.7199562,
+  "lon": 8.4264270
+},
+{
+  "type": "node",
+  "id": 8147892616,
+  "lat": 47.7199439,
+  "lon": 8.4264130
+},
+{
+  "type": "node",
+  "id": 5983142958,
+  "lat": 47.6600296,
+  "lon": 8.5032890
+},
+{
+  "type": "node",
+  "id": 5983142959,
+  "lat": 47.6599898,
+  "lon": 8.5032139
+},
+{
+  "type": "node",
+  "id": 5983142960,
+  "lat": 47.6598814,
+  "lon": 8.5033373
+},
+{
+  "type": "node",
+  "id": 5983142961,
+  "lat": 47.6599212,
+  "lon": 8.5034124
+},
+{
+  "type": "node",
+  "id": 3043628947,
+  "lat": 47.6492055,
+  "lon": 8.5674385
+},
+{
+  "type": "node",
+  "id": 3043628948,
+  "lat": 47.6491233,
+  "lon": 8.5675522
+},
+{
+  "type": "node",
+  "id": 3043628949,
+  "lat": 47.6491527,
+  "lon": 8.5675989
+},
+{
+  "type": "node",
+  "id": 3043628950,
+  "lat": 47.6490582,
+  "lon": 8.5677296
+},
+{
+  "type": "node",
+  "id": 3043628951,
+  "lat": 47.6493373,
+  "lon": 8.5681742
+},
+{
+  "type": "node",
+  "id": 3043628952,
+  "lat": 47.6493776,
+  "lon": 8.5681184
+},
+{
+  "type": "node",
+  "id": 3043628953,
+  "lat": 47.6494253,
+  "lon": 8.5681944
+},
+{
+  "type": "node",
+  "id": 3043628954,
+  "lat": 47.6495409,
+  "lon": 8.5680345
+},
+{
+  "type": "node",
+  "id": 3043628955,
+  "lat": 47.6494980,
+  "lon": 8.5679662
+},
+{
+  "type": "node",
+  "id": 3043628956,
+  "lat": 47.6495187,
+  "lon": 8.5679375
+},
+{
+  "type": "node",
+  "id": 3009238835,
+  "lat": 47.6544390,
+  "lon": 8.5754653
+},
+{
+  "type": "node",
+  "id": 3009238834,
+  "lat": 47.6546128,
+  "lon": 8.5753565
+},
+{
+  "type": "node",
+  "id": 3009238836,
+  "lat": 47.6546531,
+  "lon": 8.5761165
+},
+{
+  "type": "node",
+  "id": 3009238837,
+  "lat": 47.6548025,
+  "lon": 8.5760136
+},
+{
+  "type": "node",
+  "id": 12762040242,
+  "lat": 47.6545771,
+  "lon": 8.5759028
+},
+{
+  "type": "node",
+  "id": 2311217325,
+  "lat": 47.6743256,
+  "lon": 8.5132693
+},
+{
+  "type": "node",
+  "id": 2311217326,
+  "lat": 47.6743571,
+  "lon": 8.5133250
+},
+{
+  "type": "node",
+  "id": 2311217327,
+  "lat": 47.6743638,
+  "lon": 8.5132215
+},
+{
+  "type": "node",
+  "id": 2311217328,
+  "lat": 47.6743954,
+  "lon": 8.5132772
+},
+{
+  "type": "node",
+  "id": 2617484450,
+  "lat": 47.6895702,
+  "lon": 8.4955756
+},
+{
+  "type": "node",
+  "id": 2617484451,
+  "lat": 47.6894397,
+  "lon": 8.4955738
+},
+{
+  "type": "node",
+  "id": 2617484452,
+  "lat": 47.6894404,
+  "lon": 8.4954574
+},
+{
+  "type": "node",
+  "id": 2617484453,
+  "lat": 47.6893599,
+  "lon": 8.4954563
+},
+{
+  "type": "node",
+  "id": 2617484454,
+  "lat": 47.6893560,
+  "lon": 8.4960790
+},
+{
+  "type": "node",
+  "id": 2617484455,
+  "lat": 47.6895671,
+  "lon": 8.4960819
+},
+{
+  "type": "node",
+  "id": 9328149795,
+  "lat": 47.6892427,
+  "lon": 8.4950934
+},
+{
+  "type": "node",
+  "id": 9328149796,
+  "lat": 47.6892428,
+  "lon": 8.4952137
+},
+{
+  "type": "node",
+  "id": 9328149802,
+  "lat": 47.6894080,
+  "lon": 8.4960797
+},
+{
+  "type": "node",
+  "id": 12871703542,
+  "lat": 47.6892427,
+  "lon": 8.4951648
+},
+{
+  "type": "node",
+  "id": 12871703544,
+  "lat": 47.6892427,
+  "lon": 8.4951407
+},
+{
+  "type": "node",
+  "id": 12871703559,
+  "lat": 47.6892314,
+  "lon": 8.4950934
+},
+{
+  "type": "node",
+  "id": 12871703561,
+  "lat": 47.6892314,
+  "lon": 8.4952138
+},
+{
+  "type": "node",
+  "id": 2617839781,
+  "lat": 47.6903139,
+  "lon": 8.5041960
+},
+{
+  "type": "node",
+  "id": 2617839783,
+  "lat": 47.6901707,
+  "lon": 8.5042371
+},
+{
+  "type": "node",
+  "id": 2617839785,
+  "lat": 47.6901881,
+  "lon": 8.5043708
+},
+{
+  "type": "node",
+  "id": 2617839787,
+  "lat": 47.6901795,
+  "lon": 8.5043763
+},
+{
+  "type": "node",
+  "id": 2617839789,
+  "lat": 47.6901959,
+  "lon": 8.5044956
+},
+{
+  "type": "node",
+  "id": 2617839791,
+  "lat": 47.6901832,
+  "lon": 8.5044995
+},
+{
+  "type": "node",
+  "id": 2617839793,
+  "lat": 47.6902003,
+  "lon": 8.5046237
+},
+{
+  "type": "node",
+  "id": 2617839795,
+  "lat": 47.6901893,
+  "lon": 8.5046310
+},
+{
+  "type": "node",
+  "id": 2617839797,
+  "lat": 47.6902060,
+  "lon": 8.5047591
+},
+{
+  "type": "node",
+  "id": 2617839799,
+  "lat": 47.6901964,
+  "lon": 8.5047618
+},
+{
+  "type": "node",
+  "id": 2617839801,
+  "lat": 47.6902116,
+  "lon": 8.5048781
+},
+{
+  "type": "node",
+  "id": 2617839804,
+  "lat": 47.6903958,
+  "lon": 8.5048252
+},
+{
+  "type": "node",
+  "id": 8205742468,
+  "lat": 47.6902877,
+  "lon": 8.5042035
+},
+{
+  "type": "node",
+  "id": 2856803640,
+  "lat": 47.7175336,
+  "lon": 8.4982118
+},
+{
+  "type": "node",
+  "id": 2856803642,
+  "lat": 47.7175791,
+  "lon": 8.4981179
+},
+{
+  "type": "node",
+  "id": 2856803643,
+  "lat": 47.7175834,
+  "lon": 8.4982652
+},
+{
+  "type": "node",
+  "id": 2856803644,
+  "lat": 47.7176289,
+  "lon": 8.4981712
+},
+{
+  "type": "node",
+  "id": 10860115048,
+  "lat": 47.7175585,
+  "lon": 8.4982385
+},
+{
+  "type": "node",
+  "id": 3596008619,
+  "lat": 47.7159787,
+  "lon": 8.5319722
+},
+{
+  "type": "node",
+  "id": 3596008620,
+  "lat": 47.7160016,
+  "lon": 8.5319087
+},
+{
+  "type": "node",
+  "id": 3596008622,
+  "lat": 47.7160162,
+  "lon": 8.5320021
+},
+{
+  "type": "node",
+  "id": 3596008623,
+  "lat": 47.7160391,
+  "lon": 8.5319387
+},
+{
+  "type": "node",
+  "id": 8721974325,
+  "lat": 47.7490033,
+  "lon": 8.3892829
+},
+{
+  "type": "node",
+  "id": 8721974326,
+  "lat": 47.7490554,
+  "lon": 8.3892072
+},
+{
+  "type": "node",
+  "id": 8721974327,
+  "lat": 47.7490083,
+  "lon": 8.3891354
+},
+{
+  "type": "node",
+  "id": 8721974328,
+  "lat": 47.7489562,
+  "lon": 8.3892112
+},
+{
+  "type": "node",
+  "id": 2391558900,
+  "lat": 47.7368597,
+  "lon": 8.4402303
+},
+{
+  "type": "node",
+  "id": 2391558912,
+  "lat": 47.7369873,
+  "lon": 8.4402013
+},
+{
+  "type": "node",
+  "id": 2391559066,
+  "lat": 47.7369984,
+  "lon": 8.4403090
+},
+{
+  "type": "node",
+  "id": 2391559070,
+  "lat": 47.7368708,
+  "lon": 8.4403380
+},
+{
+  "type": "node",
+  "id": 2064211616,
+  "lat": 47.7432210,
+  "lon": 8.4484650
+},
+{
+  "type": "node",
+  "id": 2064211621,
+  "lat": 47.7433768,
+  "lon": 8.4482469
+},
+{
+  "type": "node",
+  "id": 2064211630,
+  "lat": 47.7435079,
+  "lon": 8.4489183
+},
+{
+  "type": "node",
+  "id": 2064211632,
+  "lat": 47.7435376,
+  "lon": 8.4488768
+},
+{
+  "type": "node",
+  "id": 2064211633,
+  "lat": 47.7435567,
+  "lon": 8.4489069
+},
+{
+  "type": "node",
+  "id": 2064211645,
+  "lat": 47.7436828,
+  "lon": 8.4487304
+},
+{
+  "type": "node",
+  "id": 2064211675,
+  "lat": 47.7441724,
+  "lon": 8.4499668
+},
+{
+  "type": "node",
+  "id": 2064211681,
+  "lat": 47.7443592,
+  "lon": 8.4495699
+},
+{
+  "type": "node",
+  "id": 2064211685,
+  "lat": 47.7445894,
+  "lon": 8.4504009
+},
+{
+  "type": "node",
+  "id": 2064211686,
+  "lat": 47.7447762,
+  "lon": 8.4500040
+},
+{
+  "type": "node",
+  "id": 3998303411,
+  "lat": 47.7442123,
+  "lon": 8.4498819
+},
+{
+  "type": "node",
+  "id": 3998303412,
+  "lat": 47.7443236,
+  "lon": 8.4496456
+},
+{
+  "type": "node",
+  "id": 2301046284,
+  "lat": 47.7474419,
+  "lon": 8.4526879
+},
+{
+  "type": "node",
+  "id": 2301046292,
+  "lat": 47.7475894,
+  "lon": 8.4524657
+},
+{
+  "type": "node",
+  "id": 2301046293,
+  "lat": 47.7477574,
+  "lon": 8.4531510
+},
+{
+  "type": "node",
+  "id": 2301046294,
+  "lat": 47.7478111,
+  "lon": 8.4527912
+},
+{
+  "type": "node",
+  "id": 2301046296,
+  "lat": 47.7478555,
+  "lon": 8.4527243
+},
+{
+  "type": "node",
+  "id": 2301046297,
+  "lat": 47.7478713,
+  "lon": 8.4528794
+},
+{
+  "type": "node",
+  "id": 2301046298,
+  "lat": 47.7479049,
+  "lon": 8.4529288
+},
+{
+  "type": "node",
+  "id": 2301046299,
+  "lat": 47.7479156,
+  "lon": 8.4528126
+},
+{
+  "type": "node",
+  "id": 1022953783,
+  "lat": 47.7609712,
+  "lon": 8.4889557
+},
+{
+  "type": "node",
+  "id": 1022953990,
+  "lat": 47.7610410,
+  "lon": 8.4889356
+},
+{
+  "type": "node",
+  "id": 1022954631,
+  "lat": 47.7609953,
+  "lon": 8.4888832
+},
+{
+  "type": "node",
+  "id": 1022956479,
+  "lat": 47.7610199,
+  "lon": 8.4890116
+},
+{
+  "type": "node",
+  "id": 727622295,
+  "lat": 47.7383340,
+  "lon": 8.5318692
+},
+{
+  "type": "node",
+  "id": 727622307,
+  "lat": 47.7383189,
+  "lon": 8.5317651
+},
+{
+  "type": "node",
+  "id": 727622325,
+  "lat": 47.7382907,
+  "lon": 8.5318143
+},
+{
+  "type": "node",
+  "id": 727622344,
+  "lat": 47.7383622,
+  "lon": 8.5318199
+},
+{
+  "type": "node",
+  "id": 9543498698,
+  "lat": 47.7436291,
+  "lon": 8.5471567
+},
+{
+  "type": "node",
+  "id": 9543498699,
+  "lat": 47.7436489,
+  "lon": 8.5471066
+},
+{
+  "type": "node",
+  "id": 9543498700,
+  "lat": 47.7436014,
+  "lon": 8.5471326
+},
+{
+  "type": "node",
+  "id": 9543498701,
+  "lat": 47.7436212,
+  "lon": 8.5470824
+},
+{
+  "type": "node",
+  "id": 727646404,
+  "lat": 47.7479142,
+  "lon": 8.5492929
+},
+{
+  "type": "node",
+  "id": 727646423,
+  "lat": 47.7478605,
+  "lon": 8.5493027
+},
+{
+  "type": "node",
+  "id": 727646429,
+  "lat": 47.7478536,
+  "lon": 8.5492197
+},
+{
+  "type": "node",
+  "id": 727646434,
+  "lat": 47.7479074,
+  "lon": 8.5492099
+},
+{
+  "type": "node",
+  "id": 8700592344,
+  "lat": 47.7464697,
+  "lon": 8.5640239
+},
+{
+  "type": "node",
+  "id": 8700592345,
+  "lat": 47.7464684,
+  "lon": 8.5640955
+},
+{
+  "type": "node",
+  "id": 8700592346,
+  "lat": 47.7465028,
+  "lon": 8.5640969
+},
+{
+  "type": "node",
+  "id": 8700592347,
+  "lat": 47.7465041,
+  "lon": 8.5640253
+},
+{
+  "type": "node",
+  "id": 10297990924,
+  "lat": 47.7340125,
+  "lon": 8.5745821
+},
+{
+  "type": "node",
+  "id": 10297990925,
+  "lat": 47.7340639,
+  "lon": 8.5746051
+},
+{
+  "type": "node",
+  "id": 10297990926,
+  "lat": 47.7340458,
+  "lon": 8.5747129
+},
+{
+  "type": "node",
+  "id": 10297990927,
+  "lat": 47.7339910,
+  "lon": 8.5746884
+},
+{
+  "type": "node",
+  "id": 10298192063,
+  "lat": 47.7340369,
+  "lon": 8.5747090
+},
+{
+  "type": "node",
+  "id": 10298192064,
+  "lat": 47.7340169,
+  "lon": 8.5747000
+},
+{
+  "type": "node",
+  "id": 10298192065,
+  "lat": 47.7340566,
+  "lon": 8.5746597
+},
+{
+  "type": "node",
+  "id": 10298192066,
+  "lat": 47.7340532,
+  "lon": 8.5746581
+}
+
+  ]

@@ -1,21 +1,28 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import maplibregl from 'maplibre-gl';
+	import 'maplibre-gl/dist/maplibre-gl.css';
 	import {
 		gpxTrackStore,
 		selectedRangeTrackStore,
-		tableDataDisplay,
-		mapInstanceStore
+		tableDataDisplayStore,
+		mapInstanceStore,
+
+		polyAroundTrackStore
+
 	} from '$lib/stores';
 
+	const markerSize = 15; // Size of the marker in pixels
 	let mapContainer: HTMLDivElement;
 	let map: maplibregl.Map;
+
+	let markers: maplibregl.Marker[] = []; // Array to hold markers
 
 	onMount(() => {
 		map = new maplibregl.Map({
 			container: mapContainer,
 			style: `https://api.maptiler.com/maps/openstreetmap/style.json?key=${import.meta.env.VITE_MAPTILER_API_KEY}`,
-			zoom: 14,
+			zoom: 1,
 			attributionControl: false
 		});
 		mapInstanceStore.set(map);
@@ -99,11 +106,40 @@
 			}
 		}
 	});
-	tableDataDisplay.subscribe((row) => {
-		if(map && row) {
-			
+	tableDataDisplayStore.subscribe((tableData) => {
+		if (map && tableData) {
+			console.log('Updating markers on map with table data:', tableData);
+			// Remove existing markers
+			markers.forEach((marker) => {
+				marker.remove();
+			});
+			markers = []; // Clear the markers array
+			tableData.forEach((row) => {
+				const el = document.createElement('div');
+				el.className = 'marker';
+				el.style.backgroundImage = getIcon(row.category? row.category : '');
+				el.style.position = 'absolute';
+				el.style.width = `${markerSize}px`;
+				el.style.height = `${markerSize}px`;
+				el.addEventListener('click', () => {
+					console.log('Marker clicked:', row.type);
+					console.log('Marker location:', row.location);
+				});
+				const popup = new maplibregl.Popup({ offset: 25 }).setText(row.type);
+				popup.setHTML(
+					`<strong>${row.type}</strong><br>
+					Distance on route: ${row.distanceOnRoute.toFixed(2)} m<br>
+					Distance from route: ${row.distanceFromRoute.toFixed(2)} m<br>`
+				);
+				
+				const marker = new maplibregl.Marker({ element: el })
+					.setLngLat([row.location.lon, row.location.lat])
+					.setPopup(popup)
+					.addTo(map);
+				markers.push(marker); // Store the marker in the array
+			});
 		}
-	})
+	});
 	// polyAroundTrackStore.subscribe((polygon) => {
 	// 	if (map && polygon) {
 	// 		if (!map.getSource('poly-around-track')) {
@@ -180,14 +216,49 @@
 	// );
 
 
+	function getIcon(category: string): string {
+		if (!category) {
+			return 'url(/icons/default.svg)'; // Default icon if type is not provided
+		}
+		// switch (type) {
+		// 	case 'vending_machine':
+		// 		return 'url(/icons/vending_machine.svg)';
+		// 	case 'shelter':
+		// 		return 'url(/icons/shelter.svg)';
+		// 	case 'ice_cafe':
+		// 		return 'url(/icons/ice_cafe.svg)';
+		// 	case 'fuel':
+		// 		return 'url(/icons/fuel.svg)';
+		// 	case 'supermarket':
+		// 		return 'url(/icons/supermarket.svg)';
+		// 	case 'bakery':
+		// 		return 'url(/icons/bakery.svg)';
+		// 	case 'kiosk':
+		// 		return 'url(/icons/kiosk.svg)';
+		// 	case 'drinking_water':
+		// 		return 'url(/icons/drinking_water.svg)';
+		// 	case 'toilets':
+		// 		return 'url(/icons/toilets.svg)';
+		// 	case 'restaurant':
+		// 		return 'url(/icons/restaurant.svg)';
+		// 	case 'camp_site':
+		// 		return 'url(/icons/camp_site.svg)';
+		// 	case 'bicycle_repair':
+		// 		return 'url(/icons/bicycle_repair.svg)';
+		// 	case 'accommodation':
+		// 		return 'url(/icons/accommodation.svg)';
+		// }
+		return `url(/icons/${category}.svg)`;
+	}
 </script>
+
 
 <div bind:this={mapContainer} id="map"></div>
 
 <style>
 	#map {
-		height: 100vh;
 		width: 100%;
-		position: relative;
+		height: 100vh;
+		overflow: hidden;
 	}
 </style>
