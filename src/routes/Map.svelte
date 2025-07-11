@@ -34,7 +34,7 @@
 			}
 			const selectedRangeTrack = get(selectedRangeTrackStore);
 			if (selectedRangeTrack) {
-				addOrUpdateSelectedGpxTrack(selectedRangeTrack);
+				addOrUpdateSelectedRangeGpxTrack(selectedRangeTrack);
 			}
 			const tableData = get(tableDataDisplayStore);
 			if (tableData) {
@@ -59,7 +59,7 @@
 
 	selectedRangeTrackStore.subscribe((geojson) => {
 		if (geojson) {
-			addOrUpdateSelectedGpxTrack(geojson);
+			addOrUpdateSelectedRangeGpxTrack(geojson);
 		}
 	});
 
@@ -67,7 +67,7 @@
 		addOrUpdateTableDataDisplay(tableData);
 	});
 
-	function addOrUpdateSelectedGpxTrack(
+	function addOrUpdateSelectedRangeGpxTrack(
 		geojson: GeoJSON.FeatureCollection<Geometry, GeoJsonProperties>
 	) {
 		if (map) {
@@ -104,7 +104,25 @@
 					type: 'geojson',
 					data: geojson
 				});
-
+				const gpxName = geojson.features[0]?.properties?.name || 'GPX Track';
+				const nameDiv = document.createElement('div');
+				nameDiv.id = 'gpx-track-name-label';
+				nameDiv.textContent = gpxName;
+				nameDiv.style.position = 'absolute';
+				nameDiv.style.top = '10px';
+				nameDiv.style.left = '10px';
+				nameDiv.style.background = 'rgba(255,255,255,0.85)';
+				nameDiv.style.padding = '4px 10px';
+				nameDiv.style.borderRadius = '6px';
+				nameDiv.style.fontWeight = 'bold';
+				nameDiv.style.zIndex = '10';
+				nameDiv.style.pointerEvents = 'none';
+				nameDiv.style.fontSize = '1rem';
+				const existingLabel = document.getElementById('gpx-track-name-label');
+				if (existingLabel) {
+					existingLabel.remove();
+				}
+				map.getContainer().appendChild(nameDiv);
 				map.addLayer({
 					id: 'gpx-track-line',
 					type: 'line',

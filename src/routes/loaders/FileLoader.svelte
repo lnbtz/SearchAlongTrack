@@ -5,8 +5,10 @@
 
 	let loading = false;
 	let progress = 0;
+	let showTrackLoadedBanner = false;
 
 	function handleChange(e: Event) {
+		showTrackLoadedBanner = true;
 		const file = (e.target as HTMLInputElement).files?.[0];
 		if (!file) return;
 
@@ -29,8 +31,6 @@
 		};
 		reader.readAsText(file);
 	}
-
-	let showTrackLoadedBanner = true;
 </script>
 
 {#if !loading && $gpxTrackStore?.features?.length}
@@ -47,6 +47,18 @@
 			<button class="close-btn" onclick={() => (showTrackLoadedBanner = false)} aria-label="Close"
 				>&times;</button
 			>
+		</div>
+	{:else}
+		<div class="centered-button">
+			<button
+				class="upload-new-btn"
+				onclick={() => {
+					gpxTrackStore.set(null);
+					showTrackLoadedBanner = false;
+				}}
+			>
+				Upload new GPX track
+			</button>
 		</div>
 	{/if}
 {:else}
@@ -70,6 +82,42 @@
 {/if}
 
 <style>
+	.centered-button {
+		display: flex; 
+		justify-content: center; 
+		align-items: center; 
+		margin-top: 2rem;
+	}
+	.upload-new-btn {
+		background: #4267b2;
+		color: #fff;
+		border: 1.5px solid #31497a;
+		padding: 10px 26px;
+		border-radius: 8px;
+		cursor: pointer;
+		font-size: 17px;
+		font-weight: 500;
+		letter-spacing: 0.5px;
+		box-shadow: 0 2px 8px rgba(66, 103, 178, 0.1);
+		transition:
+			background 0.2s,
+			box-shadow 0.2s,
+			transform 0.1s;
+	}
+	.upload-new-btn:hover {
+		background: #365899;
+		box-shadow: 0 4px 16px rgba(66, 103, 178, 0.18);
+		transform: translateY(-1px) scale(1.02);
+	}
+	.upload-new-btn:active {
+		background: #31497a;
+		transform: scale(0.98);
+		box-shadow: 0 1px 4px rgba(66, 103, 178, 0.08);
+	}
+	.upload-new-btn:focus {
+		outline: none;
+		box-shadow: 0 0 0 2px #a3bffa;
+	}
 	.close-btn {
 		top: 1rem;
 		right: 1rem;

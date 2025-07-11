@@ -9,8 +9,9 @@
 	import type { TableRow } from '$lib/results';
 
 	let { children } = $props();
-	const allTracks: Record<string, FeatureCollection<Geometry, GeoJsonProperties>> = {};
-	const allTables: Record<string, TableRow[]> = {};
+
+	let allTracks: Record<string, FeatureCollection<Geometry, GeoJsonProperties>> = $state({});
+	let allTables: Record<string, TableRow[]> = $state({});
 	let gpxTrack: FeatureCollection<Geometry, GeoJsonProperties> | null = null;
 	let tableData: TableRow[] = [];
 	tableDataStore.subscribe((content) => {
@@ -27,6 +28,8 @@
 		}
 	});
 	onMount(() => {
+		const tracks: Record<string, FeatureCollection<Geometry, GeoJsonProperties>> = {};
+		const tables: Record<string, TableRow[]> = {};
 		for (let i = 0; i < localStorage.length; i++) {
 			const key = localStorage.key(i);
 			if (!key) continue;
@@ -40,20 +43,11 @@
 				const tableData = localStorage.getItem(key);
 				if (tableData) {
 					allTables[key.replace('table-', '')] = JSON.parse(tableData);
+
+					console.log('Loaded tracks:', allTracks);
+					console.log('Loaded tables:', allTables);
 				}
 			}
-		}
-
-		// Now you have allTracks and allTables as objects keyed by trackName/hash
-		// You can use them to populate a list, let the user select, etc.
-		console.log('Loaded tracks:', allTracks);
-		console.log('Loaded tables:', allTables);
-
-		// Example: set the first found as current (optional)
-		const firstTrackName = Object.keys(allTracks)[0];
-		if (firstTrackName) {
-			gpxTrackStore.set(allTracks[firstTrackName]);
-			tableDataStore.set(allTables[firstTrackName]);
 		}
 	});
 
@@ -76,36 +70,38 @@
 	}
 </script>
 
-<ul class="track-list">
-	{#each Object.entries(allTracks) as [trackName, track]}
-		<li class="track-item">
-			<span class="track-name">{track.features[0]?.properties?.name || trackName}</span>
-			<div class="track-actions">
-				<button
-					class="load-btn"
-					onclick={() => {
-						/* loadTrack(trackName) */
-					}}
-				>
-					Load
-				</button>
-				<button
-					class="delete-btn"
-					onclick={() => {
-						/* deleteTrack(trackName) */
-					}}
-					aria-label="Delete track"
-				>
-					<svg class="trash-icon" viewBox="0 0 24 24">
-						<path
-							d="M3 6h18M9 6v12a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2V6m-7 0V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"
-						/>
-					</svg>
-				</button>
-			</div>
-		</li>
-	{/each}
-</ul>
+<div>
+	<ul class="track-list">
+		{#each Object.entries(allTracks) as [trackName, track]}
+			<li class="track-item">
+				<span class="track-name">{track.features[0]?.properties?.name || trackName}</span>
+				<div class="track-actions">
+					<button
+						class="load-btn"
+						onclick={() => {
+							/* loadTrack(trackName) */
+						}}
+					>
+						Load
+					</button>
+					<button
+						class="delete-btn"
+						onclick={() => {
+							/* deleteTrack(trackName) */
+						}}
+						aria-label="Delete track"
+					>
+						<svg class="trash-icon" viewBox="0 0 24 24">
+							<path
+								d="M3 6h18M9 6v12a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2V6m-7 0V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"
+							/>
+						</svg>
+					</button>
+				</div>
+			</li>
+		{/each}
+	</ul>
+</div>
 
 <style>
 	.track-list {

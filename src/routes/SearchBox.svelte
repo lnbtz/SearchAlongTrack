@@ -1,17 +1,28 @@
 <script lang="ts">
 	import { searchAlongTrack } from '$lib/api';
 	import { buildTableData } from '$lib/results';
-	import { gpxTrackStore } from '$lib/stores';
+	import { gpxTrackStore, tableDataStore } from '$lib/stores';
 
 	import { get, writable } from 'svelte/store';
 
-	let loadingState = writable<string>('idle');
+	let loadingState = getLoadingState();
+	let showBanner = false;
+
+	function getLoadingState() {
+		console.log('tableDataStore', get(tableDataStore));
+		const state = writable<'idle' | 'searching' | 'processing' | 'done' | 'disabled'>('idle');
+		if (get(tableDataStore).length > 0){
+			state.set('disabled');
+		}
+		return state;
+	}
 	async function search() {
+		showBanner = true;
 		if (!get(gpxTrackStore)) {
 			return alert('Please upload a GPX file first.');
 		}
 		loadingState.set('searching');
-		await sleep(2000); // pauses for 2 second
+		await sleep(2000);
 		await searchAlongTrack();
 		await sleep(100);
 		loadingState.set('processing');
@@ -23,12 +34,13 @@
 	function sleep(ms: number): Promise<void> {
 		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
-	let showBanner = true;
 </script>
 
 <div class="search-box">
 	{#if $loadingState === 'idle'}
-		<button onclick={search} class="search-button"> Search for Points of Interest along the GPX Track </button>
+		<button onclick={search} class="search-button">
+			Search for Points of Interest along the GPX Track
+		</button>
 	{:else if $loadingState === 'searching'}
 		<div class="loadingState">
 			<span class="loader"></span>
@@ -52,8 +64,12 @@
 				>
 			</div>
 		{/if}
+	{:else if $loadingState === 'disabled'}
+		<!-- don't show anything -->
 	{/if}
 </div>
+
+
 
 <style>
 	.close-btn {
@@ -153,7 +169,7 @@
 		font-size: 17px;
 		font-weight: 500;
 		letter-spacing: 0.5px;
-		box-shadow: 0 2px 8px rgba(66, 103, 178, 0.10);
+		box-shadow: 0 2px 8px rgba(66, 103, 178, 0.1);
 		transition:
 			background 0.2s,
 			box-shadow 0.2s,
@@ -173,5 +189,4 @@
 		outline: none;
 		box-shadow: 0 0 0 2px #a3bffa;
 	}
-
 </style>
