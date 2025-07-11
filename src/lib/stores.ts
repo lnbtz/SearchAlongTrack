@@ -2,8 +2,10 @@ import { writable } from 'svelte/store';
 import type { FeatureCollection, Geometry, GeoJsonProperties, LineString, MultiPolygon, Polygon, Feature } from 'geojson';
 import type { OverpassJson } from 'overpass-ts';
 import type { TableRow } from './results';
+import maplibregl from 'maplibre-gl';
 
 // Store to hold the loaded GPX track as GeoJSON
+export const markersStore = writable<maplibregl.Marker[]>([]); // Store to hold markers on the map
 export const mapInstanceStore = writable<maplibregl.Map | undefined>(undefined); // Store to hold the MapLibre GL map instance
 export const gpxTrackStore = writable<FeatureCollection<Geometry, GeoJsonProperties> | null>(null); // Store to hold the loaded GPX track as GeoJSON
 export const simplifiedGpxTrackStore = writable<LineString | null>(null); // Store to hold the simplified GPX track as GeoJSON

@@ -203,6 +203,6 @@ function simplifyGpxTrack() {
         console.error('Invalid GPX track data');
         return;
     }
-    const simplified = simplify(gpxTrack.features[0].geometry, { tolerance: 0.0001, highQuality: true });
+    const simplified = simplify(gpxTrack.features[0].geometry, { tolerance: 0.001, highQuality: true });
     simplifiedGpxTrackStore.set(simplified);
 }

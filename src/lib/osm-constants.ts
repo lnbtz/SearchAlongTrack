@@ -1,6 +1,4 @@
 import type { OverpassJson } from "overpass-ts";
-import fs from 'fs';
-import path from 'path';
 
 export const SEARCH_CORRIDOR_RADIUS = 5000; // in meters, this is the radius around the track where we search for points of interest
 

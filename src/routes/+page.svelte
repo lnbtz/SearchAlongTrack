@@ -22,13 +22,9 @@
 	<meta name="description" content="Search along GPS Track" />
 </svelte:head>
 
-<section>
-	
-	
+<section>	
 	<FileLoader />
-	<br />
 	<SearchBox />
-	<br />
 	<Map />
 	{#if tableData}
 		<Results {tableData} />

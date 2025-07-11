@@ -1,19 +1,36 @@
 <script lang="ts">
-	import { type TableRow } from '$lib/results';
+	import { displayType, type TableRow } from '$lib/results';
 	import { OSMCategories, OSMCategoriesMap } from '$lib/osm-constants';
 	import {
 		mapInstanceStore,
+		markersStore,
 		selectedCategoriesStore,
 		selectedEndRangeStore,
 		selectedRadiusStore,
 		selectedStartRangeStore,
 		tableDataDisplayStore,
-		tableDataStore
+		totalTrackLengthStore
 	} from '$lib/stores';
 	import { get } from 'svelte/store';
-	import { centerOnCoords } from '$lib/util';
+	import { calculateSelectedRangeTrackStore, centerOnCoords } from '$lib/util';
+	import RangeSlider from 'svelte-range-slider-pips';
 	export let tableData: TableRow[];
-	export let selectedCategories: string[] = Array.from(OSMCategoriesMap.keys());
+
+	let selectedCategories: string[] = get(selectedCategoriesStore).length === 0 ? 
+	Array.from(OSMCategoriesMap.keys()) : get(selectedCategoriesStore);
+	
+	let value = $selectedRadiusStore;
+	$: selectedRadiusStore.set(value);
+
+	// Initialize local values from stores
+	let values = [$selectedStartRangeStore, $selectedEndRangeStore];
+
+	// Update stores when slider changes
+	$: selectedStartRangeStore.set(values[0]);
+	$: selectedEndRangeStore.set(values[1]);
+
+	// Update slider if stores change elsewhere
+	$: values = [$selectedStartRangeStore, $selectedEndRangeStore];
 
 	function checkBox(category: string, e: Event) {
 		const checked = (e.target as HTMLInputElement).checked;
@@ -26,8 +43,13 @@
 	}
 
 	function handleShowOnMap(row: TableRow) {
+		const markers = get(markersStore);
+		const markerToPopup = markers.find((marker) => {
+			const lngLat = marker.getLngLat();
+			return lngLat.lat === row.location?.lat && lngLat.lng === row.location?.lon;
+		});
+		markerToPopup?.togglePopup();
 		const map = get(mapInstanceStore);
-		// TODO highlight the pin and select it when it is available
 		centerOnCoords(map, row.location ? row.location : { lat: 0, lon: 0 });
 	}
 
@@ -44,7 +66,6 @@
 				types.push(...values);
 			}
 		});
-		console.log('types ', types);
 		const tableDataDisplay = tableData
 			.filter((row) => {
 				return (
@@ -55,6 +76,7 @@
 				);
 			})
 			.sort((a, b) => {
+				// sort by distance on route
 				if (a.distanceOnRoute < b.distanceOnRoute) return -1;
 				if (a.distanceOnRoute > b.distanceOnRoute) return 1;
 				return 0;
@@ -64,11 +86,40 @@
 	}
 </script>
 
+<div class="slider-group">
+	<div>
+		<label for="selected-range-slider" class="slider-label"
+			>Select Range (in km): start: {$selectedStartRangeStore} km, end: {$selectedEndRangeStore} km
+		</label>
+		<RangeSlider
+			bind:values
+			min={0}
+			max={$totalTrackLengthStore}
+			pips
+			first="label"
+			last="label"
+			rest="pip"
+			on:change={() => {
+				calculateSelectedRangeTrackStore();
+			}}
+		/>
+	</div>
+	<div>
+		<label for="radius-slider" class="slider-label">Select Radius (in m): {$selectedRadiusStore} m</label>
+		<RangeSlider bind:value min={100} max={5000} step={100} pips first="label" last="label" />
+	</div>
+</div>
+
 <!--
 	Search along GPS track results page.
 	This page displays the results of the search along the GPS track.
 	It includes a table with the results and checkboxes to filter the results by category.
 -->
+<fieldset class="category-group">
+	<legend>
+		<h3>Filter by Category</h3>
+		<p>Select the categories you want to display in the results table.</p>
+	</legend>
 
 <label>
 	<input
@@ -213,6 +264,7 @@
 	/>
 	Bicycle Repair
 </label>
+</fieldset>
 
 {#if tableData.length > 0}
 	<table>
@@ -232,7 +284,7 @@
 		<tbody>
 			{#each filterTableData(selectedCategories, tableData, $selectedRadiusStore, $selectedStartRangeStore, $selectedEndRangeStore) as row}
 				<tr>
-					<td>{row.type}</td>
+					<td>{displayType(row.type)}</td>
 					<td>{row.name}</td>
 					<td>
 						{#if row.website}
@@ -276,46 +328,28 @@
 									}
 								}}
 								title="Click to call or copy to clipboard"
+								style="display: inline-flex; align-items: center; gap: 0.2em;"
 							>
 								<svg
-									fill="#000000"
-									height="18px"
-									width="18px"
-									version="1.1"
-									id="Capa_1"
-									xmlns="http://www.w3.org/2000/svg"
-									xmlns:xlink="http://www.w3.org/1999/xlink"
-									viewBox="0 0 473.806 473.806"
-									xml:space="preserve"
-									><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g
-										id="SVGRepo_tracerCarrier"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-									></g><g id="SVGRepo_iconCarrier">
-										<g>
-											<g>
-												<path
-													d="M374.456,293.506c-9.7-10.1-21.4-15.5-33.8-15.5c-12.3,0-24.1,5.3-34.2,15.4l-31.6,31.5c-2.6-1.4-5.2-2.7-7.7-4 c-3.6-1.8-7-3.5-9.9-5.3c-29.6-18.8-56.5-43.3-82.3-75c-12.5-15.8-20.9-29.1-27-42.6c8.2-7.5,15.8-15.3,23.2-22.8 c2.8-2.8,5.6-5.7,8.4-8.5c21-21,21-48.2,0-69.2l-27.3-27.3c-3.1-3.1-6.3-6.3-9.3-9.5c-6-6.2-12.3-12.6-18.8-18.6 c-9.7-9.6-21.3-14.7-33.5-14.7s-24,5.1-34,14.7c-0.1,0.1-0.1,0.1-0.2,0.2l-34,34.3c-12.8,12.8-20.1,28.4-21.7,46.5 c-2.4,29.2,6.2,56.4,12.8,74.2c16.2,43.7,40.4,84.2,76.5,127.6c43.8,52.3,96.5,93.6,156.7,122.7c23,10.9,53.7,23.8,88,26 c2.1,0.1,4.3,0.2,6.3,0.2c23.1,0,42.5-8.3,57.7-24.8c0.1-0.2,0.3-0.3,0.4-0.5c5.2-6.3,11.2-12,17.5-18.1c4.3-4.1,8.7-8.4,13-12.9 c9.9-10.3,15.1-22.3,15.1-34.6c0-12.4-5.3-24.3-15.4-34.3L374.456,293.506z M410.256,398.806 C410.156,398.806,410.156,398.906,410.256,398.806c-3.9,4.2-7.9,8-12.2,12.2c-6.5,6.2-13.1,12.7-19.3,20 c-10.1,10.8-22,15.9-37.6,15.9c-1.5,0-3.1,0-4.6-0.1c-29.7-1.9-57.3-13.5-78-23.4c-56.6-27.4-106.3-66.3-147.6-115.6 c-34.1-41.1-56.9-79.1-72-119.9c-9.3-24.9-12.7-44.3-11.2-62.6c1-11.7,5.5-21.4,13.8-29.7l34.1-34.1c4.9-4.6,10.1-7.1,15.2-7.1 c6.3,0,11.4,3.8,14.6,7c0.1,0.1,0.2,0.2,0.3,0.3c6.1,5.7,11.9,11.6,18,17.9c3.1,3.2,6.3,6.4,9.5,9.7l27.3,27.3 c10.6,10.6,10.6,20.4,0,31c-2.9,2.9-5.7,5.8-8.6,8.6c-8.4,8.6-16.4,16.6-25.1,24.4c-0.2,0.2-0.4,0.3-0.5,0.5 c-8.6,8.6-7,17-5.2,22.7c0.1,0.3,0.2,0.6,0.3,0.9c7.1,17.2,17.1,33.4,32.3,52.7l0.1,0.1c27.6,34,56.7,60.5,88.8,80.8 c4.1,2.6,8.3,4.7,12.3,6.7c3.6,1.8,7,3.5,9.9,5.3c0.4,0.2,0.8,0.5,1.2,0.7c3.4,1.7,6.6,2.5,9.9,2.5c8.3,0,13.5-5.2,15.2-6.9 l34.2-34.2c3.4-3.4,8.8-7.5,15.1-7.5c6.2,0,11.3,3.9,14.4,7.3c0.1,0.1,0.1,0.1,0.2,0.2l55.1,55.1 C420.456,377.706,420.456,388.206,410.256,398.806z"
-												></path>
-												<path
-													d="M256.056,112.706c26.2,4.4,50,16.8,69,35.8s31.3,42.8,35.8,69c1.1,6.6,6.8,11.2,13.3,11.2c0.8,0,1.5-0.1,2.3-0.2 c7.4-1.2,12.3-8.2,11.1-15.6c-5.4-31.7-20.4-60.6-43.3-83.5s-51.8-37.9-83.5-43.3c-7.4-1.2-14.3,3.7-15.6,11 S248.656,111.506,256.056,112.706z"
-												></path>
-												<path
-													d="M473.256,209.006c-8.9-52.2-33.5-99.7-71.3-137.5s-85.3-62.4-137.5-71.3c-7.3-1.3-14.2,3.7-15.5,11 c-1.2,7.4,3.7,14.3,11.1,15.6c46.6,7.9,89.1,30,122.9,63.7c33.8,33.8,55.8,76.3,63.7,122.9c1.1,6.6,6.8,11.2,13.3,11.2 c0.8,0,1.5-0.1,2.3-0.2C469.556,223.306,474.556,216.306,473.256,209.006z"
-												></path>
-											</g>
-										</g>
-									</g></svg
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									height="18"
+									width="18"
+									viewBox="0 0 24 24"
+									style="vertical-align: middle;"
 								>
+									<path
+										d="M22 16.92v3a2 2 0 0 1-2.18 2A19.86 19.86 0 0 1 3.09 4.18 2 2 0 0 1 5 2h3a2 2 0 0 1 2 1.72c.13 1.05.37 2.06.72 3.03a2 2 0 0 1-.45 2.11l-1.27 1.27a16 16 0 0 0 6.29 6.29l1.27-1.27a2 2 0 0 1 2.11-.45c.97.35 1.98.59 3.03.72A2 2 0 0 1 22 16.92z"
+									/>
+								</svg>
 							</a>
-						{:else}
-							-
 						{/if}
 					</td>
 					<td>
 						{#if row.openingHours}
-							<details>
-								<summary class="clickable"> Show Opening Hours </summary>
+							<details class="show-more">
+								<summary class="clickable"> Opening Hours </summary>
 								<div class="info-box">
 									{#each row.openingHours.split(';') as segment, i}
 										{segment.trim()}{#if i < row.openingHours.split(';').length - 1}<br />{/if}
@@ -341,176 +375,178 @@
 							Copy
 						</button>
 						<br />
-						<button
-							title="Open in Google Maps"
-							aria-label="Open in Google Maps"
-							on:click={() => {
-								const lat = row.location?.lat;
-								const lon = row.location?.lon;
-								if (!lat || !lon) return;
-								const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
-								window.open(url, '_blank');
-							}}
-						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 92.3 132.3"
-								width="18"
-								height="18"
-								><path
-									fill="#1a73e8"
-									d="M60.2 2.2C55.8.8 51 0 46.1 0 32 0 19.3 6.4 10.8 16.5l21.8 18.3L60.2 2.2z"
-								/><path
-									fill="#ea4335"
-									d="M10.8 16.5C4.1 24.5 0 34.9 0 46.1c0 8.7 1.7 15.7 4.6 22l28-33.3-21.8-18.3z"
-								/><path
-									fill="#4285f4"
-									d="M46.2 28.5c9.8 0 17.7 7.9 17.7 17.7 0 4.3-1.6 8.3-4.2 11.4 0 0 13.9-16.6 27.5-32.7-5.6-10.8-15.3-19-27-22.7L32.6 34.8c3.3-3.8 8.1-6.3 13.6-6.3"
-								/><path
-									fill="#fbbc04"
-									d="M46.2 63.8c-9.8 0-17.7-7.9-17.7-17.7 0-4.3 1.5-8.3 4.1-11.3l-28 33.3c4.8 10.6 12.8 19.2 21 29.9l34.1-40.5c-3.3 3.9-8.1 6.3-13.5 6.3"
-								/><path
-									fill="#34a853"
-									d="M59.1 109.2c15.4-24.1 33.3-35 33.3-63 0-7.7-1.9-14.9-5.2-21.3L25.6 98c2.6 3.4 5.3 7.3 7.9 11.3 9.4 14.5 6.8 23.1 12.8 23.1s3.4-8.7 12.8-23.2"
-								/></svg
+						<div class="links-container">
+							<button
+								title="Open in Google Maps"
+								aria-label="Open in Google Maps"
+								on:click={() => {
+									const lat = row.location?.lat;
+									const lon = row.location?.lon;
+									if (!lat || !lon) return;
+									const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
+									window.open(url, '_blank');
+								}}
 							>
-						</button>
-						<button
-							aria-label="Open in Google Maps"
-							title="Open in Apple Maps"
-							on:click={() => {
-								const lat = row.location?.lat;
-								const lon = row.location?.lon;
-								if (!lat || !lon) return;
-								const url = `https://maps.apple.com/?q=${lat},${lon}`;
-								window.open(url, '_blank');
-							}}
-						>
-							<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48">
-								<path
-									fill="#e0e0e0"
-									d="M35.13 42H19V30C19 30 35.48 42 35.13 42zM6.3 10.87c.1-.33.22-.65.38-.96C7.36 8.46 8.54 7.3 10 6.64 10.149 6.565 11 13 11 13S6.193 11.207 6.3 10.87z"
-								></path><path fill="#7cb342" d="M18 6H20V23H18z"></path><path
-									fill="#ffcdd2"
-									d="M11,18v23.73c-0.35-0.09-0.68-0.21-1-0.37c-2.36-1.08-4-3.47-4-6.23V18H11z"
-								></path><path
-									fill="#aed581"
-									d="M42,25v10.13c0,0.36-0.03,0.71-0.09,1.05L20,20.6V6h3C23,16.48,31.52,25,42,25z"
-								></path><path
-									fill="#bdbdbd"
-									d="M12 14h-2V6.64c.32-.16.65-.28 1-.37.32-.1.66-.17 1-.2C12.28 6.02 12 14 12 14zM18 32H20V42H18z"
-								></path><path
-									fill="#f9a825"
-									d="M42,35.02v0.11c0,0.36-0.03,0.71-0.09,1.05c-0.06,0.43-0.16,0.84-0.31,1.23 c-0.82,2.36-2.9,4.13-5.44,4.5C35.83,41.97,35.48,42,35.13,42h-0.57l-3.02-2.15c-0.01,0-0.01-0.01-0.01-0.01l-4.5-3.2 c0,0-0.01,0-0.01-0.01l-6.36-4.52L20,31.65l-1-0.72l-1-0.71l-0.91-0.64L16.28,29l-2.49-1.77L12.06,26L12,25.96l-1-0.71l-1-0.72 L9.26,24H9.25L6,21.69v-8.82c0-0.69,0.1-1.37,0.3-2c0.1-0.33,0.22-0.65,0.38-0.96L10,12.27l2,1.42l1,0.71l5,3.55l1,0.71l0.55,0.39 L20,19.37v0.01l14.73,10.47l1.6,1.14l2.66,1.89l0.98,0.7L42,35.02z"
-								></path><path
-									fill="#fdd835"
-									d="M41.91,36.18c-0.06,0.43-0.16,0.84-0.31,1.23c-0.82,2.36-2.9,4.13-5.44,4.5l-2.72-1.93 c-0.01,0.01-0.01,0.01-0.02,0l-1.49-1.08l-4.15-2.94c0,0,0,0-0.01-0.01l-1.51-1.08l-5.07-3.6L20,30.42l-1-0.71L18,29l-1.53-1.09 h-0.01l-2.31-1.65L13,25.45l-1-0.72l-1-0.71l-1-0.71l-0.11-0.08L6,20.47v-7.6c0-0.69,0.1-1.37,0.3-2L10,13.5l1,0.71l2,1.42l5,3.55 l1,0.71l1,0.71v0.01l12.41,8.81l1.89,1.35c0,0,0,0.01,0.01,0.01l4.6,3.26l0.88,0.63L41.91,36.18z"
-								></path><path
-									fill="#ef9a9a"
-									d="M12,33v8.94c-0.34-0.04-0.68-0.11-1-0.21c-0.35-0.09-0.68-0.21-1-0.37V32L12,33z"
-								></path><path
-									fill="#fafafa"
-									d="M19,6v36h-6.13c-0.3,0-0.59-0.02-0.87-0.06c-0.34-0.04-0.68-0.11-1-0.21V6.27 c0.32-0.1,0.66-0.17,1-0.2C12.28,6.02,12.57,6,12.87,6H19z"
-								></path><path fill="#3996e8" d="M18,6v17h-6V6.052C12.28,6.015,12.57,6,12.87,6H18z"
-								></path><path
-									fill="#1976d2"
-									d="M38.77,29.04c0,0-0.77,0.96-2.77,0.96s-3-1-3-1s-1,1-3,1s-2.77-0.96-2.77-0.96 C26.45,30.16,26,31.53,26,33c0,3.87,3.13,7,7,7s7-3.13,7-7C40,31.53,39.55,30.16,38.77,29.04z"
-								></path><path
-									fill="#d84315"
-									d="M38,33H28c0-0.42,0.05-0.83,0.15-1.23C28.72,31.92,29.34,32,30,32c1.28,0,2.29-0.31,3-0.64 c0.71,0.33,1.72,0.64,3,0.64c0.66,0,1.28-0.08,1.85-0.23C37.95,32.17,38,32.58,38,33z"
-								></path><path
-									fill="#fbc02d"
-									d="M10 12.27L10 13.5 10 24.53 11 25.25 11 14.21 11 12.98zM20 19.38L20 31.65 19 30.93 19 18.66z"
-								></path><path fill="#1976d2" d="M15 21A7 7 0 1 0 15 35A7 7 0 1 0 15 21Z"
-								></path><path
-									fill="#e89c23"
-									d="M10 12.27L10 13.5 11 14.21 11 12.98zM19 18.66L19 19.89 20 20.6 20 19.37z"
-								></path><path
-									fill="#e9e9e9"
-									d="M42,16.96V26c-11.03,0-20-8.97-20-20h9.04C31.52,11.83,36.17,16.48,42,16.96z"
-								></path><path
-									fill="#7cb342"
-									d="M42,13v4.96C35.62,17.48,30.52,12.38,30.05,6H35C38.87,6,42,9.13,42,13z"
-								></path><path
-									fill="#aed581"
-									d="M42,13v3.96C36.17,16.48,31.52,11.83,31.04,6H35C38.87,6,42,9.13,42,13z"
-								></path><g
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									viewBox="0 0 92.3 132.3"
+									width="18"
+									height="18"
 									><path
-										fill="#7cb342"
-										d="M23,6h-1c0,11.03,8.97,20,20,20v-1C31.52,25,23,16.48,23,6z"
-									></path></g
-								><g
-									><path fill="#fafafa" d="M15 24L12 32 15 30 18 32z"></path><path
-										fill="#fff"
-										d="M38.45,30.48C37.88,30.76,37.08,31,36,31c-1.39,0-2.39-0.41-3-0.77C32.39,30.59,31.39,31,30,31 c-1.08,0-1.88-0.24-2.45-0.52C27.19,31.26,27,32.11,27,33c0,3.31,2.69,6,6,6s6-2.69,6-6C39,32.11,38.81,31.26,38.45,30.48z M33,38 c-2.415,0-4.434-1.721-4.899-4h9.798C37.434,36.279,35.415,38,33,38z M28,33c0-0.422,0.051-0.834,0.151-1.233 C28.724,31.922,29.343,32,30,32c1.283,0,2.288-0.308,3-0.641C33.712,31.692,34.717,32,36,32c0.657,0,1.276-0.078,1.849-0.233 C37.949,32.166,38,32.578,38,33H28z"
-									></path><path
-										fill="#fff"
-										d="M32.125 35.24c0 0 0-.625-.625-.625s-.625.625-.625.625h.375c0-.114.043-.25.25-.25.066 0 .242 0 .25.25 0 .215-.291.549-.487.707l-.013.01-.375.325v.036.298h1.25V36.24h-.628C31.497 36.24 32.125 35.74 32.125 35.24zM33.4 35.615c.125-.102.225-.243.225-.427 0-.316-.28-.573-.625-.573s-.625.257-.625.573c0 .184.1.325.225.427-.125.102-.225.243-.225.427 0 .316.28.573.625.573s.625-.257.625-.573C33.625 35.858 33.525 35.717 33.4 35.615zM33 34.99c.135 0 .25.091.25.198 0 .106-.157.19-.25.228-.092-.037-.25-.121-.25-.228C32.75 35.079 32.862 34.99 33 34.99zM33 36.24c-.138 0-.25-.089-.25-.198 0-.106.157-.19.25-.228.092.037.25.121.25.228C33.25 36.149 33.135 36.24 33 36.24zM34.499 34.99c.104 0 .138.033.163.067.057.075.087.207.087.382v.354c0 .175-.03.307-.086.381-.026.034-.06.067-.162.067-.105 0-.139-.033-.165-.067-.057-.075-.087-.206-.087-.38v-.355c0-.175.03-.307.086-.381C34.362 35.023 34.396 34.99 34.499 34.99M34.499 34.615c-.199 0-.352.071-.461.214s-.163.346-.163.608v.355c0 .261.055.463.164.607.109.144.264.215.463.215.198 0 .351-.071.46-.214.109-.143.163-.346.163-.608v-.354c0-.262-.055-.465-.164-.608C34.852 34.687 34.698 34.615 34.499 34.615L34.499 34.615z"
-									></path></g
+										fill="#1a73e8"
+										d="M60.2 2.2C55.8.8 51 0 46.1 0 32 0 19.3 6.4 10.8 16.5l21.8 18.3L60.2 2.2z"
+									/><path
+										fill="#ea4335"
+										d="M10.8 16.5C4.1 24.5 0 34.9 0 46.1c0 8.7 1.7 15.7 4.6 22l28-33.3-21.8-18.3z"
+									/><path
+										fill="#4285f4"
+										d="M46.2 28.5c9.8 0 17.7 7.9 17.7 17.7 0 4.3-1.6 8.3-4.2 11.4 0 0 13.9-16.6 27.5-32.7-5.6-10.8-15.3-19-27-22.7L32.6 34.8c3.3-3.8 8.1-6.3 13.6-6.3"
+									/><path
+										fill="#fbbc04"
+										d="M46.2 63.8c-9.8 0-17.7-7.9-17.7-17.7 0-4.3 1.5-8.3 4.1-11.3l-28 33.3c4.8 10.6 12.8 19.2 21 29.9l34.1-40.5c-3.3 3.9-8.1 6.3-13.5 6.3"
+									/><path
+										fill="#34a853"
+										d="M59.1 109.2c15.4-24.1 33.3-35 33.3-63 0-7.7-1.9-14.9-5.2-21.3L25.6 98c2.6 3.4 5.3 7.3 7.9 11.3 9.4 14.5 6.8 23.1 12.8 23.1s3.4-8.7 12.8-23.2"
+									/></svg
 								>
-							</svg>
-						</button>
-						<button
-							aria-label="Open in Komoot"
-							title="Open on Komoot"
-							on:click={() => {
-								const lat = row.location?.lat;
-								const lon = row.location?.lon;
-								if (!lat || !lon) return;
-								const url = `https://www.komoot.com/de-de/plan/@${lat},${lon},14.742z?`;
-								window.open(url, '_blank');
-							}}
-						>
-							<svg
-								width="18"
-								height="18"
-								viewBox="0 0 120 120"
-								fill="none"
-								xmlns="http://www.w3.org/2000/svg"
+							</button>
+							<button
+								aria-label="Open in Google Maps"
+								title="Open in Apple Maps"
+								on:click={() => {
+									const lat = row.location?.lat;
+									const lon = row.location?.lon;
+									if (!lat || !lon) return;
+									const url = `https://maps.apple.com/?q=${lat},${lon}`;
+									window.open(url, '_blank');
+								}}
 							>
-								<path
-									d="M118.322 74.0303C126.071 41.8197 106.241 9.42631 74.0303 1.67762C41.8197 -6.07107 9.42631 13.7592 1.67762 45.9698C-6.07107 78.1803 13.7592 110.574 45.9698 118.322C78.1803 126.071 110.574 106.241 118.322 74.0303Z"
-									fill="white"
-								/>
-								<path
-									d="M8.64907 59.9929C8.64907 31.6855 31.6912 8.64343 59.9986 8.64343C88.3229 8.64343 111.348 31.6855 111.348 59.9929C111.348 71.387 107.691 82.1377 100.784 91.1616L75.0326 65.4106C75.676 63.6499 75.9977 61.8214 75.9977 59.976C75.9977 51.1553 68.8192 43.9769 59.9986 43.9769C51.1779 43.9769 43.9995 51.1553 43.9995 59.976C43.9995 61.8214 44.3211 63.6499 44.9645 65.4106L19.2136 91.1616C12.306 82.1547 8.64907 71.387 8.64907 59.9929Z"
-									fill="url(#paint0_linear)"
-								/>
-								<path
-									d="M50.5853 72.115L59.9985 57.4365L69.4118 72.0981L94.9257 97.612C85.3939 106.467 73.0179 111.342 59.9985 111.342C46.9792 111.342 34.6031 106.467 25.0714 97.612L50.5853 72.115Z"
-									fill="url(#paint1_linear)"
-								/>
-								<defs>
-									<linearGradient
-										id="paint0_linear"
-										x1="59.9981"
-										y1="8.65109"
-										x2="59.9981"
-										y2="111.344"
-										gradientUnits="userSpaceOnUse"
+								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48">
+									<path
+										fill="#e0e0e0"
+										d="M35.13 42H19V30C19 30 35.48 42 35.13 42zM6.3 10.87c.1-.33.22-.65.38-.96C7.36 8.46 8.54 7.3 10 6.64 10.149 6.565 11 13 11 13S6.193 11.207 6.3 10.87z"
+									></path><path fill="#7cb342" d="M18 6H20V23H18z"></path><path
+										fill="#ffcdd2"
+										d="M11,18v23.73c-0.35-0.09-0.68-0.21-1-0.37c-2.36-1.08-4-3.47-4-6.23V18H11z"
+									></path><path
+										fill="#aed581"
+										d="M42,25v10.13c0,0.36-0.03,0.71-0.09,1.05L20,20.6V6h3C23,16.48,31.52,25,42,25z"
+									></path><path
+										fill="#bdbdbd"
+										d="M12 14h-2V6.64c.32-.16.65-.28 1-.37.32-.1.66-.17 1-.2C12.28 6.02 12 14 12 14zM18 32H20V42H18z"
+									></path><path
+										fill="#f9a825"
+										d="M42,35.02v0.11c0,0.36-0.03,0.71-0.09,1.05c-0.06,0.43-0.16,0.84-0.31,1.23 c-0.82,2.36-2.9,4.13-5.44,4.5C35.83,41.97,35.48,42,35.13,42h-0.57l-3.02-2.15c-0.01,0-0.01-0.01-0.01-0.01l-4.5-3.2 c0,0-0.01,0-0.01-0.01l-6.36-4.52L20,31.65l-1-0.72l-1-0.71l-0.91-0.64L16.28,29l-2.49-1.77L12.06,26L12,25.96l-1-0.71l-1-0.72 L9.26,24H9.25L6,21.69v-8.82c0-0.69,0.1-1.37,0.3-2c0.1-0.33,0.22-0.65,0.38-0.96L10,12.27l2,1.42l1,0.71l5,3.55l1,0.71l0.55,0.39 L20,19.37v0.01l14.73,10.47l1.6,1.14l2.66,1.89l0.98,0.7L42,35.02z"
+									></path><path
+										fill="#fdd835"
+										d="M41.91,36.18c-0.06,0.43-0.16,0.84-0.31,1.23c-0.82,2.36-2.9,4.13-5.44,4.5l-2.72-1.93 c-0.01,0.01-0.01,0.01-0.02,0l-1.49-1.08l-4.15-2.94c0,0,0,0-0.01-0.01l-1.51-1.08l-5.07-3.6L20,30.42l-1-0.71L18,29l-1.53-1.09 h-0.01l-2.31-1.65L13,25.45l-1-0.72l-1-0.71l-1-0.71l-0.11-0.08L6,20.47v-7.6c0-0.69,0.1-1.37,0.3-2L10,13.5l1,0.71l2,1.42l5,3.55 l1,0.71l1,0.71v0.01l12.41,8.81l1.89,1.35c0,0,0,0.01,0.01,0.01l4.6,3.26l0.88,0.63L41.91,36.18z"
+									></path><path
+										fill="#ef9a9a"
+										d="M12,33v8.94c-0.34-0.04-0.68-0.11-1-0.21c-0.35-0.09-0.68-0.21-1-0.37V32L12,33z"
+									></path><path
+										fill="#fafafa"
+										d="M19,6v36h-6.13c-0.3,0-0.59-0.02-0.87-0.06c-0.34-0.04-0.68-0.11-1-0.21V6.27 c0.32-0.1,0.66-0.17,1-0.2C12.28,6.02,12.57,6,12.87,6H19z"
+									></path><path fill="#3996e8" d="M18,6v17h-6V6.052C12.28,6.015,12.57,6,12.87,6H18z"
+									></path><path
+										fill="#1976d2"
+										d="M38.77,29.04c0,0-0.77,0.96-2.77,0.96s-3-1-3-1s-1,1-3,1s-2.77-0.96-2.77-0.96 C26.45,30.16,26,31.53,26,33c0,3.87,3.13,7,7,7s7-3.13,7-7C40,31.53,39.55,30.16,38.77,29.04z"
+									></path><path
+										fill="#d84315"
+										d="M38,33H28c0-0.42,0.05-0.83,0.15-1.23C28.72,31.92,29.34,32,30,32c1.28,0,2.29-0.31,3-0.64 c0.71,0.33,1.72,0.64,3,0.64c0.66,0,1.28-0.08,1.85-0.23C37.95,32.17,38,32.58,38,33z"
+									></path><path
+										fill="#fbc02d"
+										d="M10 12.27L10 13.5 10 24.53 11 25.25 11 14.21 11 12.98zM20 19.38L20 31.65 19 30.93 19 18.66z"
+									></path><path fill="#1976d2" d="M15 21A7 7 0 1 0 15 35A7 7 0 1 0 15 21Z"
+									></path><path
+										fill="#e89c23"
+										d="M10 12.27L10 13.5 11 14.21 11 12.98zM19 18.66L19 19.89 20 20.6 20 19.37z"
+									></path><path
+										fill="#e9e9e9"
+										d="M42,16.96V26c-11.03,0-20-8.97-20-20h9.04C31.52,11.83,36.17,16.48,42,16.96z"
+									></path><path
+										fill="#7cb342"
+										d="M42,13v4.96C35.62,17.48,30.52,12.38,30.05,6H35C38.87,6,42,9.13,42,13z"
+									></path><path
+										fill="#aed581"
+										d="M42,13v3.96C36.17,16.48,31.52,11.83,31.04,6H35C38.87,6,42,9.13,42,13z"
+									></path><g
+										><path
+											fill="#7cb342"
+											d="M23,6h-1c0,11.03,8.97,20,20,20v-1C31.52,25,23,16.48,23,6z"
+										></path></g
+									><g
+										><path fill="#fafafa" d="M15 24L12 32 15 30 18 32z"></path><path
+											fill="#fff"
+											d="M38.45,30.48C37.88,30.76,37.08,31,36,31c-1.39,0-2.39-0.41-3-0.77C32.39,30.59,31.39,31,30,31 c-1.08,0-1.88-0.24-2.45-0.52C27.19,31.26,27,32.11,27,33c0,3.31,2.69,6,6,6s6-2.69,6-6C39,32.11,38.81,31.26,38.45,30.48z M33,38 c-2.415,0-4.434-1.721-4.899-4h9.798C37.434,36.279,35.415,38,33,38z M28,33c0-0.422,0.051-0.834,0.151-1.233 C28.724,31.922,29.343,32,30,32c1.283,0,2.288-0.308,3-0.641C33.712,31.692,34.717,32,36,32c0.657,0,1.276-0.078,1.849-0.233 C37.949,32.166,38,32.578,38,33H28z"
+										></path><path
+											fill="#fff"
+											d="M32.125 35.24c0 0 0-.625-.625-.625s-.625.625-.625.625h.375c0-.114.043-.25.25-.25.066 0 .242 0 .25.25 0 .215-.291.549-.487.707l-.013.01-.375.325v.036.298h1.25V36.24h-.628C31.497 36.24 32.125 35.74 32.125 35.24zM33.4 35.615c.125-.102.225-.243.225-.427 0-.316-.28-.573-.625-.573s-.625.257-.625.573c0 .184.1.325.225.427-.125.102-.225.243-.225.427 0 .316.28.573.625.573s.625-.257.625-.573C33.625 35.858 33.525 35.717 33.4 35.615zM33 34.99c.135 0 .25.091.25.198 0 .106-.157.19-.25.228-.092-.037-.25-.121-.25-.228C32.75 35.079 32.862 34.99 33 34.99zM33 36.24c-.138 0-.25-.089-.25-.198 0-.106.157-.19.25-.228.092.037.25.121.25.228C33.25 36.149 33.135 36.24 33 36.24zM34.499 34.99c.104 0 .138.033.163.067.057.075.087.207.087.382v.354c0 .175-.03.307-.086.381-.026.034-.06.067-.162.067-.105 0-.139-.033-.165-.067-.057-.075-.087-.206-.087-.38v-.355c0-.175.03-.307.086-.381C34.362 35.023 34.396 34.99 34.499 34.99M34.499 34.615c-.199 0-.352.071-.461.214s-.163.346-.163.608v.355c0 .261.055.463.164.607.109.144.264.215.463.215.198 0 .351-.071.46-.214.109-.143.163-.346.163-.608v-.354c0-.262-.055-.465-.164-.608C34.852 34.687 34.698 34.615 34.499 34.615L34.499 34.615z"
+										></path></g
 									>
-										<stop stop-color="#8FCE3C" />
-										<stop offset="1" stop-color="#64A322" />
-									</linearGradient>
-									<linearGradient
-										id="paint1_linear"
-										x1="59.9981"
-										y1="8.65109"
-										x2="59.9981"
-										y2="111.344"
-										gradientUnits="userSpaceOnUse"
-									>
-										<stop stop-color="#8FCE3C" />
-										<stop offset="1" stop-color="#64A322" />
-									</linearGradient>
-								</defs>
-							</svg>
-						</button>
+								</svg>
+							</button>
+							<button
+								aria-label="Open in Komoot"
+								title="Open on Komoot"
+								on:click={() => {
+									const lat = row.location?.lat;
+									const lon = row.location?.lon;
+									if (!lat || !lon) return;
+									const url = `https://www.komoot.com/de-de/plan/@${lat},${lon},14.742z?`;
+									window.open(url, '_blank');
+								}}
+							>
+								<svg
+									width="18"
+									height="18"
+									viewBox="0 0 120 120"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										d="M118.322 74.0303C126.071 41.8197 106.241 9.42631 74.0303 1.67762C41.8197 -6.07107 9.42631 13.7592 1.67762 45.9698C-6.07107 78.1803 13.7592 110.574 45.9698 118.322C78.1803 126.071 110.574 106.241 118.322 74.0303Z"
+										fill="white"
+									/>
+									<path
+										d="M8.64907 59.9929C8.64907 31.6855 31.6912 8.64343 59.9986 8.64343C88.3229 8.64343 111.348 31.6855 111.348 59.9929C111.348 71.387 107.691 82.1377 100.784 91.1616L75.0326 65.4106C75.676 63.6499 75.9977 61.8214 75.9977 59.976C75.9977 51.1553 68.8192 43.9769 59.9986 43.9769C51.1779 43.9769 43.9995 51.1553 43.9995 59.976C43.9995 61.8214 44.3211 63.6499 44.9645 65.4106L19.2136 91.1616C12.306 82.1547 8.64907 71.387 8.64907 59.9929Z"
+										fill="url(#paint0_linear)"
+									/>
+									<path
+										d="M50.5853 72.115L59.9985 57.4365L69.4118 72.0981L94.9257 97.612C85.3939 106.467 73.0179 111.342 59.9985 111.342C46.9792 111.342 34.6031 106.467 25.0714 97.612L50.5853 72.115Z"
+										fill="url(#paint1_linear)"
+									/>
+									<defs>
+										<linearGradient
+											id="paint0_linear"
+											x1="59.9981"
+											y1="8.65109"
+											x2="59.9981"
+											y2="111.344"
+											gradientUnits="userSpaceOnUse"
+										>
+											<stop stop-color="#8FCE3C" />
+											<stop offset="1" stop-color="#64A322" />
+										</linearGradient>
+										<linearGradient
+											id="paint1_linear"
+											x1="59.9981"
+											y1="8.65109"
+											x2="59.9981"
+											y2="111.344"
+											gradientUnits="userSpaceOnUse"
+										>
+											<stop stop-color="#8FCE3C" />
+											<stop offset="1" stop-color="#64A322" />
+										</linearGradient>
+									</defs>
+								</svg>
+							</button>
+						</div>
 					</td>
 					<td>
 						{#if row.description}
-							<details>
-								<summary class="clickable"> Show Further Details </summary>
+							<details class="show-more">
+								<summary class="clickable"> Further Details </summary>
 								<div class="info-box">
 									{row.description}
 								</div>
@@ -526,72 +562,218 @@
 {/if}
 
 <style>
+	.slider-group {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		margin: 1.5rem 0;
+		padding: 1rem;
+		border: 1.5px solid #31497a;
+		border-radius: 12px;
+		background: #f6f8fc;
+		box-shadow: 0 2px 8px rgba(66, 103, 178, 0.08);
+	}
+	.slider-label {
+		font-size: 1rem;
+		font-weight: 500;
+		color: #31497a;
+		margin-bottom: 0.5rem;
+	}
+	.show-more {
+		position: relative;
+	}
+	.category-group {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem 1.5rem;
+		padding: 1.5rem 1rem 1rem 1rem;
+		margin: 2rem 0;
+		border: 1.5px solid #31497a;
+		border-radius: 12px;
+		background: #f6f8fc;
+		box-shadow: 0 2px 8px rgba(66, 103, 178, 0.08);
+	}
+
+	.category-group legend {
+		width: 100%;
+		font-size: 1.15rem;
+		font-weight: 600;
+		color: #31497a;
+		margin-bottom: 0.7rem;
+		padding: 0 0.5rem;
+		letter-spacing: 0.2px;
+	}
+
+	.category-group label {
+		display: flex;
+		align-items: center;
+		gap: 0.7em;
+		font-size: 1.07rem;
+		font-weight: 500;
+		color: #31497a;
+		background: #fff;
+		border-radius: 8px;
+		box-shadow: 0 1px 4px rgba(66, 103, 178, 0.07);
+		padding: 0.6em 1.1em;
+		margin-bottom: 0.1em;
+		cursor: pointer;
+		transition:
+			background 0.18s,
+			box-shadow 0.18s,
+			color 0.18s,
+			transform 0.1s;
+		border: 1.5px solid #31497a;
+	}
+
+	.category-group label:hover,
+	.category-group input[type="checkbox"]:focus + span {
+		background: #e9eef8;
+		color: #4267b2;
+		box-shadow: 0 2px 8px rgba(66, 103, 178, 0.13);
+		transform: translateY(-1px) scale(1.01);
+	}
+
+	.category-group input[type="checkbox"] {
+		accent-color: #4267b2;
+		width: 1.2em;
+		height: 1.2em;
+		margin-right: 0.3em;
+		border-radius: 4px;
+		border: 2px solid #31497a;
+		box-shadow: 0 0 0 2px #e9eef8;
+		transition: border 0.15s;
+	}
+
+	@media (max-width: 900px) {
+		.category-group {
+			gap: 0.7rem 1rem;
+			padding: 1rem 0.5rem 0.5rem 0.5rem;
+		}
+	}
+	@media (max-width: 600px) {
+		.category-group {
+			flex-direction: column;
+			gap: 0.5rem 0;
+			padding: 0.5rem 0.2rem 0.2rem 0.2rem;
+		}
+	}
+	.links-container {
+		display: flex;
+		gap: 0rem;
+	}
 	.clickable {
 		font-size: small;
 		cursor: pointer;
 		color: #2563eb;
 		text-decoration: underline;
 	}
-	td {
-		position: relative;
-	}
 
 	.info-box {
-		font-size: small;
-		white-space: pre-wrap;
-		background: #f3f4f6;
-		border-radius: 0.5rem;
-		padding: 0.5rem;
-		min-width: 200px;
-		max-width: 350px;
+		font-size: 0.93rem;
+		white-space: normal;
+		background: #f6f8fc;
+		border-radius: 8px;
+		padding: 0.6rem 0.8rem;
+		min-width: 180px;
+		max-width: 400px;
 		position: absolute;
 		z-index: 10;
 		top: 100%;
 		left: 0;
-		box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-		margin-top: 0.25em;
+		box-shadow: 0 1px 4px rgba(66, 103, 178, 0.10);
+		border: 1px solid #31497a;
+		color: #31497a;
 	}
 
 	/* Optional: Add a transition for smoothness */
 	.info-box {
 		transition: opacity 0.2s;
 	}
-
 	table {
 		width: 100%;
-		border-collapse: collapse;
-		font-family: system-ui, sans-serif;
-		background: #fff;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-		border-radius: 8px;
+		border-collapse: separate;
+		border-spacing: 0;
+		font-family: 'Inter', system-ui, sans-serif;
+		background: #f6f8fc;
+		box-shadow: 0 2px 8px rgba(66, 103, 178, 0.08);
+		border-radius: 12px;
 		overflow: auto;
+		margin: 2rem 0;
+		border: 1.5px solid #31497a;
 	}
 
 	th,
 	td {
-		padding: 0.75rem 1rem;
+		padding: 0.8rem 0.8rem;
 		text-align: left;
-		border-bottom: 1px solid #e5e7eb;
 	}
 
 	th {
-		background: linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 100%);
+		background: #e9eef8;
 		font-weight: 600;
-		letter-spacing: 0.03em;
-		color: #374151;
+		letter-spacing: 0.01em;
+		color: #31497a;
+		font-size: 1.07rem;
+		border-bottom: 2px solid #31497a;
 	}
 
-	tr:last-child td {
-		border-bottom: none;
+	tr {
+		transition:
+			box-shadow 0.18s,
+			background 0.18s;
+	}
+
+	tr:not(:last-child) td {
+		border-bottom: 1.5px solid #e9eef8;
 	}
 
 	tr:hover {
-		background: #f9fafb;
-		transition: background 0.2s;
+		background: #e9eef8;
+		box-shadow: 0 2px 8px rgba(66, 103, 178, 0.13);
 	}
 
 	td {
-		color: #4b5563;
+		color: #31497a;
+		font-size: 1rem;
+		vertical-align: middle;
+	}
+
+	td button,
+	td a {
+		border: 1.5px solid #31497a;
+		background: #fff;
+		color: #2563eb;
+		cursor: pointer;
+		font-size: 0.98rem;
+		padding: 0.2em 0.7em;
+		border-radius: 8px;
+		transition:
+			background 0.18s,
+			color 0.18s,
+			box-shadow 0.18s,
+			transform 0.1s;
+		box-shadow: 0 1px 4px rgba(66, 103, 178, 0.07);
+	}
+
+	td button:hover,
+	td a:hover {
+		background: #e9eef8;
+		color: #4267b2;
+		box-shadow: 0 2px 8px rgba(66, 103, 178, 0.13);
+		transform: translateY(-1px) scale(1.01);
+	}
+
+	.links-container {
+		display: flex;
+		gap: 0.2rem;
+	}
+
+	@media (max-width: 900px) {
+		th,
+		td {
+			padding: 0.8rem 0.7rem;
+			font-size: 0.97rem;
+		}
 	}
 
 	@media (max-width: 700px) {
@@ -607,22 +789,25 @@
 			display: none;
 		}
 		tr {
-			margin-bottom: 1rem;
-			box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
-			border-radius: 6px;
-			background: #fff;
+			margin-bottom: 1.2rem;
+			box-shadow: 0 2px 8px rgba(66, 103, 178, 0.08);
+			border-radius: 10px;
+			background: #f6f8fc;
+			overflow: hidden;
+			border: 1.5px solid #31497a;
 		}
 		td {
-			padding: 0.75rem;
+			padding: 1rem 0.8rem;
 			border-bottom: none;
 			position: relative;
 		}
 		td:before {
 			content: attr(data-label);
 			font-weight: 600;
-			color: #6b7280;
+			color: #4267b2;
 			display: block;
 			margin-bottom: 0.25rem;
+			font-size: 0.93rem;
 		}
 	}
 </style>

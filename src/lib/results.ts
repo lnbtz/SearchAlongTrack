@@ -9,33 +9,76 @@ import { get } from 'svelte/store';
 
 
 
-import type { OverpassNode, OverpassWay, OverpassRelation, OverpassArea, OverpassTimeline, OverpassCount, OverpassJson } from 'overpass-ts';
+import type { OverpassNode, OverpassWay, OverpassRelation, OverpassJson } from 'overpass-ts';
 import type { LineString } from 'geojson';
 import { nearestPointOnLine } from '@turf/turf';
-import { OSMCategoriesMap, SEARCH_CORRIDOR_RADIUS } from './osm-constants';
+import { OSMCategoriesMap } from './osm-constants';
 
 
 
-export function buildTableData() {
+export async function buildTableData() {
     const searchResultsCache = get(searchResultsCacheStore);
     const lastQueryHash = get(lastQueryHashStore);
     const queryResults = searchResultsCache.get(lastQueryHash);
-    const selectedRadius = SEARCH_CORRIDOR_RADIUS;
-    const selectedStartRange = 0;
     const simplifiedGpxTrack: LineString = get(simplifiedGpxTrackStore) as LineString;
     const rows: TableRow[] = [];
-    // build location map for faster lookup where key is the element id and value is the lat/lon
-    const locationMap = new Map<number, { lat: number; lon: number }>();
+    const locationMap = new Map<number, { lat: number, lon: number, element: OverpassNode | OverpassWay | OverpassRelation }>();
     if (queryResults) {
         buildLocationMap(queryResults, locationMap);
-        console.time('Building table rows from cache');
-        queryResults.elements.forEach((element) => {
-            buildTableRow(element, rows, locationMap, selectedRadius, selectedStartRange, simplifiedGpxTrack);
+        locationMap.forEach((element) => {
+            buildTableRow(element, rows, simplifiedGpxTrack);
         });
-        console.timeEnd('Building table rows from cache');
-        console.log('Table rows built from cache:', rows.length);
         tableDataStore.set(rows);
         return;
+    }
+}
+
+export function displayType(type: string) {
+    switch (type) {
+        case 'shelter':
+            return 'Shelter'
+        case 'cafe':
+            return 'Cafe'
+        case 'fuel':
+            return 'Fuel';
+        case 'supermarket':
+            return 'Supermarket';
+        case 'bakery':
+            return 'Bakery';
+        case 'vending_machine':
+            return 'Vending Machine';
+        case 'ice_cream':
+            return 'Ice Cream';
+        case 'kiosk':
+            return 'Kiosk';
+        case 'drinking_water':
+            return 'Drinking Water';
+        case 'toilets':
+            return 'Toilets';
+        case 'restaurant':
+            return 'Restaurant';
+        case 'camp_site':
+            return 'Camp Site';
+        case 'bicycle_repair_station':
+            return 'Bicycle Repair Station';
+        case 'bicycle':
+            return 'Bike Shop';
+        case 'hotel':
+            return 'Hotel';
+        case 'apartment':
+            return 'Apartment';
+        case 'alpine_hut':
+            return 'Alpine Hut';
+        case 'hostel':
+            return 'Hostel';
+        case 'motel':
+            return 'Motel';
+        case 'wilderness_hut':
+            return 'Wilderness Hut';
+        case 'guest_house':
+            return 'Guest House';
+        default:
+            return type.charAt(0).toUpperCase() + type.slice(1);
     }
 }
 
@@ -54,7 +97,7 @@ export interface TableRow {
 }
 
 
-function buildTableRow(element: OverpassNode | OverpassWay | OverpassRelation | OverpassArea | OverpassTimeline | OverpassCount, rows: TableRow[], locationMap: Map<number, { lat: number; lon: number; }>, selectedRadius: number, selectedStartRange: number, lineString: LineString) {
+function buildTableRow(entry: { lat?: number; lon?: number; element?: OverpassNode | OverpassWay | OverpassRelation; }, rows: TableRow[], lineString: LineString) {
     let type: string;
     let category: string | undefined;
     let description: string | undefined;
@@ -63,7 +106,9 @@ function buildTableRow(element: OverpassNode | OverpassWay | OverpassRelation | 
     let phoneNumber: string | undefined;
     let openingHours: string | undefined;
 
+    const element = entry.element;
 
+    if (!element || !entry.lat || !entry.lon) { return; }
     if (element.tags && (element.type === 'node' || element.type === 'way' || element.type === 'relation')) {
         type = element.tags.amenity || element.tags.shop || element.tags.tourism;
         category = Array.from(OSMCategoriesMap.keys()).find(key => OSMCategoriesMap.get(key)?.includes(type));
@@ -75,15 +120,9 @@ function buildTableRow(element: OverpassNode | OverpassWay | OverpassRelation | 
     } else {
         return; // Skip if no tags or not a node/way/relation
     }
-    const location = locationMap.get(element.id);
-    if (!location) {
-        return; // Skip if location is not found
-    }
-
-    const result = nearestPointOnLine(lineString, [location.lon, location.lat], { units: 'meters' });
-
-    const distanceFromRoute = Number(result.properties.dist.toFixed(0));
-    const distanceOnRoute = Number((result.properties.location / 1000 + selectedStartRange).toFixed(2));
+    const result = nearestPointOnLine(lineString, [entry.lon, entry.lat], { units: 'meters' });
+    const distanceFromRoute = Math.ceil(result.properties.dist / 50) * 50;
+    const distanceOnRoute = Number((result.properties.location / 1000).toFixed(2));
     const indexOfRoute = result.properties.index;
 
     const tableRow: TableRow = {
@@ -93,7 +132,7 @@ function buildTableRow(element: OverpassNode | OverpassWay | OverpassRelation | 
         name,
         website,
         phoneNumber,
-        location: { lat: location.lat, lon: location.lon },
+        location: { lat: entry.lat, lon: entry.lon },
         openingHours,
         distanceFromRoute,
         distanceOnRoute,
@@ -102,21 +141,24 @@ function buildTableRow(element: OverpassNode | OverpassWay | OverpassRelation | 
     rows.push(tableRow);
 }
 
-function buildLocationMap(queryResults: OverpassJson | undefined, locationMap: Map<number, { lat: number; lon: number; }>) {
+function buildLocationMap(queryResults: OverpassJson | undefined, locationMap: Map<number, { lat: number, lon: number, element: OverpassNode | OverpassWay | OverpassRelation }>) {
     queryResults?.elements.forEach((element) => {
-        if (element.type === 'node') {
-            locationMap.set(element.id, { lat: element.lat, lon: element.lon });
+        if (element.type === 'node' && element.tags) {
+
+            locationMap.set(element.id, { lat: element.lat, lon: element.lon, element: element as OverpassNode });
         } else if (element.type === 'way' && element.nodes) {
             const firstNodeId = element.nodes[0];
             const firstNode = locationMap.get(firstNodeId);
             if (firstNode) {
-                locationMap.set(element.id, { lat: firstNode.lat, lon: firstNode.lon });
+
+                locationMap.set(element.id, { lat: firstNode.lat, lon: firstNode.lon, element: element as OverpassWay });
             }
         } else if (element.type === 'relation') {
             const firstMemberId = element.members[0].ref;
             const firstMember = locationMap.get(firstMemberId);
             if (firstMember) {
-                locationMap.set(element.id, { lat: firstMember.lat, lon: firstMember.lon });
+
+                locationMap.set(element.id, { lat: firstMember.lat, lon: firstMember.lon, element: element as OverpassRelation });
             }
         }
     });
