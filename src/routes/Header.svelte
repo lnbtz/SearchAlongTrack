@@ -24,60 +24,58 @@
 <style>
 	header {
 		display: flex;
-		justify-content: space-between;
+		justify-content: center;
+		align-items: center;
+		background: var(--color-background, #f8f9fa);
+		box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+		padding: 0 1.5rem;
 	}
 
 	nav {
-		display: flex;
-		justify-content: center;
-		--background: rgba(255, 255, 255, 0.7);
+		width: 100%;
+		max-width: 900px;
 	}
 
 	ul {
-		position: relative;
-		padding: 0;
-		margin: 0;
-		height: 3em;
 		display: flex;
-		justify-content: center;
+		justify-content: flex-start;
 		align-items: center;
+		gap: 1.5rem;
 		list-style: none;
-		background: var(--background);
-		background-size: contain;
+		margin: 0;
+		padding: 0;
+		background: transparent;
 	}
 
 	li {
 		position: relative;
-		height: 100%;
 	}
 
-	li[aria-current='page']::before {
-		--size: 6px;
-		content: '';
-		width: 0;
-		height: 0;
-		position: absolute;
-		top: 0;
-		left: calc(50% - var(--size));
-		border: var(--size) solid transparent;
-		border-top: var(--size) solid var(--color-theme-1);
+	li[aria-current='page'] a {
+		color: var(--color-theme-1, #0070f3);
+		border-bottom: 2px solid var(--color-theme-1, #0070f3);
+		background: rgba(0,112,243,0.06);
+		border-radius: 4px 4px 0 0;
 	}
 
 	nav a {
 		display: flex;
-		height: 100%;
 		align-items: center;
-		padding: 0 0.5rem;
-		color: var(--color-text);
-		font-weight: 700;
-		font-size: 0.8rem;
-		text-transform: uppercase;
-		letter-spacing: 0.1em;
+		padding: 0.75em 1em;
+		color: var(--color-text, #222);
+		font-weight: 600;
+		font-size: 1rem;
+		text-transform: none;
+		letter-spacing: 0.02em;
 		text-decoration: none;
-		transition: color 0.2s linear;
+		border-bottom: 2px solid transparent;
+		transition: color 0.2s, border-bottom 0.2s, background 0.2s;
+		border-radius: 4px 4px 0 0;
 	}
 
-	a:hover {
-		color: var(--color-theme-1);
+	nav a:hover {
+		color: var(--color-theme-1, #0070f3);
+		background: rgba(0,112,243,0.08);
+		border-bottom: 2px solid var(--color-theme-1, #0070f3);
 	}
 </style>

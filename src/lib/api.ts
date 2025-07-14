@@ -18,10 +18,7 @@ const queryFooter: string = `
 let query: string;
 
 export async function searchAlongTrack() {
-
-
     buildPolyQueryBody();
-
     // optimize query to be as small as possible
     query = `${queryHeader}${queryBody}${queryFooter}`;
     console.log('Overpass query:', query);

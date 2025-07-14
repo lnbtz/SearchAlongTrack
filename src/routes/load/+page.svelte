@@ -5,10 +5,8 @@
 	import { onMount } from 'svelte';
 	import type { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson';
 	import type { TableRow } from '$lib/results';
-
 	import { handleGpxTrack } from '$lib/util';
 	import { goto } from '$app/navigation';
-
 
 
 	let allTracks: Record<string, FeatureCollection<Geometry, GeoJsonProperties>> = $state({});
@@ -94,13 +92,25 @@
 	}
 </script>
 
-<h1 class="banner">Saved Tracks</h1>
+<div class="mb-10">
+	<h1 class="text-5xl font-extrabold text-blue-900 mb-3 tracking-tight drop-shadow">
+		Saved Tracks
+	</h1>
+	<p class="text-lg text-blue-800 mb-4">
+		Manage your previously uploaded GPX tracks here.<br>
+		Select a track to view it on the map, or remove tracks you no longer need.
+	</p>
 
-{#if Object.keys(allTracks).length === 0}
-	<p class="banner">No saved tracks found. Upload a GPX file to get started.</p>
-{:else}
-	<p class="banner">Click on a track to load it into the map.</p>
-{/if}
+	{#if Object.keys(allTracks).length === 0}
+		<p class="text-blue-700 bg-blue-50 rounded px-4 py-2 border border-blue-200">
+			No saved tracks found. Upload a GPX file to get started and visualize your routes!
+		</p>
+	{:else}
+		<p class="text-blue-700 bg-blue-50 rounded px-4 py-2 border border-blue-200">
+			Click <span class="font-semibold text-blue-900">Load</span> to open a track on the map, or <span class="font-semibold text-red-700">Delete</span> to remove it from your saved list.
+		</p>
+	{/if}
+</div>
 
 <div>
 	<ul class="track-list">
@@ -134,34 +144,6 @@
 </div>
 
 <style>
-	.banner {
-		background: #f6f8fc;
-		color: #31497a;
-		padding: 2rem 2.5rem 1.5rem 2.5rem;
-		border-radius: 14px;
-		box-shadow: 0 2px 8px rgba(66, 103, 178, 0.08);
-		margin-bottom: 2rem;
-		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-		border: 1.5px solid #31497a;
-	}
-
-	h1 {
-		font-size: 2.1rem;
-		font-weight: 700;
-		margin: 0 0 0.5rem 0;
-		letter-spacing: -1px;
-		line-height: 1.1;
-		color: #31497a;
-	}
-
-	p {
-		font-size: 1.1rem;
-		color: #4267b2;
-		margin: 0;
-	}
-
 	.track-list {
 		margin: 2rem 0;
 		padding: 0;
@@ -250,15 +232,6 @@
 	}
 
 	@media (max-width: 600px) {
-		.banner {
-			padding: 1.2rem 1rem 1rem 1rem;
-		}
-		h1 {
-			font-size: 1.5rem;
-		}
-		p {
-			font-size: 1rem;
-		}
 		.track-item {
 			padding: 0.8rem 0.7rem;
 			margin-bottom: 0.7rem;

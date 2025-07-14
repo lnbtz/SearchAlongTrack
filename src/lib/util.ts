@@ -1,19 +1,15 @@
 import {
-    selectedPointsStoreAlongTrackStore,
     totalTrackLengthStore,
     gpxTrackStore,
     selectedStartRangeStore,
     selectedEndRangeStore,
-    selectedRadiusStore,
     selectedRangeTrackStore,
-    selectedCoordinatesAlongTrackStore,
-    bboxAroundSelectedTrackStore,
     simplifiedGpxTrackStore,
     polyAroundTrackStore
 } from "./stores";
 import { get } from "svelte/store";
 import type { FeatureCollection, GeoJsonProperties, Geometry, LineString } from "geojson";
-import { lineSliceAlong, length, along, simplify, buffer } from '@turf/turf';
+import { lineSliceAlong, simplify, buffer } from '@turf/turf';
 import { SEARCH_CORRIDOR_RADIUS } from "./osm-constants";
 
 export function handleGpxTrack() {
@@ -94,38 +90,38 @@ export function calculateSelectedRangeTrackStore() {
     selectedRangeTrackStore.set(selectedRangeTrack);
 }
 
-export function getCoordinatesAlongSelectedTrack() {
-    const selectedRangeGpxTrack: FeatureCollection<Geometry, GeoJsonProperties> | null = get(selectedRangeTrackStore);
-    const radius: number = get(selectedRadiusStore); // in meters, for example
+// export function getCoordinatesAlongSelectedTrack() {
+//     const selectedRangeGpxTrack: FeatureCollection<Geometry, GeoJsonProperties> | null = get(selectedRangeTrackStore);
+//     const radius: number = get(selectedRadiusStore); // in meters, for example
 
-    if (!selectedRangeGpxTrack || selectedRangeGpxTrack.features[0].geometry.type !== 'LineString' || radius <= 0) {
-        return [];
-    }
+//     if (!selectedRangeGpxTrack || selectedRangeGpxTrack.features[0].geometry.type !== 'LineString' || radius <= 0) {
+//         return [];
+//     }
 
-    const lineFeature = selectedRangeGpxTrack.features[0];
-    const lineString = lineFeature.geometry as LineString;
-    const lineLength = length(lineFeature, { units: 'meters' }); // total length in meters
+//     const lineFeature = selectedRangeGpxTrack.features[0];
+//     const lineString = lineFeature.geometry as LineString;
+//     const lineLength = length(lineFeature, { units: 'meters' }); // total length in meters
 
-    const coords: number[][] = [];
-    for (let dist = 0; dist <= lineLength; dist += radius) {
-        const point = along(lineString, dist, { units: 'meters' });
-        coords.push(point.geometry.coordinates);
-    }
-    selectedCoordinatesAlongTrackStore.set(coords);
-    // transform to points
-    const points: FeatureCollection<Geometry, GeoJsonProperties> = {
-        type: 'FeatureCollection',
-        features: coords.map((coord) => ({
-            type: 'Feature',
-            geometry: {
-                type: 'Point',
-                coordinates: coord
-            },
-            properties: {}
-        }))
-    };
-    selectedPointsStoreAlongTrackStore.set(points);
-}
+//     const coords: number[][] = [];
+//     for (let dist = 0; dist <= lineLength; dist += radius) {
+//         const point = along(lineString, dist, { units: 'meters' });
+//         coords.push(point.geometry.coordinates);
+//     }
+//     selectedCoordinatesAlongTrackStore.set(coords);
+//     // transform to points
+//     const points: FeatureCollection<Geometry, GeoJsonProperties> = {
+//         type: 'FeatureCollection',
+//         features: coords.map((coord) => ({
+//             type: 'Feature',
+//             geometry: {
+//                 type: 'Point',
+//                 coordinates: coord
+//             },
+//             properties: {}
+//         }))
+//     };
+//     selectedPointsStoreAlongTrackStore.set(points);
+// }
 
 export function polyAroundTrack() {
     const simplifiedGpxTrack: LineString | null = get(simplifiedGpxTrackStore);
@@ -144,58 +140,58 @@ export function polyAroundTrack() {
 }
 
 
-export function bboxAroundSelectedTrack() {
-    const selectedRangeTrack: FeatureCollection<Geometry, GeoJsonProperties> | null = get(selectedRangeTrackStore);
-    if (!selectedRangeTrack || selectedRangeTrack.features[0].geometry.type !== 'LineString') {
-        console.error('Invalid GPX track data');
-        return;
-    }
-    const selectedRadius = get(selectedRadiusStore);
+// export function bboxAroundSelectedTrack() {
+//     const selectedRangeTrack: FeatureCollection<Geometry, GeoJsonProperties> | null = get(selectedRangeTrackStore);
+//     if (!selectedRangeTrack || selectedRangeTrack.features[0].geometry.type !== 'LineString') {
+//         console.error('Invalid GPX track data');
+//         return;
+//     }
+//     const selectedRadius = get(selectedRadiusStore);
 
-    const coordinates = selectedRangeTrack.features[0].geometry.coordinates as number[][];
-    const lats = coordinates.map(coord => coord[1]);
-    const lons = coordinates.map(coord => coord[0]);
-    const minLat = Math.min(...lats);
-    const maxLat = Math.max(...lats);
-    const minLon = Math.min(...lons);
-    const maxLon = Math.max(...lons);
+//     const coordinates = selectedRangeTrack.features[0].geometry.coordinates as number[][];
+//     const lats = coordinates.map(coord => coord[1]);
+//     const lons = coordinates.map(coord => coord[0]);
+//     const minLat = Math.min(...lats);
+//     const maxLat = Math.max(...lats);
+//     const minLon = Math.min(...lons);
+//     const maxLon = Math.max(...lons);
 
-    // Expand bbox by radius (in meters)
-    const marginLat = selectedRadius / 111320;
-    const centerLat = (minLat + maxLat) / 2;
-    const marginLon = selectedRadius / (111320 * Math.cos(centerLat * Math.PI / 180));
+//     // Expand bbox by radius (in meters)
+//     const marginLat = selectedRadius / 111320;
+//     const centerLat = (minLat + maxLat) / 2;
+//     const marginLon = selectedRadius / (111320 * Math.cos(centerLat * Math.PI / 180));
 
-    const expandedMinLat = minLat - marginLat;
-    const expandedMaxLat = maxLat + marginLat;
-    const expandedMinLon = minLon - marginLon;
-    const expandedMaxLon = maxLon + marginLon;
-    const cornerPoints: FeatureCollection<Geometry, GeoJsonProperties> = {
-        type: 'FeatureCollection',
-        features: [
-            {
-                type: 'Feature',
-                geometry: { type: 'Point', coordinates: [expandedMinLon, expandedMinLat] },
-                properties: { corner: 'SW' }
-            },
-            {
-                type: 'Feature',
-                geometry: { type: 'Point', coordinates: [expandedMinLon, expandedMaxLat] },
-                properties: { corner: 'NW' }
-            },
-            {
-                type: 'Feature',
-                geometry: { type: 'Point', coordinates: [expandedMaxLon, expandedMaxLat] },
-                properties: { corner: 'NE' }
-            },
-            {
-                type: 'Feature',
-                geometry: { type: 'Point', coordinates: [expandedMaxLon, expandedMinLat] },
-                properties: { corner: 'SE' }
-            }
-        ]
-    };
-    bboxAroundSelectedTrackStore.set(cornerPoints);
-}
+//     const expandedMinLat = minLat - marginLat;
+//     const expandedMaxLat = maxLat + marginLat;
+//     const expandedMinLon = minLon - marginLon;
+//     const expandedMaxLon = maxLon + marginLon;
+//     const cornerPoints: FeatureCollection<Geometry, GeoJsonProperties> = {
+//         type: 'FeatureCollection',
+//         features: [
+//             {
+//                 type: 'Feature',
+//                 geometry: { type: 'Point', coordinates: [expandedMinLon, expandedMinLat] },
+//                 properties: { corner: 'SW' }
+//             },
+//             {
+//                 type: 'Feature',
+//                 geometry: { type: 'Point', coordinates: [expandedMinLon, expandedMaxLat] },
+//                 properties: { corner: 'NW' }
+//             },
+//             {
+//                 type: 'Feature',
+//                 geometry: { type: 'Point', coordinates: [expandedMaxLon, expandedMaxLat] },
+//                 properties: { corner: 'NE' }
+//             },
+//             {
+//                 type: 'Feature',
+//                 geometry: { type: 'Point', coordinates: [expandedMaxLon, expandedMinLat] },
+//                 properties: { corner: 'SE' }
+//             }
+//         ]
+//     };
+//     bboxAroundSelectedTrackStore.set(cornerPoints);
+// }
 
 function simplifyGpxTrack() {
     const gpxTrack: FeatureCollection<Geometry, GeoJsonProperties> | null = get(gpxTrackStore);
