@@ -9,13 +9,14 @@
 		selectedRadiusStore,
 		selectedStartRangeStore,
 		tableDataDisplayStore,
+		tableDataStore,
 		totalTrackLengthStore
 	} from '$lib/stores';
 	import { get } from 'svelte/store';
 	import { calculateSelectedRangeTrackStore, centerOnCoords } from '$lib/util';
 	import RangeSlider from 'svelte-range-slider-pips';
-	export let tableData: TableRow[];
-
+	let tableData: TableRow[] = get(tableDataStore);
+	let tableDataDisplay: TableRow[] = get(tableDataDisplayStore);
 	let selectedCategories: string[] = get(selectedCategoriesStore).length === 0 ? 
 	Array.from(OSMCategoriesMap.keys()) : get(selectedCategoriesStore);
 	
@@ -266,7 +267,7 @@
 </label>
 </fieldset>
 
-{#if tableData.length > 0}
+{#if tableDataDisplay}
 	<table>
 		<thead>
 			<tr>

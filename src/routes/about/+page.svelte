@@ -1,9 +1,4 @@
 <script lang="ts">
-	// You can add any script logic here if needed
-	import { page } from '$app/state';
-	import Header from '../Header.svelte';
-
-	let { children } = $props();
 </script>
 
 <div class="about-container">

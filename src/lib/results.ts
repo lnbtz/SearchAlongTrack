@@ -28,6 +28,7 @@ export async function buildTableData() {
         locationMap.forEach((element) => {
             buildTableRow(element, rows, simplifiedGpxTrack);
         });
+        console.log('Table rows built:', rows.length);
         tableDataStore.set(rows);
         return;
     }

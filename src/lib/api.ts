@@ -4,7 +4,7 @@ import { get } from 'svelte/store';
 import type { OverpassJson } from "overpass-ts";
 import { overpass } from "overpass-ts";
 
-import { OverpassAllButVending, QueryBodies } from './osm-constants';
+import { QueryBodies } from './osm-constants';
 
 
 const queryHeader: string = `[out:json];
@@ -32,56 +32,32 @@ export async function searchAlongTrack() {
         console.log('Query already in cache');
         const cachedResponse: OverpassJson = searchResultsCache.get(queryHash) as OverpassJson;
         console.log('Cached response:', cachedResponse);
-        // do something with the cached response
-        // this updates the last search query store and triggers the UI to update
         lastQueryHashStore.set(queryHash);
         return;
     }
     // inject test response here
-    if (testingQuery()) {
-        const testResponse: OverpassJson = OverpassAllButVending;
-        searchResultsCache.set(queryHash, testResponse);
-        searchResultsCacheStore.set(searchResultsCache);
-        lastQueryHashStore.set(queryHash);
-    }
+    // if (testingQuery()) {
+    //     const testResponse: OverpassJson = OverpassAllButVending;
+    //     searchResultsCache.set(queryHash, testResponse);
+    //     searchResultsCacheStore.set(searchResultsCache);
+    //     lastQueryHashStore.set(queryHash);
+    // }
     // for testing purposes, use the test response instead of the actual query
 
     // execute query
-    // overpass(query)
-    //     .then((response) => response.json())
-    //     .then((json) => {
-    //         json = json as OverpassJson;
-    //         // cache the response
-    //         searchResultsCache.set(queryHash, json);
-    //         searchResultsCacheStore.set(searchResultsCache);
-    //         // update the last search query store
-    //         // this triggers the UI to update
-    //         lastQueryHashStore.set(queryHash);
-    //         console.log('Overpass JSON:', json);
-    //     })
-
+    await overpass(query)
+        .then((response) => response.json())
+        .then((json) => {
+            json = json as OverpassJson;
+            // cache the response
+            searchResultsCache.set(queryHash, json);
+            searchResultsCacheStore.set(searchResultsCache);
+            // update the last search query store
+            // this triggers the UI to update
+            lastQueryHashStore.set(queryHash);
+            console.log('Overpass JSON:', json);
+        });
 }
-
-
-// function buildBboxQueryBody() {
-//     const bbox = get(bboxAroundSelectedTrackStore);
-//     console.log('Bounding box:', bbox);
-//     if (!bbox || bbox.features.length === 0 || bbox.features[0].geometry.type !== 'Point'
-//         || bbox.features[2].geometry.type !== 'Point' || bbox.features.length < 4
-//     ) {
-//         console.error('No bounding box around selected track');
-//         return;
-//     }
-//     const minLat = bbox.features[0].geometry.coordinates[1];
-//     const minLon = bbox.features[0].geometry.coordinates[0];
-//     const maxLat = bbox.features[2].geometry.coordinates[1];
-//     const maxLon = bbox.features[2].geometry.coordinates[0];
-//     QueryBodies.forEach((queryBodyPart) => {
-//         queryBody += `
-//                 nwr${queryBodyPart.query}(${minLat}, ${minLon}, ${maxLat}, ${maxLon});
-//                 `;
-//     });
-// }
 
 function buildPolyQueryBody() {
     queryBody = ''; // reset query body
@@ -108,7 +84,7 @@ async function createQueryHash(query: string): Promise<string> {
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
-function testingQuery() {
-    return true;
-}
+// function testingQuery() {
+//     return true;
+// }
 

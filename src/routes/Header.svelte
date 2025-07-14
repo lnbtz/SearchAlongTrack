@@ -3,19 +3,22 @@
 </script>
 
 <header>
-<nav>
-	<ul>
-		<li aria-current={page.url.pathname === '/' ? 'page' : undefined}>
-			<a href="/">Home</a>
-		</li>
-		<li aria-current={page.url.pathname === '/about' ? 'page' : undefined}>
-			<a href="/about">About</a>
-		</li>
-		<li aria-current={page.url.pathname === '/load' ? 'page' : undefined}>
-			<a href="/load">Load</a>
-		</li>
-	</ul>
-</nav>
+	<nav>
+		<ul>
+			<li aria-current={page.url.pathname === '/' ? 'page' : undefined}>
+				<a href="/">Upload and Search</a>
+			</li>
+			<li aria-current={page.url.pathname === '/map' ? 'page' : undefined}>
+				<a href="/map">Map and Results</a>
+			</li>
+				<li aria-current={page.url.pathname === '/load' ? 'page' : undefined}>
+				<a href="/load">Load Tracks</a>
+			</li>
+			<li aria-current={page.url.pathname === '/about' ? 'page' : undefined}>
+				<a href="/about">About</a>
+			</li>
+		</ul>
+	</nav>
 </header>
 
 <style>

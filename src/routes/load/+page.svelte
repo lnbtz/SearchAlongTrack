@@ -1,14 +1,15 @@
 <script lang="ts">
-	import { page } from '$app/state';
+
 	import { gpxTrackStore, tableDataStore } from '$lib/stores';
 	import { get } from 'svelte/store';
-	import Header from '../Header.svelte';
-	import { gpx } from '@mapbox/togeojson';
 	import { onMount } from 'svelte';
 	import type { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson';
 	import type { TableRow } from '$lib/results';
 
-	let { children } = $props();
+	import { handleGpxTrack } from '$lib/util';
+	import { goto } from '$app/navigation';
+
+
 
 	let allTracks: Record<string, FeatureCollection<Geometry, GeoJsonProperties>> = $state({});
 	let allTables: Record<string, TableRow[]> = $state({});
@@ -28,8 +29,6 @@
 		}
 	});
 	onMount(() => {
-		const tracks: Record<string, FeatureCollection<Geometry, GeoJsonProperties>> = {};
-		const tables: Record<string, TableRow[]> = {};
 		for (let i = 0; i < localStorage.length; i++) {
 			const key = localStorage.key(i);
 			if (!key) continue;
@@ -43,9 +42,6 @@
 				const tableData = localStorage.getItem(key);
 				if (tableData) {
 					allTables[key.replace('table-', '')] = JSON.parse(tableData);
-
-					console.log('Loaded tracks:', allTracks);
-					console.log('Loaded tables:', allTables);
 				}
 			}
 		}
@@ -68,7 +64,43 @@
 		}
 		return `track-${Math.abs(hash)}`;
 	}
+
+
+	function loadTrack(trackName: string) {
+		const track = allTracks[trackName];
+		if (track) {
+			gpxTrackStore.set(track);
+			tableDataStore.set(allTables[trackName] || []);
+			handleGpxTrack();
+			console.log(`Loaded track: ${trackName}`);
+		} else {
+			console.error(`Track not found: ${trackName}`);
+		}
+		goto('/map');
+	}
+
+
+	function deleteTrack(trackName: string) {
+		if (allTracks[trackName]) {
+			delete allTracks[trackName];
+			gpxTrackStore.set(null);
+			tableDataStore.set([]);
+			localStorage.removeItem(`track-${trackName}`);
+			localStorage.removeItem(`table-${trackName}`);
+			console.log(`Deleted track: ${trackName}`);
+		} else {
+			console.error(`Track not found for deletion: ${trackName}`);
+		}
+	}
 </script>
+
+<h1 class="banner">Saved Tracks</h1>
+
+{#if Object.keys(allTracks).length === 0}
+	<p class="banner">No saved tracks found. Upload a GPX file to get started.</p>
+{:else}
+	<p class="banner">Click on a track to load it into the map.</p>
+{/if}
 
 <div>
 	<ul class="track-list">
@@ -79,7 +111,7 @@
 					<button
 						class="load-btn"
 						onclick={() => {
-							/* loadTrack(trackName) */
+							loadTrack(trackName)
 						}}
 					>
 						Load
@@ -87,14 +119,12 @@
 					<button
 						class="delete-btn"
 						onclick={() => {
-							/* deleteTrack(trackName) */
+							deleteTrack(trackName)
 						}}
 						aria-label="Delete track"
 					>
-						<svg class="trash-icon" viewBox="0 0 24 24">
-							<path
-								d="M3 6h18M9 6v12a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2V6m-7 0V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"
-							/>
+						<svg class="trash-icon" viewBox="0 0 24 24" aria-hidden="true">
+							<path d="M3 6h18M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14zM10 11v6m4-6v6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 						</svg>
 					</button>
 				</div>
@@ -104,63 +134,140 @@
 </div>
 
 <style>
+	.banner {
+		background: #f6f8fc;
+		color: #31497a;
+		padding: 2rem 2.5rem 1.5rem 2.5rem;
+		border-radius: 14px;
+		box-shadow: 0 2px 8px rgba(66, 103, 178, 0.08);
+		margin-bottom: 2rem;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		border: 1.5px solid #31497a;
+	}
+
+	h1 {
+		font-size: 2.1rem;
+		font-weight: 700;
+		margin: 0 0 0.5rem 0;
+		letter-spacing: -1px;
+		line-height: 1.1;
+		color: #31497a;
+	}
+
+	p {
+		font-size: 1.1rem;
+		color: #4267b2;
+		margin: 0;
+	}
+
 	.track-list {
 		margin: 2rem 0;
 		padding: 0;
 		list-style: none;
-		max-width: 500px;
+		max-width: 600px;
 	}
+
 	.track-item {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 0.75rem 1rem;
-		margin-bottom: 0.5rem;
-		background: #f8f9fa;
-		border-radius: 8px;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+		padding: 1.2rem 1.5rem;
+		margin-bottom: 1.2rem;
+		background: #f6f8fc;
+		border-radius: 12px;
+		box-shadow: 0 2px 8px rgba(66, 103, 178, 0.08);
+		border: 1.5px solid #31497a;
+		transition: box-shadow 0.18s, transform 0.12s, border 0.18s;
 	}
+
+	.track-item:hover {
+		box-shadow: 0 4px 16px rgba(66, 103, 178, 0.13);
+		transform: translateY(-1px) scale(1.01);
+		border-color: #4267b2;
+	}
+
 	.track-name {
-		font-weight: 500;
+		font-weight: 600;
+		font-size: 1.13rem;
+		color: #31497a;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
-		max-width: 220px;
+		max-width: 260px;
+		letter-spacing: 0.01em;
 	}
+
 	.track-actions {
 		display: flex;
 		gap: 0.5rem;
 	}
+
 	.load-btn {
-		background: #2563eb;
+		background: #4267b2;
 		color: white;
-		border: none;
+		border: 1.5px solid #31497a;
 		padding: 0.4rem 0.9rem;
-		border-radius: 5px;
+		border-radius: 8px;
 		cursor: pointer;
 		font-size: 1rem;
-		transition: background 0.2s;
+		transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.1s;
+		box-shadow: 0 1px 4px rgba(66, 103, 178, 0.07);
 	}
+
 	.load-btn:hover {
-		background: #1d4ed8;
+		background: #31497a;
+		color: #fff;
+		box-shadow: 0 2px 8px rgba(66, 103, 178, 0.13);
+		transform: translateY(-1px) scale(1.01);
 	}
+
 	.delete-btn {
-		background: #ef4444;
-		color: white;
-		border: none;
+		background: #fff;
+		color: #ef4444;
+		border: 1.5px solid #ef4444;
 		padding: 0.4rem 0.7rem;
-		border-radius: 5px;
+		border-radius: 8px;
 		cursor: pointer;
 		display: flex;
 		align-items: center;
-		transition: background 0.2s;
+		transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.1s;
+		box-shadow: 0 1px 4px rgba(66, 103, 178, 0.07);
 	}
+
 	.delete-btn:hover {
-		background: #b91c1c;
+		background: #ffeaea;
+		color: #b91c1c;
+		box-shadow: 0 2px 8px rgba(239, 68, 68, 0.13);
+		transform: translateY(-1px) scale(1.01);
 	}
+
 	.trash-icon {
 		width: 1em;
 		height: 1em;
 		fill: currentColor;
 	}
+
+	@media (max-width: 600px) {
+		.banner {
+			padding: 1.2rem 1rem 1rem 1rem;
+		}
+		h1 {
+			font-size: 1.5rem;
+		}
+		p {
+			font-size: 1rem;
+		}
+		.track-item {
+			padding: 0.8rem 0.7rem;
+			margin-bottom: 0.7rem;
+		}
+		.track-name {
+			max-width: 120px;
+			font-size: 1rem;
+		}
+	}
+
+
 </style>

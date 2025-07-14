@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { GeoJSON, Geometry, GeoJsonProperties } from 'geojson';
+	import type { Geometry, GeoJsonProperties } from 'geojson';
 	import { onDestroy, onMount } from 'svelte';
 	import maplibregl from 'maplibre-gl';
 	import 'maplibre-gl/dist/maplibre-gl.css';
@@ -12,7 +12,7 @@
 	} from '$lib/stores';
 	import { get } from 'svelte/store';
 	import { displayType, type TableRow } from '$lib/results';
-	import { center } from '@turf/turf';
+
 
 	const markerSize = 15; // Size of the marker in pixels
 	let mapContainer: HTMLDivElement;
@@ -37,9 +37,7 @@
 				addOrUpdateSelectedRangeGpxTrack(selectedRangeTrack);
 			}
 			const tableData = get(tableDataDisplayStore);
-			if (tableData) {
-				addOrUpdateTableDataDisplay(tableData);
-			}
+			addOrUpdateTableDataDisplay(tableData);
 		});
 		mapInstanceStore.set(map);
 	});
@@ -120,7 +118,7 @@
 				nameDiv.style.fontSize = '1rem';
 				const existingLabel = document.getElementById('gpx-track-name-label');
 				if (existingLabel) {
-					existingLabel.remove();
+					existingLabel.textContent = gpxName;
 				}
 				map.getContainer().appendChild(nameDiv);
 				map.addLayer({
@@ -169,7 +167,8 @@
 	}
 
 	function addOrUpdateTableDataDisplay(tableData: TableRow[]) {
-		if (map && tableData) {
+		if (!map) return;
+		if (tableData) {
 			// Remove existing markers
 			let markers: maplibregl.Marker[] = get(markersStore);
 			markers.forEach((marker) => {
@@ -192,6 +191,13 @@
 				markers.push(marker); // Store the marker in the array
 			});
 			markersStore.set(markers); // Update the store with the new markers
+		} else {
+			// If no table data, clear markers
+			let markers: maplibregl.Marker[] = get(markersStore);
+			markers.forEach((marker) => {
+				marker.remove();
+			});
+			markersStore.set([]); // Clear the store
 		}
 	}
 
