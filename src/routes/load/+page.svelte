@@ -92,23 +92,30 @@
 	}
 </script>
 
-<div class="mb-10">
-	<h1 class="text-5xl font-extrabold text-blue-900 mb-3 tracking-tight drop-shadow">
-		Saved Tracks
-	</h1>
-	<p class="text-lg text-blue-800 mb-4">
-		Manage your previously uploaded GPX tracks here.<br>
-		Select a track to view it on the map, or remove tracks you no longer need.
-	</p>
-
+<div class="info-banner">
+	<h2>Saved Tracks</h2>
 	{#if Object.keys(allTracks).length === 0}
-		<p class="text-blue-700 bg-blue-50 rounded px-4 py-2 border border-blue-200">
-			No saved tracks found. Upload a GPX file to get started and visualize your routes!
+		<p class="no-tracks-message">
+			<strong>No saved tracks found.</strong>
 		</p>
+		<ul>
+			<li>
+				<span class="highlight">1. Upload</span> a GPX file. Come back here to view and manage your tracks.
+			</li>
+			<li>
+				Your uploaded tracks will appear here for easy access.
+			</li>
+		</ul>
 	{:else}
-		<p class="text-blue-700 bg-blue-50 rounded px-4 py-2 border border-blue-200">
-			Click <span class="font-semibold text-blue-900">Load</span> to open a track on the map, or <span class="font-semibold text-red-700">Delete</span> to remove it from your saved list.
-		</p>
+		<p class="no-tracks-message">Manage your previously uploaded GPX tracks:</p>
+		<ul>
+			<li>
+				<span class="highlight">Load</span> a track to view it on the map.
+			</li>
+			<li>
+				<span class="highlight">Delete</span> a track to remove it from your saved list.
+			</li>
+		</ul>
 	{/if}
 </div>
 
@@ -144,6 +151,51 @@
 </div>
 
 <style>
+	.no-tracks-message{
+		text-align: center;
+		font-size: 1.1rem;
+		color: #4f5fff;
+		margin: 1rem 0;
+	}
+	.info-banner {
+		background: linear-gradient(90deg, #e0e7ff 0%, #f0f4ff 100%);
+		border: 1.5px solid #31497a;
+		border-radius: 12px;
+		padding: 1.5rem 2rem;
+		margin: 2rem auto 1.5rem auto;
+		max-width: 480px;
+		box-shadow: 0 2px 12px rgba(60, 80, 180, 0.07);
+		text-align: center;
+	}
+	.info-banner h2 {
+		margin: 0 0 0.5rem 0;
+		font-size: 1.35rem;
+		color: #31497a;
+		font-weight: 700;
+		letter-spacing: 0.01em;
+	}
+	.info-banner p {
+		color: #4f5fff;
+		font-size: 1.05rem;
+		margin-bottom: 0.7rem;
+	}
+	.info-banner ul {
+		list-style: disc inside;
+		color: #2d3a5a;
+		font-size: 0.98rem;
+		margin: 0.5rem 0 0 0;
+		padding: 0;
+	}
+	.info-banner li {
+		margin-bottom: 0.2rem;
+	}
+	.info-banner .highlight {
+		background: #dbeafe;
+		color: #31497a;
+		padding: 0.1em 0.35em;
+		border-radius: 0.4em;
+		font-weight: 600;
+	}
 	.track-list {
 		margin: 2rem 0;
 		padding: 0;

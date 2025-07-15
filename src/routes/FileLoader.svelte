@@ -203,8 +203,8 @@
 	}
 	.info-banner {
 		background: linear-gradient(90deg, #e0e7ff 0%, #f0f4ff 100%);
-		border: 1.5px solid #b3c6ff;
-		border-radius: 1rem;
+		border: 1.5px solid #31497a;
+		border-radius: 12px;
 		padding: 1.5rem 2rem;
 		margin: 2rem auto 1.5rem auto;
 		max-width: 480px;
@@ -246,69 +246,6 @@
 		align-items: center;
 		margin-top: 2rem;
 	}
-	.upload-new-btn {
-		background: #4267b2;
-		color: #fff;
-		border: 1.5px solid #31497a;
-		padding: 10px 26px;
-		border-radius: 8px;
-		cursor: pointer;
-		font-size: 17px;
-		font-weight: 500;
-		letter-spacing: 0.5px;
-		box-shadow: 0 2px 8px rgba(66, 103, 178, 0.1);
-		transition:
-			background 0.2s,
-			box-shadow 0.2s,
-			transform 0.1s;
-	}
-	.upload-new-btn:hover {
-		background: #365899;
-		box-shadow: 0 4px 16px rgba(66, 103, 178, 0.18);
-		transform: translateY(-1px) scale(1.02);
-	}
-	.upload-new-btn:active {
-		background: #31497a;
-		transform: scale(0.98);
-		box-shadow: 0 1px 4px rgba(66, 103, 178, 0.08);
-	}
-	.upload-new-btn:focus {
-		outline: none;
-		box-shadow: 0 0 0 2px #a3bffa;
-	}
-	.close-btn {
-		top: 1rem;
-		right: 1rem;
-		background: transparent;
-		border: none;
-		font-size: 1.2rem;
-		color: #4f5fff;
-		cursor: pointer;
-		transition: color 0.2s;
-	}
-
-	.track-info {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: #f0f7fa;
-		border-radius: 1rem;
-		box-shadow: 0 2px 12px rgba(60, 80, 180, 0.08);
-		padding: 1.5rem 2rem;
-		margin: 2rem auto;
-		max-width: 400px;
-		gap: 1rem;
-	}
-	.track-icon {
-		font-size: 1.1rem;
-		color: #4f5fff;
-	}
-	.track-name {
-		font-size: 1rem;
-		font-weight: 600;
-		color: #2d3a5a;
-		letter-spacing: 0.01em;
-	}
 	.upload-container {
 		display: flex;
 		flex-direction: column;
@@ -316,10 +253,11 @@
 		justify-content: center;
 		padding: 2rem;
 		background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
-		border-radius: 1rem;
 		box-shadow: 0 4px 24px rgba(60, 80, 180, 0.08);
 		max-width: 400px;
 		margin: 2rem auto;
+		border: 1.5px solid #31497a;
+		border-radius: 12px;
 	}
 
 	.upload-title {
