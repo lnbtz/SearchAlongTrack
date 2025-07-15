@@ -15,9 +15,12 @@
 		if (!get(gpxTrackStore)) {
 			return alert('Please upload a GPX file first.');
 		}
+		console.log('Starting search along track...');
 		loadingState = 'searching';
 		await searchAlongTrack();
+		console.log('Search completed, building table data...');
 		await buildTableData();
+		console.log('Table data built, updating state...');
 		loadingState = 'done';
 	}
 
@@ -68,17 +71,18 @@
 </div>
 
 <div class="upload-container">
-	<div class="upload-title">Load GPX File</div>
-	<div class="upload-desc">
-		1. Upload a GPX file to visualize your track on the map.<br />
-		Drag &amp; drop or click below to select a file.
-	</div>
-	<label class="upload-label" for="file-input">
-		<span class="upload-icon">📁</span>
-		<span class="upload-text">{loading ? 'Uploading...' : 'Click or Drag GPX file here'}</span>
-	</label>
-	<input id="file-input" type="file" accept=".gpx" onchange={handleChange} />
-	{#if loading && loadingState === 'uploading'}
+	{#if !loading && loadingState === 'idle'}
+		<div class="upload-title">Load GPX File</div>
+		<div class="upload-desc">
+			1. Upload a GPX file to visualize your track on the map.<br />
+			Drag &amp; drop or click below to select a file.
+		</div>
+		<label class="upload-label" for="file-input">
+			<span class="upload-icon">📁</span>
+			<span class="upload-text">{loading ? 'Uploading...' : 'Click or Drag GPX file here'}</span>
+		</label>
+		<input id="file-input" type="file" accept=".gpx" onchange={handleChange} />
+	{:else if loading && loadingState === 'uploading'}
 		<div class="progress-bar">
 			<div class="progress-bar-inner" style="--progress: {progress}%"></div>
 		</div>

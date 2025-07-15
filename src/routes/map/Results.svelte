@@ -294,7 +294,7 @@
 								target="_blank"
 								rel="noopener noreferrer"
 								title="Open website"
-								style="display: inline-flex; align-items: center; gap: 0.2em;"
+								class="clickable-icon"
 								aria-label="Open website"
 							>
 								<svg
@@ -329,7 +329,7 @@
 									}
 								}}
 								title="Click to call or copy to clipboard"
-								style="display: inline-flex; align-items: center; gap: 0.2em;"
+								class="clickable-icon"
 							>
 								<svg
 									fill="none"
@@ -380,6 +380,7 @@
 							<button
 								title="Open in Google Maps"
 								aria-label="Open in Google Maps"
+								class="map-icon"
 								on:click={() => {
 									const lat = row.location?.lat;
 									const lon = row.location?.lon;
@@ -414,6 +415,7 @@
 							<button
 								aria-label="Open in Google Maps"
 								title="Open in Apple Maps"
+								class="map-icon"
 								on:click={() => {
 									const lat = row.location?.lat;
 									const lon = row.location?.lon;
@@ -489,6 +491,7 @@
 							<button
 								aria-label="Open in Komoot"
 								title="Open on Komoot"
+								class="map-icon"
 								on:click={() => {
 									const lat = row.location?.lat;
 									const lon = row.location?.lon;
@@ -563,6 +566,38 @@
 {/if}
 
 <style>
+	.map-icon {
+		cursor: pointer;
+		color: #2563eb;
+		text-decoration: none;
+		transition: color 0.2s ease-in-out;
+		display: inline-flex;
+		align-items: center;
+		padding: 0;
+		margin: 0 2px;
+		width: 1em;
+		height: 1em;
+	}
+	.clickable-icon {
+		cursor: pointer;
+		color: #2563eb;
+		text-decoration: none;
+		transition: color 0.2s ease-in-out;
+		display: inline-flex;
+		align-items: center;
+		padding: 0;
+		margin: 0 2px;
+		width: 1em;
+		height: 1em;
+	}
+
+	@media (max-width: 700px) {
+		.clickable-icon {
+			width: 1em;
+			height: 1em;
+			margin: 0 1px;
+		}
+	}
 	.slider-group {
 		display: flex;
 		flex-direction: column;
@@ -644,18 +679,48 @@
 		box-shadow: 0 0 0 2px #e9eef8;
 		transition: border 0.15s;
 	}
-
-	@media (max-width: 900px) {
+	@media (max-width: 700px) {
 		.category-group {
-			gap: 0.7rem 1rem;
-			padding: 1rem 0.5rem 0.5rem 0.5rem;
+			flex-direction: row;
+			flex-wrap: wrap;
+			justify-content: flex-start;
+			align-items: flex-start;
+			gap: 0.3rem 0.5rem;
+			padding: 0.3rem 0.2rem 0.2rem 0.2rem;
+			margin: 0.5rem 0;
+		}
+		.category-group label {
+			flex: 1 1 45%;
+			min-width: 120px;
+			max-width: 48%;
+			margin-bottom: 0.2em;
+			font-size: 0.8rem;
+			padding: 0.3em 0.6em;
+			border-radius: 6px;
+			box-sizing: border-box;
 		}
 	}
-	@media (max-width: 600px) {
+	@media (max-width: 700px) {
 		.category-group {
+			gap: 0.3rem 0.5rem;
+			padding: 0.3rem 0.2rem 0.2rem 0.2rem;
+			margin: 0.5rem 0;
 			flex-direction: column;
-			gap: 0.5rem 0;
-			padding: 0.5rem 0.2rem 0.2rem 0.2rem;
+		}
+		.category-group legend {
+			font-size: 0.9rem;
+			margin-bottom: 0.3rem;
+			padding: 0 0.2rem;
+		}
+		.category-group label {
+			font-size: 0.8rem;
+			padding: 0.3em 0.6em;
+			border-radius: 6px;
+		}
+		.category-group input[type="checkbox"] {
+			width: 1em;
+			height: 1em;
+			margin-right: 0.2em;
 		}
 	}
 	.links-container {
@@ -667,6 +732,13 @@
 		cursor: pointer;
 		color: #2563eb;
 		text-decoration: underline;
+	}
+
+	@media (max-width: 700px) {
+		.clickable {
+			font-size: 0.5rem;
+			padding: 0.1em 0.3em;
+		}
 	}
 
 	.info-box {
@@ -735,19 +807,17 @@
 
 	td {
 		color: #31497a;
-		font-size: 1rem;
+		font-size: 0.98rem;
 		vertical-align: middle;
 	}
 
 	td button,
 	td a {
-		border: 1.5px solid #31497a;
 		background: #fff;
 		color: #2563eb;
 		cursor: pointer;
 		font-size: 0.98rem;
 		padding: 0.2em 0.7em;
-		border-radius: 8px;
 		transition:
 			background 0.18s,
 			color 0.18s,
@@ -778,37 +848,74 @@
 	}
 
 	@media (max-width: 700px) {
-		table,
-		thead,
-		tbody,
-		th,
-		td,
-		tr {
+		table {
 			display: block;
+			width: 100%;
+			overflow-x: auto;
+			border-radius: 12px;
+			margin: 1rem 0;
+			border: 1.5px solid #31497a;
+			background: #f6f8fc;
+			box-shadow: 0 2px 8px rgba(66, 103, 178, 0.08);
 		}
 		thead {
-			display: none;
+			display: table-header-group;
+			background: #e9eef8;
+			position: sticky;
+			top: 0;
+			z-index: 2;
+		}
+		th {
+			font-size: 0.5rem;
+			padding: 0.7rem 0.5rem;
+			background: #e9eef8;
+			position: sticky;
+			top: 0;
+			z-index: 2;
+			border-bottom: 2px solid #31497a;
+		}
+		tbody,
+		tr,
+		td {
+			display: table-row-group;
+			width: 100%;
 		}
 		tr {
-			margin-bottom: 1.2rem;
-			box-shadow: 0 2px 8px rgba(66, 103, 178, 0.08);
-			border-radius: 10px;
+			display: table-row;
+			margin-bottom: 0;
+			box-shadow: none;
+			border-radius: 0;
 			background: #f6f8fc;
-			overflow: hidden;
-			border: 1.5px solid #31497a;
+			border: none;
 		}
 		td {
-			padding: 1rem 0.8rem;
-			border-bottom: none;
+			display: table-cell;
+			padding: 0.7rem 0.5rem;
+			border-bottom: 1px solid #e9eef8;
 			position: relative;
+			font-size: 0.5rem;
+			vertical-align: top;
+			word-break: break-word;
 		}
 		td:before {
-			content: attr(data-label);
-			font-weight: 600;
-			color: #4267b2;
-			display: block;
-			margin-bottom: 0.25rem;
-			font-size: 0.93rem;
+			display: none;
+		}
+	}
+
+	@media (max-width: 500px) {
+		table {
+			font-size: 0.5rem;
+		}
+		th, td {
+			padding: 0.5rem 0.3rem;
+		}
+	}
+
+	/* Optional: Make table horizontally scrollable on very small screens */
+	@media (max-width: 700px) {
+		.table-responsive {
+			width: 100%;
+			overflow-x: auto;
 		}
 	}
 </style>

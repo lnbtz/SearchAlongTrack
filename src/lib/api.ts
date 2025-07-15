@@ -1,4 +1,3 @@
-
 import { lastQueryHashStore, searchResultsCacheStore, polyAroundTrackStore } from './stores';
 import { get } from 'svelte/store';
 import type { OverpassJson } from "overpass-ts";
@@ -74,12 +73,14 @@ function buildPolyQueryBody() {
 
 
 async function createQueryHash(query: string): Promise<string> {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(query);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    // Convert buffer to hex string
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    let hash = 0, i, chr;
+    if (query.length === 0) return hash.toString();
+    for (i = 0; i < query.length; i++) {
+        chr = query.charCodeAt(i);
+        hash = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return hash.toString();
 }
 // function testingQuery() {
 //     return true;

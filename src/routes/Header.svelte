@@ -28,7 +28,9 @@
 		align-items: center;
 		background: var(--color-background, #f8f9fa);
 		box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-		padding: 0 1.5rem;
+		width: 100%;
+		padding: 0 1rem;
+		box-sizing: border-box;
 	}
 
 	nav {

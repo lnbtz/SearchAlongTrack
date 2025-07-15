@@ -48,6 +48,7 @@ function setTrackLengthStore() {
         const lon2 = coordinates[i + 1][0];
         length += calculateDistanceBetweenPoints(lat1, lon1, lat2, lon2);
     }
+    selectedEndRangeStore.set(length);
     totalTrackLengthStore.set(length);
 }
 

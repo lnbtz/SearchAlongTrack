@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Geometry, GeoJsonProperties } from 'geojson';
 	import { onDestroy, onMount } from 'svelte';
-	import maplibregl from 'maplibre-gl';
+	import maplibregl, { GeolocateControl } from 'maplibre-gl';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import {
 		gpxTrackStore,
@@ -12,7 +12,6 @@
 	} from '$lib/stores';
 	import { get } from 'svelte/store';
 	import { displayType, type TableRow } from '$lib/results';
-
 
 	const markerSize = 15; // Size of the marker in pixels
 	let mapContainer: HTMLDivElement;
@@ -39,6 +38,14 @@
 			const tableData = get(tableDataDisplayStore);
 			addOrUpdateTableDataDisplay(tableData);
 		});
+		map.addControl(
+			new GeolocateControl({
+				positionOptions: {
+					enableHighAccuracy: true
+				},
+				trackUserLocation: true
+			})
+		);
 		mapInstanceStore.set(map);
 	});
 	onDestroy(() => {
