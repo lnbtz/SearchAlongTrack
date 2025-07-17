@@ -1,7 +1,9 @@
 <script lang="ts">
 	import Header from './Header.svelte';
 	import '../app.css';
+	import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
 
+	injectSpeedInsights();
 	let { children } = $props();
 </script>
 
@@ -11,8 +13,6 @@
 	<main>
 		{@render children()}
 	</main>
-
-
 </div>
 
 <style>
@@ -32,6 +32,4 @@
 		margin: 0 auto;
 		box-sizing: border-box;
 	}
-
-
 </style>
