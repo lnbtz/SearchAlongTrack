@@ -1,39 +1,37 @@
-# sv
-
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
-
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
 # SearchAlongTrack
+
+SearchAlongTrack is a web application designed to help users search for points of interest along a specified route. The project leverages mapping APIs to provide real-time data and interactive route planning. It was mainly built to find places to sleep and restock food / water on bikepacking trips.
+
+## Technologies Used
+
+- **SvelteKit**: Frontend UI framework
+- **SvelteKit**: Backend server
+- **localStorage**: Client-side browser storage for saving user routes and results
+- **MapLibre**: Interactive maps and route visualization
+- **OpenStreetMap Overpass API**: Geolocation and POI data
+
+## Features
+
+- **Route Uploading**: Users can upload GPX files.
+- **Search Along Route**: Find shelters, supermarkets, restaurants, gas stations, hotels, and other POIs along the selected route.
+- **Interactive Map**: Visualize routes and POIs on a dynamic map.
+- **API Integration**: Utilizes MapLibre and OpenStreetMap APIs for accurate mapping and search results.
+- **Responsive Design**: Works seamlessly on desktop and mobile devices.
+
+## Hosted Website
+
+[Visit the live site](https://search-along-track.vercel.app/)
+
+## Screenshots
+
+
+![Home Screen](/screenshots/Homescreen.png)
+![Map](/screenshots/Map.png)
+![Display Settings](/screenshots/DisplaySettings.png)
+![Result Table](/screenshots/ResultTable.png)
+![Result Marker](/screenshots/ResultMarker.png)
+![Load Tracks](/screenshots/LoadTracks.png)
+
+## Feature Requests
+
+If you have any ideas for new features that would help you on your next adventure let me know.

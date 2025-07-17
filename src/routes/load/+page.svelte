@@ -140,8 +140,9 @@
 						}}
 						aria-label="Delete track"
 					>
-						<svg class="trash-icon" viewBox="0 0 24 24" aria-hidden="true">
-							<path d="M3 6h18M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14zM10 11v6m4-6v6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+						<svg class="trash-icon" viewBox="0 0 24 24" aria-hidden="true" style="display: block; margin: auto;">
+							<path d="M3 6h18M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14zM10 11v6m4-6v6"
+								stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 						</svg>
 					</button>
 				</div>
@@ -258,8 +259,8 @@
 	}
 
 	.delete-btn {
-		background: #fff;
-		color: #ef4444;
+		background: #ef4444;
+		color: #fff;
 		border: 1.5px solid #ef4444;
 		padding: 0.4rem 0.7rem;
 		border-radius: 8px;
@@ -267,22 +268,27 @@
 		display: flex;
 		align-items: center;
 		transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.1s;
-		box-shadow: 0 1px 4px rgba(66, 103, 178, 0.07);
+		box-shadow: 0 1px 4px rgba(239, 68, 68, 0.07);
 	}
 
 	.delete-btn:hover {
-		background: #ffeaea;
-		color: #b91c1c;
+		background: #b91c1c;
+		color: #fff;
 		box-shadow: 0 2px 8px rgba(239, 68, 68, 0.13);
 		transform: translateY(-1px) scale(1.01);
 	}
 
-	.trash-icon {
-		width: 1em;
-		height: 1em;
-		fill: currentColor;
+	.delete-btn .trash-icon {
+		stroke: #fff;
 	}
 
+	.trash-icon {
+		width: 1.2rem;
+		height: 1.2rem;
+		stroke-width: 2;
+		stroke: currentColor;
+		fill: none;
+	}
 	@media (max-width: 600px) {
 		.track-item {
 			padding: 0.8rem 0.7rem;

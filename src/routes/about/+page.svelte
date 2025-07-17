@@ -6,20 +6,19 @@
 	<p>
 		SearchAlongTrack is a project designed to help users find points of interest along a specific
 		route or track. Whether you're planning a road trip, a hike, or just exploring new areas, this
-		tool makes it easy to discover interesting locations nearby.
+		tool makes it easy to discover locations that help you on your journey.
 	</p>
 	<p>
 		<strong class="highlight">Features:</strong>
 	</p>
 	<ul>
 		<li>Search for places along a custom route</li>
-		<li>Interactive map interface</li>
-		<li>Easy-to-use and responsive design</li>
+		<li>Where can you restock food and water or take a good night's rest</li>
+		<li>Upload your GPX files and load already saved tracks</li>
 	</ul>
 
 	<p>
-		This project is open source and built with Svelte. For more information or to contribute, visit
-		the <a href="https://github.com/your-repo" target="_blank" rel="noopener">GitHub repository</a>.
+		For feature requests, hit me up on GitHub or via <a href="mailto:mrleonbeitz@gmail.com">email</a>, or check out the <a href="https://github.com/lnbtz/SearchAlongTrack" target="_blank" rel="noopener">GitHub repository</a>.
 	</p>
 </div>
 
