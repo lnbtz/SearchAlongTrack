@@ -23,11 +23,11 @@ export function handleGpxTrack() {
     polyAroundTrack();
 }
 
-export function centerOnCoords(map: maplibregl.Map | undefined, location: { lon: number; lat: number }) {
+export function centerOnCoords(map: maplibregl.Map | undefined, location: { lon: number; lat: number }, zoom: number) {
     if (map && location.lon !== undefined && location.lat !== undefined) {
         map.flyTo({
             center: [location.lon, location.lat],
-            zoom: 14,
+            zoom: zoom,
             speed: 1.2,
             curve: 1,
             easing(t) {

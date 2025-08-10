@@ -10,6 +10,7 @@
 	import { calculateSelectedRangeTrackStore, recomputeTableDataDisplay } from '$lib/util';
     import RangeSlider from 'svelte-range-slider-pips';
     import { onMount } from 'svelte';
+    import { getCategoryIconUrl } from '$lib/icons';
 
 let panelOpen = $state(true);
 
@@ -118,7 +119,7 @@ let values: number[] = $state([$selectedStartRangeStore, $selectedEndRangeStore]
 						checked={selectedCategories.includes(OSMCategories.value.VENDING_MACHINE)}
                         onchange={(e) => checkBox(OSMCategories.value.VENDING_MACHINE, e)}
 					/>
-					Vending Machines
+                    Vending Machines<img src={getCategoryIconUrl(OSMCategories.value.VENDING_MACHINE)} alt="Vending Machines" style="width: 24px; height: 24px;" />
 				</label>
 				<label>
                     <input
@@ -127,7 +128,7 @@ let values: number[] = $state([$selectedStartRangeStore, $selectedEndRangeStore]
 						checked={selectedCategories.includes(OSMCategories.value.FUEL)}
                         onchange={(e) => checkBox(OSMCategories.value.FUEL, e)}
 					/>
-					Gas Stations
+					Gas Stations<img src={getCategoryIconUrl(OSMCategories.value.FUEL)} alt="Gas Stations" style="width: 24px; height: 24px;" />
 				</label>
 				<label>
                     <input
@@ -136,7 +137,7 @@ let values: number[] = $state([$selectedStartRangeStore, $selectedEndRangeStore]
 						checked={selectedCategories.includes(OSMCategories.value.SUPERMARKET)}
                         onchange={(e) => checkBox(OSMCategories.value.SUPERMARKET, e)}
 					/>
-					Supermarkets
+					Supermarkets<img src={getCategoryIconUrl(OSMCategories.value.SUPERMARKET)} alt="Supermarkets" style="width: 24px; height: 24px;" />
 				</label>
 				<label>
                     <input
@@ -145,7 +146,7 @@ let values: number[] = $state([$selectedStartRangeStore, $selectedEndRangeStore]
 						checked={selectedCategories.includes(OSMCategories.value.SHELTER)}
                         onchange={(e) => checkBox(OSMCategories.value.SHELTER, e)}
 					/>
-					Shelters
+					Shelters<img src={getCategoryIconUrl(OSMCategories.value.SHELTER)} alt="Shelters" style="width: 24px; height: 24px;" />
 				</label>
 				<label>
                     <input
@@ -154,7 +155,7 @@ let values: number[] = $state([$selectedStartRangeStore, $selectedEndRangeStore]
 						checked={selectedCategories.includes(OSMCategories.value.BAKERY)}
                         onchange={(e) => checkBox(OSMCategories.value.BAKERY, e)}
 					/>
-					Bakery
+					Bakery<img src={getCategoryIconUrl(OSMCategories.value.BAKERY)} alt="Bakery" style="width: 24px; height: 24px;" />
 				</label>
 				<label>
                     <input
@@ -163,7 +164,7 @@ let values: number[] = $state([$selectedStartRangeStore, $selectedEndRangeStore]
 						checked={selectedCategories.includes(OSMCategories.value.KIOSK)}
                         onchange={(e) => checkBox(OSMCategories.value.KIOSK, e)}
 					/>
-					Kiosks
+					Kiosks<img src={getCategoryIconUrl(OSMCategories.value.KIOSK)} alt="Kiosks" style="width: 24px; height: 24px;" />
 				</label>
 				<label>
                     <input
@@ -172,7 +173,7 @@ let values: number[] = $state([$selectedStartRangeStore, $selectedEndRangeStore]
 						checked={selectedCategories.includes(OSMCategories.value.DRINKING_WATER)}
                         onchange={(e) => checkBox(OSMCategories.value.DRINKING_WATER, e)}
 					/>
-					Drinking Water
+					Drinking Water<img src={getCategoryIconUrl(OSMCategories.value.DRINKING_WATER)} alt="Drinking Water" style="width: 24px; height: 24px;" />
 				</label>
 				<label>
                     <input
@@ -181,7 +182,7 @@ let values: number[] = $state([$selectedStartRangeStore, $selectedEndRangeStore]
 						checked={selectedCategories.includes(OSMCategories.value.TOILETS)}
                         onchange={(e) => checkBox(OSMCategories.value.TOILETS, e)}
 					/>
-					Toilets
+					Toilets<img src={getCategoryIconUrl(OSMCategories.value.TOILETS)} alt="Toilets" style="width: 24px; height: 24px;" />
 				</label>
 				<label>
                     <input
@@ -190,7 +191,7 @@ let values: number[] = $state([$selectedStartRangeStore, $selectedEndRangeStore]
 						checked={selectedCategories.includes(OSMCategories.key.ICE_CAFE)}
                         onchange={(e) => checkBox(OSMCategories.key.ICE_CAFE, e)}
 					/>
-					Cafés & Ice Cream
+					Cafés & Ice Cream<img src={getCategoryIconUrl(OSMCategories.key.ICE_CAFE)} alt="Cafés & Ice Cream" style="width: 24px; height: 24px;" />
 				</label>
 				<label>
                     <input
@@ -199,7 +200,7 @@ let values: number[] = $state([$selectedStartRangeStore, $selectedEndRangeStore]
 						checked={selectedCategories.includes(OSMCategories.value.RESTAURANT)}
                         onchange={(e) => checkBox(OSMCategories.value.RESTAURANT, e)}
 					/>
-					Restaurants
+					Restaurants<img src={getCategoryIconUrl(OSMCategories.value.RESTAURANT)} alt="Restaurants" style="width: 24px; height: 24px;" />
 				</label>
 				<label>
                     <input
@@ -208,7 +209,7 @@ let values: number[] = $state([$selectedStartRangeStore, $selectedEndRangeStore]
 						checked={selectedCategories.includes(OSMCategories.value.CAMP_SITE)}
                         onchange={(e) => checkBox(OSMCategories.value.CAMP_SITE, e)}
 					/>
-					Camp Sites
+					Camp Sites<img src={getCategoryIconUrl(OSMCategories.value.CAMP_SITE)} alt="Camp Sites" style="width: 24px; height: 24px;" />
 				</label>
 				<label>
                     <input
@@ -217,7 +218,7 @@ let values: number[] = $state([$selectedStartRangeStore, $selectedEndRangeStore]
 						checked={selectedCategories.includes(OSMCategories.key.ACCOMMODATION)}
                         onchange={(e) => checkBox(OSMCategories.key.ACCOMMODATION, e)}
 					/>
-					Accommodations
+					Accommodations<img src={getCategoryIconUrl(OSMCategories.key.ACCOMMODATION)} alt="Accommodations" style="width: 24px; height: 24px;" />
 				</label>
 				<label>
                     <input
@@ -226,7 +227,7 @@ let values: number[] = $state([$selectedStartRangeStore, $selectedEndRangeStore]
 						checked={selectedCategories.includes(OSMCategories.key.BICYCLE_REPAIR)}
                         onchange={(e) => checkBox(OSMCategories.key.BICYCLE_REPAIR, e)}
 					/>
-					Bicycle Repair
+					Bicycle Repair<img src={getCategoryIconUrl(OSMCategories.key.BICYCLE_REPAIR)} alt="Bicycle Repair" style="width: 24px; height: 24px;" />
 				</label>
 			</fieldset>
 		</div>
@@ -255,64 +256,73 @@ let values: number[] = $state([$selectedStartRangeStore, $selectedEndRangeStore]
 	}
 	.toggle:hover { box-shadow: var(--shadow-md); }
 
-	.panel {
-		margin-top: 10px;
-		padding: 0.75rem 0.85rem;
-		min-width: 320px;
-		max-width: min(88vw, 520px);
-		max-height: min(68vh, 560px);
-		overflow: auto;
-		border: 1px solid var(--border);
-		border-radius: var(--radius-md);
-		background: color-mix(in oklab, var(--bg-elevated) 85%, transparent);
-		backdrop-filter: blur(8px) saturate(140%);
-		box-shadow: var(--shadow-md);
-	}
+    .panel {
+        margin-top: 8px;
+        padding: 0.5rem 0.6rem;
+        min-width: 300px;
+        max-width: min(88vw, 500px);
+        /* keep the panel compact to avoid internal scrollbar */
+        max-height: none;
+        overflow: visible;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        background: color-mix(in oklab, var(--bg-elevated) 90%, transparent);
+        backdrop-filter: blur(6px) saturate(140%);
+        box-shadow: var(--shadow-md);
+    }
 
-	.sliders { display: grid; gap: 0.6rem; }
+    .sliders { display: grid; gap: 0.4rem; }
 	.slider-group {
-		background: var(--bg);
-		border: 1px solid var(--border);
-		border-radius: var(--radius-sm);
-		padding: 0.5rem 0.6rem;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 0.35rem 0.45rem;
 	}
-	.slider-label { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; }
+    .slider-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 700; }
 
-	.category-group {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.4rem 0.6rem;
-		padding: 0.6rem;
-		margin-top: 0.6rem;
-		border: 1px dashed var(--border);
-		border-radius: var(--radius-sm);
-		background: var(--bg);
-	}
+    /* Compact the range slider component height and visuals */
+    :global(.range-slider) { height: 22px; padding: 6px 2px; }
+    :global(.range-slider__range) { height: 4px; }
+    :global(.range-slider__thumb) { width: 12px; height: 12px; }
+    :global(.range-slider__pip) { transform: translateY(-2px); }
+    :global(.range-slider__pip-label) { font-size: 10px; }
+
+    .category-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem 0.5rem;
+        padding: 0.4rem;
+        margin-top: 0.4rem;
+        border: 1px dashed var(--border);
+        border-radius: var(--radius-sm);
+        background: var(--bg);
+    }
 	.category-group legend { width: 100%; margin: 0 0 0.25rem 0; }
 	.category-group h3 { margin: 0; font-size: 1rem; }
-	.category-group p { margin: 0.15rem 0 0 0; font-size: 0.85rem; color: var(--text-muted); }
+    .category-group p { margin: 0.15rem 0 0 0; font-size: 0.8rem; color: var(--text-muted); }
 	.category-group label {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.5em;
-		font-size: 0.95rem;
+        gap: 0.4em;
+        font-size: 0.75rem;
 		font-weight: 500;
 		color: var(--text);
 		background: var(--bg-elevated);
 		border-radius: 8px;
 		box-shadow: var(--shadow-sm);
-		padding: 0.35em 0.7em;
+        padding: 0.25em 0.45em;
 		cursor: pointer;
 		border: 1px solid var(--border);
 	}
 	.category-group input[type='checkbox'] {
 		accent-color: var(--primary);
-		width: 1.05em;
-		height: 1.05em;
+        width: 0.95em;
+        height: 0.95em;
 		border-radius: 4px;
 	}
+    .category-group label img { width: 18px; height: 18px; }
 
-	@media (max-width: 560px) {
-		.panel { min-width: 260px; }
-	}
+    @media (max-width: 560px) {
+        .panel { min-width: 260px; }
+    }
 </style>

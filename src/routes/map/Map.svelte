@@ -14,6 +14,7 @@
 	import { get } from 'svelte/store';
     import { displayType, type TableRow } from '$lib/results';
     import MapControls from './MapControls.svelte';
+    import { getCategoryIconUrl } from '$lib/icons';
     import { recomputeTableDataDisplay } from '$lib/util';
 
 	const markerWidth = 32; // Size of the marker in pixels
@@ -196,7 +197,7 @@
 			tableData.forEach((row) => {
 				const el = document.createElement('div');
 				el.className = 'marker';
-				el.style.backgroundImage = getIcon(row.category ? row.category : '');
+                el.style.backgroundImage = `url(${getCategoryIconUrl(row.category ? row.category : '')})`;
 				el.style.position = 'absolute';
 				el.style.width = `${markerWidth}px`;
 				el.style.height = `${markerHeight}px`;
@@ -438,12 +439,7 @@
 			</div>`;
 	}
 
-	function getIcon(category: string): string {
-		if (!category) {
-			return 'url(/icons/new_icons/default.png)'; // Default icon if type is not provided
-		}
-		return `url(/icons/new_icons/${category}.png)`;
-	}
+    
 </script>
 
 <div class="map-wrapper">
