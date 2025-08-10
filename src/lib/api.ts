@@ -3,7 +3,7 @@ import { get } from 'svelte/store';
 import type { OverpassJson } from "overpass-ts";
 import { overpass } from "overpass-ts";
 
-import { OverpassQueryResultDebug, QueryBodies } from './osm-constants';
+import { QueryBodies } from './osm-constants';
 
 
 const queryHeader: string = `[out:json];
