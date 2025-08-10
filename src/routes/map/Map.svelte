@@ -1,8 +1,6 @@
 <script lang="ts">
 	import type { Geometry, GeoJsonProperties } from 'geojson';
 	import { onDestroy, onMount } from 'svelte';
-    import maplibregl, { GeolocateControl } from 'maplibre-gl';
-	import 'maplibre-gl/dist/maplibre-gl.css';
     import {
         gpxTrackStore,
         selectedRangeTrackStore,
@@ -16,6 +14,7 @@
     import MapControls from './MapControls.svelte';
     import { getCategoryIconUrl } from '$lib/icons';
     import { recomputeTableDataDisplay } from '$lib/util';
+	import maplibregl from 'maplibre-gl';
 
 	const markerWidth = 32; // Size of the marker in pixels
 	const markerHeight = 36;
@@ -23,7 +22,11 @@
 	let map: maplibregl.Map;
 	let lastMapState: { center: [number, number]; zoom: number } | null = null;
 
-    onMount(() => {
+    onMount(async () => {
+		const maplibrePkg = await import('maplibre-gl');
+        const maplibregl = maplibrePkg.default ?? maplibrePkg; // CJS default
+        const { GeolocateControl } = maplibregl as any;
+        await import('maplibre-gl/dist/maplibre-gl.css');
 		let mapOptions = {
 			container: mapContainer,
 			style: `https://api.maptiler.com/maps/openstreetmap/style.json?key=${import.meta.env.VITE_MAPTILER_API_KEY}`,

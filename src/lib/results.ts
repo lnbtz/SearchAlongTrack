@@ -28,7 +28,6 @@ export async function buildTableData() {
         locationMap.forEach((element) => {
             buildTableRow(element, rows, simplifiedGpxTrack);
         });
-        console.log('Table rows built:', rows.length);
         tableDataStore.set(rows);
         return;
     }
@@ -78,6 +77,8 @@ export function displayType(type: string) {
             return 'Wilderness Hut';
         case 'guest_house':
             return 'Guest House';
+        case 'fast_food':
+            return 'Fast Food';
         default:
             return type.charAt(0).toUpperCase() + type.slice(1);
     }
@@ -144,7 +145,7 @@ function buildTableRow(entry: { lat?: number; lon?: number; element?: OverpassNo
 
 function buildLocationMap(queryResults: OverpassJson | undefined, locationMap: Map<number, { lat: number, lon: number, element: OverpassNode | OverpassWay | OverpassRelation }>) {
     queryResults?.elements.forEach((element) => {
-        if (element.type === 'node' && element.tags) {
+        if (element.type === 'node') {
             locationMap.set(element.id, { lat: element.lat, lon: element.lon, element: element as OverpassNode });
         }
     });

@@ -47,7 +47,8 @@ export const OSMCategoriesMap = new Map<string, string[]>([
   [OSMCategories.value.KIOSK, [OSMCategories.value.KIOSK]],
   [OSMCategories.value.DRINKING_WATER, [OSMCategories.value.DRINKING_WATER]],
   [OSMCategories.value.TOILETS, [OSMCategories.value.TOILETS]],
-  [OSMCategories.value.RESTAURANT, [OSMCategories.value.RESTAURANT, OSMCategories.value.FAST_FOOD]],
+  [OSMCategories.value.RESTAURANT, [OSMCategories.value.RESTAURANT]],
+  [OSMCategories.value.FAST_FOOD, [OSMCategories.value.FAST_FOOD]],
   [OSMCategories.value.CAMP_SITE, [OSMCategories.value.CAMP_SITE]],
   [OSMCategories.key.BICYCLE_REPAIR, [OSMCategories.value.BICYCLE_REPAIR_STATION, OSMCategories.value.BICYCLE]],
   [OSMCategories.key.ACCOMMODATION, [

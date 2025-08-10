@@ -205,6 +205,15 @@ let values: number[] = $state([$selectedStartRangeStore, $selectedEndRangeStore]
 				<label>
                     <input
 						type="checkbox"
+						value={OSMCategories.value.FAST_FOOD}
+						checked={selectedCategories.includes(OSMCategories.value.FAST_FOOD)}
+                        onchange={(e) => checkBox(OSMCategories.value.FAST_FOOD, e)}
+					/>
+					Fast Food<img src={getCategoryIconUrl(OSMCategories.value.FAST_FOOD)} alt="Fast Food" style="width: 24px; height: 24px;" />
+				</label>
+				<label>
+                    <input
+						type="checkbox"
 						value={OSMCategories.value.CAMP_SITE}
 						checked={selectedCategories.includes(OSMCategories.value.CAMP_SITE)}
                         onchange={(e) => checkBox(OSMCategories.value.CAMP_SITE, e)}
