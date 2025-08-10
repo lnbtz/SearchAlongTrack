@@ -41,11 +41,13 @@
     nav {
         margin: 0 auto;
         max-width: 72rem;
+        width: 100%;
         padding: 0.6rem 1rem;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 1rem;
+        box-sizing: border-box;
     }
 
     .brand-link {
@@ -111,5 +113,31 @@
         background: color-mix(in oklab, var(--primary) 8%, transparent);
         box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--primary) 20%, transparent);
         transform: translateY(-1px);
+    }
+
+    @media (max-width: 640px) {
+        nav {
+            padding: 0.5rem 0.75rem;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .title {
+            font-size: 0.95rem;
+        }
+        .links {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            white-space: nowrap;
+            justify-content: flex-start;
+            gap: 0.25rem;
+        }
+        .links li {
+            flex: 0 0 auto;
+        }
+        nav a {
+            padding: 0.45rem 0.6rem;
+            font-size: 0.9rem;
+        }
     }
 </style>

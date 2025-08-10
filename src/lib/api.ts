@@ -3,7 +3,7 @@ import { get } from 'svelte/store';
 import type { OverpassJson } from "overpass-ts";
 import { overpass } from "overpass-ts";
 
-import { QueryBodies } from './osm-constants';
+import { OverpassQueryResultDebug, QueryBodies } from './osm-constants';
 
 
 const queryHeader: string = `[out:json];
@@ -32,27 +32,27 @@ export async function searchAlongTrack() {
         return;
     }
     // inject test response here
-    // if (testingQuery()) {
-    //     const testResponse: OverpassJson = OverpassAllButVending;
-    //     searchResultsCache.set(queryHash, testResponse);
-    //     searchResultsCacheStore.set(searchResultsCache);
-    //     lastQueryHashStore.set(queryHash);
-    // }
-    // for testing purposes, use the test response instead of the actual query
+    
+        const testResponse: OverpassJson = OverpassQueryResultDebug;
+        searchResultsCache.set(queryHash, testResponse);
+        searchResultsCacheStore.set(searchResultsCache);
+        lastQueryHashStore.set(queryHash);
+    
+
 
     // execute query
-    await overpass(query)
-        .then((response) => response.json())
-        .then((json) => {
-            json = json as OverpassJson;
-            // cache the response
-            searchResultsCache.set(queryHash, json);
-            searchResultsCacheStore.set(searchResultsCache);
-            // update the last search query store
-            // this triggers the UI to update
-            lastQueryHashStore.set(queryHash);
-            console.log('Overpass JSON:', json);
-        });
+    // await overpass(query)
+    //     .then((response) => response.json())
+    //     .then((json) => {
+    //         json = json as OverpassJson;
+    //         // cache the response
+    //         searchResultsCache.set(queryHash, json);
+    //         searchResultsCacheStore.set(searchResultsCache);
+    //         // update the last search query store
+    //         // this triggers the UI to update
+    //         lastQueryHashStore.set(queryHash);
+    //         console.log('Overpass JSON:', json);
+    //     });
 }
 
 function buildPolyQueryBody() {
@@ -82,7 +82,3 @@ async function createQueryHash(query: string): Promise<string> {
     }
     return hash.toString();
 }
-// function testingQuery() {
-//     return true;
-// }
-

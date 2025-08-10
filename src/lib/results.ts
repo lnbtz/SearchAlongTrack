@@ -145,20 +145,21 @@ function buildTableRow(entry: { lat?: number; lon?: number; element?: OverpassNo
 function buildLocationMap(queryResults: OverpassJson | undefined, locationMap: Map<number, { lat: number, lon: number, element: OverpassNode | OverpassWay | OverpassRelation }>) {
     queryResults?.elements.forEach((element) => {
         if (element.type === 'node' && element.tags) {
-
             locationMap.set(element.id, { lat: element.lat, lon: element.lon, element: element as OverpassNode });
-        } else if (element.type === 'way' && element.nodes) {
+        }
+    });
+    queryResults?.elements.forEach((element) => {
+        if (element.type === 'way' && element.nodes) {
             const firstNodeId = element.nodes[0];
             const firstNode = locationMap.get(firstNodeId);
             if (firstNode) {
-
+                console.log(element.tags)
                 locationMap.set(element.id, { lat: firstNode.lat, lon: firstNode.lon, element: element as OverpassWay });
             }
         } else if (element.type === 'relation') {
             const firstMemberId = element.members[0].ref;
             const firstMember = locationMap.get(firstMemberId);
             if (firstMember) {
-
                 locationMap.set(element.id, { lat: firstMember.lat, lon: firstMember.lon, element: element as OverpassRelation });
             }
         }

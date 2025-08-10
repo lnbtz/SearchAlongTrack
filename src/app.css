@@ -60,6 +60,10 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+/* Global safety nets to prevent horizontal overflow */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { max-width: 100%; overflow-x: hidden; }
+
 h1,
 h2,
 p {
