@@ -1,4 +1,6 @@
-{
+
+export const OverpassQueryResultDebug: OverpassJson= {
+
   "version": 0.6,
   "generator": "Overpass API 0.7.62.7 375dc00a",
   "osm3s": {
@@ -6161,4 +6163,5 @@
       "lon": 8.6273269
     }
   ]
+
 }
