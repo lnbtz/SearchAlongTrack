@@ -119,8 +119,12 @@
 	{/if}
 </div>
 
-<div>
-	<ul class="track-list">
+<div class="tracks-card">
+    <header class="tracks-head">
+        <h3>Your tracks</h3>
+        <p class="muted">Load to view on map or delete to remove from storage.</p>
+    </header>
+    <ul class="track-list">
 		{#each Object.entries(allTracks) as [trackName, track]}
 			<li class="track-item">
 				<span class="track-name">{track.features[0]?.properties?.name || trackName}</span>
@@ -159,124 +163,70 @@
 		margin: 1rem 0;
 	}
 	.info-banner {
-		background: linear-gradient(90deg, #e0e7ff 0%, #f0f4ff 100%);
-		border: 1.5px solid #31497a;
-		border-radius: 12px;
-		padding: 1.5rem 2rem;
-		margin: 2rem auto 1.5rem auto;
-		max-width: 480px;
-		box-shadow: 0 2px 12px rgba(60, 80, 180, 0.07);
-		text-align: center;
-	}
-	.info-banner h2 {
-		margin: 0 0 0.5rem 0;
-		font-size: 1.35rem;
-		color: #31497a;
-		font-weight: 700;
-		letter-spacing: 0.01em;
-	}
-	.info-banner p {
-		color: #4f5fff;
-		font-size: 1.05rem;
-		margin-bottom: 0.7rem;
-	}
-	.info-banner ul {
-		list-style: disc inside;
-		color: #2d3a5a;
-		font-size: 0.98rem;
-		margin: 0.5rem 0 0 0;
-		padding: 0;
-	}
-	.info-banner li {
-		margin-bottom: 0.2rem;
-	}
-	.info-banner .highlight {
-		background: #dbeafe;
-		color: #31497a;
-		padding: 0.1em 0.35em;
-		border-radius: 0.4em;
-		font-weight: 600;
-	}
-	.track-list {
-		margin: 2rem 0;
-		padding: 0;
-		list-style: none;
-		max-width: 600px;
-	}
+        position: relative;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 1.25rem 1.5rem 1.25rem 1.75rem;
+        margin: 1.25rem auto;
+        max-width: 620px;
+        box-shadow: var(--shadow-sm);
+        text-align: center;
+    }
+    .info-banner::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 6px;
+        border-radius: var(--radius-md) 0 0 var(--radius-md);
+        background: linear-gradient(180deg, var(--primary) 0%, var(--primary-700) 100%);
+    }
+    .info-banner h2 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.35rem;
+        color: var(--text);
+        font-weight: 800;
+        letter-spacing: 0.01em;
+    }
+    .info-banner p {
+        color: var(--text);
+        opacity: 0.9;
+        font-size: 1.02rem;
+        margin-bottom: 0.5rem;
+    }
+    .info-banner ul {
+        list-style: disc inside;
+        color: var(--text);
+        opacity: 0.9;
+        font-size: 0.98rem;
+        margin: 0.5rem 0 0 0;
+        padding: 0;
+        text-align: left;
+        display: inline-block;
+    }
+    .tracks-card { border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-elevated); box-shadow: var(--shadow-md); max-width: 820px; margin: 1.5rem auto; overflow: hidden; }
+    .tracks-head { padding: .85rem 1rem; border-bottom: 1px solid var(--border); background: color-mix(in oklab, var(--primary) 6%, var(--bg)); text-align: center; }
+    .tracks-head h3 { margin: 0; font-weight: 800; }
+    .tracks-head .muted { margin: .25rem 0 0 0; color: var(--text-muted); }
+    .track-list { margin: 1rem auto; padding: 1rem; list-style: none; max-width: 720px; display: grid; gap: 1rem; }
 
-	.track-item {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 1.2rem 1.5rem;
-		margin-bottom: 1.2rem;
-		background: #f6f8fc;
-		border-radius: 12px;
-		box-shadow: 0 2px 8px rgba(66, 103, 178, 0.08);
-		border: 1.5px solid #31497a;
-		transition: box-shadow 0.18s, transform 0.12s, border 0.18s;
-	}
+    .track-item { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1rem; background: var(--bg); border-radius: 12px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); transition: box-shadow .18s, transform .12s, border .18s; }
 
-	.track-item:hover {
-		box-shadow: 0 4px 16px rgba(66, 103, 178, 0.13);
-		transform: translateY(-1px) scale(1.01);
-		border-color: #4267b2;
-	}
+    .track-item:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); border-color: color-mix(in oklab, var(--primary) 35%, var(--border)); }
 
-	.track-name {
-		font-weight: 600;
-		font-size: 1.13rem;
-		color: #31497a;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		max-width: 260px;
-		letter-spacing: 0.01em;
-	}
+    .track-name { font-weight: 700; font-size: 1.02rem; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60%; letter-spacing: .01em; }
 
-	.track-actions {
-		display: flex;
-		gap: 0.5rem;
-	}
+    .track-actions { display: flex; gap: .5rem; }
 
-	.load-btn {
-		background: #4267b2;
-		color: white;
-		border: 1.5px solid #31497a;
-		padding: 0.4rem 0.9rem;
-		border-radius: 8px;
-		cursor: pointer;
-		font-size: 1rem;
-		transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.1s;
-		box-shadow: 0 1px 4px rgba(66, 103, 178, 0.07);
-	}
+    .load-btn { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-700) 100%); color: #fff; border: 1px solid color-mix(in oklab, var(--primary) 40%, transparent); padding: .4rem .85rem; border-radius: 10px; cursor: pointer; font-size: .95rem; box-shadow: 0 10px 18px rgba(59,130,246,.25); }
 
-	.load-btn:hover {
-		background: #31497a;
-		color: #fff;
-		box-shadow: 0 2px 8px rgba(66, 103, 178, 0.13);
-		transform: translateY(-1px) scale(1.01);
-	}
+    .load-btn:hover { transform: translateY(-1px); }
 
-	.delete-btn {
-		background: #ef4444;
-		color: #fff;
-		border: 1.5px solid #ef4444;
-		padding: 0.4rem 0.7rem;
-		border-radius: 8px;
-		cursor: pointer;
-		display: flex;
-		align-items: center;
-		transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.1s;
-		box-shadow: 0 1px 4px rgba(239, 68, 68, 0.07);
-	}
+    .delete-btn { background: #ef4444; color: #fff; border: 1px solid #ef4444; padding: .4rem .7rem; border-radius: 10px; cursor: pointer; display: flex; align-items: center; box-shadow: 0 10px 18px rgba(239,68,68,.18); }
 
-	.delete-btn:hover {
-		background: #b91c1c;
-		color: #fff;
-		box-shadow: 0 2px 8px rgba(239, 68, 68, 0.13);
-		transform: translateY(-1px) scale(1.01);
-	}
+    .delete-btn:hover { transform: translateY(-1px); }
 
 	.delete-btn .trash-icon {
 		stroke: #fff;
@@ -289,16 +239,7 @@
 		stroke: currentColor;
 		fill: none;
 	}
-	@media (max-width: 600px) {
-		.track-item {
-			padding: 0.8rem 0.7rem;
-			margin-bottom: 0.7rem;
-		}
-		.track-name {
-			max-width: 120px;
-			font-size: 1rem;
-		}
-	}
+    @media (max-width: 600px) { .track-item { padding: .8rem .7rem; } .track-name { max-width: 60%; font-size: 1rem; } }
 
 
 </style>

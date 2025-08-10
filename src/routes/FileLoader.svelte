@@ -27,9 +27,27 @@
 	let loading = $state(false);
 	let progress = $state(0);
 
+	function onDragOver(event: DragEvent) {
+		event.preventDefault();
+	}
+
+	function onDrop(event: DragEvent) {
+		event.preventDefault();
+		const file = event.dataTransfer?.files?.[0];
+		if (file) processFile(file);
+	}
+
 	async function handleChange(e: Event) {
 		const file = (e.target as HTMLInputElement).files?.[0];
 		if (!file) return;
+		await processFile(file);
+	}
+
+	async function processFile(file: File) {
+		if (!file.name.toLowerCase().endsWith('.gpx')) {
+			alert('Please select a GPX file (.gpx)');
+			return;
+		}
 		loadingState = 'uploading';
 		loading = true;
 
@@ -59,82 +77,96 @@
 	<ul>
 		<li>
 			<span class="highlight">1. Upload</span> a GPX track file. Then wait for the results along your
-			track and navigate to the Map Tab.
+			track.
 		</li>
 		<li>
-			<span class="highlight">2. Go to the <b>Map</b> tab</span> to view the results on the map.
+			<span class="highlight">2. Go to the <a href="/map"><b>Map</b></a> tab</span> to view the results on the map.
 		</li>
 		<li>
-			To see previous search results, navigate to the <b>Load</b> tab.
+			To see previous search results, navigate to the <a href="/load"><b>Load</b></a> tab.
 		</li>
 	</ul>
 </div>
 
-<div class="upload-container">
+<div class="upload-card">
 	{#if !loading && loadingState === 'idle'}
-		<div class="upload-title">Load GPX File</div>
-		<div class="upload-desc">
-			1. Upload a GPX file to visualize your track on the map.<br />
-			Drag &amp; drop or click below to select a file.
-		</div>
-		<label class="upload-label" for="file-input">
-			<span class="upload-icon">📁</span>
-			<span class="upload-text">{loading ? 'Uploading...' : 'Click or Drag GPX file here'}</span>
+		<header class="card-head">
+			<h3>Load a GPX track</h3>
+			<p class="muted">Drag & drop your .gpx file here or click to browse.</p>
+		</header>
+		<label class="dropzone" for="file-input" ondragover={onDragOver} ondrop={onDrop}>
+			<div class="dz-badge">GPX</div>
+			<div class="dz-icon">📁</div>
+			<div class="dz-text">Click to choose a file or drop it here</div>
+			<div class="dz-sub">Supported format: .gpx</div>
 		</label>
 		<input id="file-input" type="file" accept=".gpx" onchange={handleChange} />
 	{:else if loading && loadingState === 'uploading'}
-		<div class="progress-bar">
-			<div class="progress-bar-inner" style="--progress: {progress}%"></div>
+		<div class="state state-uploading">
+			<div class="progress"><div class="bar" style="--progress: {progress}%"></div></div>
+			<p class="muted">Uploading… {progress}%</p>
 		</div>
 	{:else if loadingState === 'searching'}
-		<div class="loadingState">
-			<span class="loader"></span>
-			🔎 Searching for Points of Interest along the GPX Track...
+		<div class="state state-searching">
+			<span class="spinner" aria-hidden="true"></span>
+			<p>Searching for points of interest along your track…</p>
 		</div>
 	{:else if loadingState === 'done'}
-		<div class="result-banner">
-			<span class="result-icon">✅</span>
-			<span class="result-text">Search completed! Results are ready.</span>
-		</div>
-		<div class="centered-button">
-			<button class="search-button" onclick={() => goto('/map')}>View Results on Map</button>
+		<div class="state state-done">
+			<div class="success">✅ Results are ready</div>
+			<button class="cta" onclick={() => goto('/map')}>View Results on Map</button>
 		</div>
 	{/if}
 </div>
 
 <style>
-	.result-banner {
-		background-color: #d4edda;
-		color: #155724;
-		border: 1px solid #c3e6cb;
-		padding: 10px;
-		border-radius: 5px;
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		margin-top: 10px;
-	}
-	.result-icon {
-		font-size: 24px;
-	}
-	.result-text {
-		font-size: 16px;
-	}
-	.loadingState {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		background: linear-gradient(90deg, #e3f0ff 0%, #f6fafd 100%);
-		border: 1px solid #b3d1fa;
-		border-radius: 6px;
-		padding: 12px 20px;
-		box-shadow: 0 2px 8px rgba(66, 103, 178, 0.08);
-		color: #235390;
-		font-size: 17px;
-		font-weight: 500;
-		margin-top: 10px;
-		animation: loadingBannerPulse 1.5s infinite alternate;
-	}
+    .upload-card {
+        display: grid;
+        gap: 1rem;
+        padding: 1.25rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        background: var(--bg-elevated);
+        box-shadow: var(--shadow-md);
+        max-width: 560px;
+        margin: 1.5rem auto;
+    }
+    .card-head h3 { margin: 0; font-weight: 800; letter-spacing: .2px; }
+    .card-head .muted { margin: .25rem 0 0 0; color: var(--text-muted); }
+
+    .dropzone {
+        display: grid;
+        justify-items: center;
+        text-align: center;
+        gap: .25rem;
+        padding: 2rem 1.5rem;
+        border: 2px dashed color-mix(in oklab, var(--primary) 55%, var(--border));
+        border-radius: var(--radius-lg);
+        background: color-mix(in oklab, var(--primary) 8%, var(--bg));
+        cursor: pointer;
+        transition: border-color .2s ease, background .2s ease, transform .06s ease;
+    }
+    .dropzone:hover { transform: translateY(-1px); background: color-mix(in oklab, var(--primary) 12%, var(--bg)); }
+    .dz-badge { font-weight: 800; color: var(--primary-700); background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 999px; padding: 2px 8px; }
+    .dz-icon { font-size: 2rem; }
+    .dz-text { font-weight: 700; }
+    .dz-sub { font-size: .9rem; color: var(--text-muted); }
+
+    .state { display: grid; gap: .5rem; align-items: center; justify-items: center; text-align: center; }
+    .progress { width: 100%; height: 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 999px; overflow: hidden; }
+    .bar { height: 100%; background: linear-gradient(90deg, var(--primary) 0%, var(--primary-700) 100%); width: var(--progress, 0%); transition: width .3s ease; }
+    .spinner { width: 22px; height: 22px; border: 3px solid color-mix(in oklab, var(--primary) 20%, transparent); border-top-color: var(--primary-700); border-radius: 999px; animation: spin 1s linear infinite; }
+    .state-searching p { margin: 0; font-weight: 600; color: var(--primary-700); }
+    .success { color: #16a34a; font-weight: 800; }
+    .cta {
+        margin-top: .25rem;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-700) 100%);
+        color: #fff; border: 1px solid color-mix(in oklab, var(--primary) 40%, transparent);
+        padding: .6rem 1.1rem; border-radius: 10px; font-weight: 700; cursor: pointer;
+        box-shadow: 0 10px 22px rgba(59,130,246,.35);
+        transition: transform .08s ease, box-shadow .2s ease;
+    }
+    .cta:hover { transform: translateY(-1px); }
 
 	@keyframes loadingBannerPulse {
 		0% {
@@ -146,18 +178,7 @@
 			background: linear-gradient(90deg, #d0e7ff 0%, #eaf6ff 100%);
 		}
 	}
-	.loader {
-		border: 4px solid rgba(0, 123, 255, 0.2);
-		border-left-color: #007bff;
-		border-radius: 50%;
-		width: 24px;
-		height: 24px;
-		animation: spin 1s linear infinite;
-		display: inline-block;
-		background: none;
-		box-shadow: none;
-		aspect-ratio: 1 / 1;
-	}
+    /* old loader unused */
 	@keyframes spin {
 		0% {
 			transform: rotate(0deg);
@@ -175,133 +196,61 @@
 			box-shadow: 0 0 0 8px rgba(0, 123, 255, 0.1);
 		}
 	}
-	.search-button {
-		background: #4267b2;
-		color: #fff;
-		border: 1.5px solid #31497a;
-		padding: 10px 26px;
-		border-radius: 8px;
-		cursor: pointer;
-		font-size: 17px;
-		font-weight: 500;
-		letter-spacing: 0.5px;
-		box-shadow: 0 2px 8px rgba(66, 103, 178, 0.1);
-		transition:
-			background 0.2s,
-			box-shadow 0.2s,
-			transform 0.1s;
-	}
-	.search-button:hover {
-		background: #365899;
-		box-shadow: 0 4px 16px rgba(66, 103, 178, 0.18);
-		transform: translateY(-1px) scale(1.02);
-	}
-	.search-button:active {
-		background: #31497a;
-		transform: scale(0.98);
-		box-shadow: 0 1px 4px rgba(66, 103, 178, 0.08);
-	}
-	.search-button:focus {
-		outline: none;
-		box-shadow: 0 0 0 2px #a3bffa;
-	}
-	.info-banner {
-		background: linear-gradient(90deg, #e0e7ff 0%, #f0f4ff 100%);
-		border: 1.5px solid #31497a;
-		border-radius: 12px;
-		padding: 1.5rem 2rem;
-		margin: 2rem auto 1.5rem auto;
-		max-width: 480px;
-		box-shadow: 0 2px 12px rgba(60, 80, 180, 0.07);
-		text-align: center;
-	}
-	.info-banner h2 {
-		margin: 0 0 0.5rem 0;
-		font-size: 1.35rem;
-		color: #31497a;
-		font-weight: 700;
-		letter-spacing: 0.01em;
-	}
-	.info-banner p {
-		color: #4f5fff;
-		font-size: 1.05rem;
-		margin-bottom: 0.7rem;
-	}
-	.info-banner ul {
-		list-style: disc inside;
-		color: #2d3a5a;
-		font-size: 0.98rem;
-		margin: 0.5rem 0 0 0;
-		padding: 0;
-	}
-	.info-banner li {
-		margin-bottom: 0.2rem;
-	}
-	.info-banner .highlight {
-		background: #dbeafe;
-		color: #31497a;
-		padding: 0.1em 0.35em;
-		border-radius: 0.4em;
-		font-weight: 600;
-	}
-	.centered-button {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		margin-top: 2rem;
-	}
-	.upload-container {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 2rem;
-		background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
-		box-shadow: 0 4px 24px rgba(60, 80, 180, 0.08);
-		max-width: 400px;
-		margin: 2rem auto;
-		border: 1.5px solid #31497a;
-		border-radius: 12px;
-	}
-
-	.upload-title {
-		font-size: 1.5rem;
-		font-weight: 700;
-		color: #2d3a5a;
-		margin-bottom: 0.5rem;
-	}
-
-	.upload-desc {
-		color: #5a6b8a;
-		margin-bottom: 1.5rem;
-		text-align: center;
-	}
-
-	.upload-label {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		background: #fff;
-		border: 2px dashed #7b8cff;
-		border-radius: 0.75rem;
-		padding: 2rem 2.5rem;
-		cursor: pointer;
-		transition: border-color 0.2s;
-		margin-bottom: 1rem;
-	}
-
-	.upload-label:hover {
-		border-color: #4f5fff;
-		background: #f5f7ff;
-	}
-
-	.upload-icon {
-		font-size: 2.5rem;
-		margin-bottom: 0.5rem;
-		color: #4f5fff;
-		animation: bounce 1.2s infinite alternate;
-	}
+    
+    .info-banner {
+        position: relative;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 1.25rem 1.5rem 1.25rem 1.75rem;
+        margin: 1.25rem auto;
+        max-width: 620px;
+        box-shadow: var(--shadow-sm);
+        text-align: center;
+    }
+    .info-banner::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 6px;
+        border-radius: var(--radius-md) 0 0 var(--radius-md);
+        background: linear-gradient(180deg, var(--primary) 0%, var(--primary-700) 100%);
+    }
+    .info-banner h2 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.35rem;
+        color: var(--text);
+        font-weight: 800;
+        letter-spacing: 0.01em;
+    }
+    .info-banner p {
+        color: var(--text);
+        opacity: 0.9;
+        font-size: 1.02rem;
+        margin-bottom: 0.5rem;
+    }
+    .info-banner ul {
+        list-style: disc inside;
+        color: var(--text);
+        opacity: 0.9;
+        font-size: 0.98rem;
+        margin: 0.5rem 0 0 0;
+        padding: 0;
+        text-align: left;
+        display: inline-block;
+    }
+    .info-banner li { margin-bottom: 0.2rem; }
+    .info-banner a { color: var(--primary-700); text-decoration: underline; font-weight: 700; }
+    .info-banner .highlight {
+        background: color-mix(in oklab, var(--primary) 10%, var(--bg));
+        color: var(--primary-700);
+        padding: 0.1em 0.4em;
+        border: 1px solid color-mix(in oklab, var(--primary) 35%, transparent);
+        border-radius: 0.45em;
+        font-weight: 700;
+    }
 
 	@keyframes bounce {
 		0% {
@@ -312,29 +261,9 @@
 		}
 	}
 
-	.upload-text {
-		font-size: 1rem;
-		color: #4f5fff;
-		font-weight: 500;
-	}
 
 	input[type='file'] {
 		display: none;
 	}
 
-	.progress-bar {
-		width: 100%;
-		height: 6px;
-		background: #e0e7ff;
-		border-radius: 3px;
-		overflow: hidden;
-		margin-top: 1rem;
-	}
-
-	.progress-bar-inner {
-		height: 100%;
-		background: linear-gradient(90deg, #7b8cff 0%, #4f5fff 100%);
-		width: var(--progress, 0%);
-		transition: width 0.3s;
-	}
 </style>

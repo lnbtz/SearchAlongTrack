@@ -3,6 +3,10 @@ import {
     gpxTrackStore,
     selectedStartRangeStore,
     selectedEndRangeStore,
+    selectedRadiusStore,
+    selectedCategoriesStore,
+    tableDataStore,
+    tableDataDisplayStore,
     selectedRangeTrackStore,
     simplifiedGpxTrackStore,
     polyAroundTrackStore
@@ -10,7 +14,8 @@ import {
 import { get } from "svelte/store";
 import type { FeatureCollection, GeoJsonProperties, Geometry, LineString } from "geojson";
 import { lineSliceAlong, simplify, buffer } from '@turf/turf';
-import { SEARCH_CORRIDOR_RADIUS } from "./osm-constants";
+import { OSMCategoriesMap, SEARCH_CORRIDOR_RADIUS } from "./osm-constants";
+import type { TableRow } from './results';
 
 export function handleGpxTrack() {
     setTrackLengthStore();
@@ -89,6 +94,43 @@ export function calculateSelectedRangeTrackStore() {
         features: [sliced]
     };
     selectedRangeTrackStore.set(selectedRangeTrack);
+}
+
+/**
+ * Recompute the filtered table data based on the currently selected
+ * categories, radius, and start/end ranges. Updates tableDataDisplayStore.
+ */
+export function recomputeTableDataDisplay(): TableRow[] {
+    const selectedCategories = get(selectedCategoriesStore);
+    const selectedRadius = get(selectedRadiusStore);
+    const selectedStartRange = get(selectedStartRangeStore);
+    const selectedEndRange = get(selectedEndRangeStore);
+    const tableData = get(tableDataStore);
+
+    const types: string[] = [];
+    OSMCategoriesMap.forEach((values, key) => {
+        if (selectedCategories.includes(key)) {
+            types.push(...values);
+        }
+    });
+
+    const tableDataDisplay = tableData
+        .filter((row) => {
+            return (
+                types.includes(row.type) &&
+                (row.distanceOnRoute ?? 0) <= selectedEndRange &&
+                (row.distanceOnRoute ?? 0) >= selectedStartRange &&
+                (row.distanceFromRoute ?? Infinity) <= selectedRadius
+            );
+        })
+        .sort((a, b) => {
+            if ((a.distanceOnRoute ?? 0) < (b.distanceOnRoute ?? 0)) return -1;
+            if ((a.distanceOnRoute ?? 0) > (b.distanceOnRoute ?? 0)) return 1;
+            return 0;
+        });
+
+    tableDataDisplayStore.set(tableDataDisplay);
+    return tableDataDisplay;
 }
 
 // export function getCoordinatesAlongSelectedTrack() {

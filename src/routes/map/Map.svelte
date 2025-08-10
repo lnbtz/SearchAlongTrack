@@ -1,24 +1,28 @@
 <script lang="ts">
 	import type { Geometry, GeoJsonProperties } from 'geojson';
 	import { onDestroy, onMount } from 'svelte';
-	import maplibregl, { GeolocateControl } from 'maplibre-gl';
+    import maplibregl, { GeolocateControl } from 'maplibre-gl';
 	import 'maplibre-gl/dist/maplibre-gl.css';
-	import {
-		gpxTrackStore,
-		selectedRangeTrackStore,
-		tableDataDisplayStore,
-		mapInstanceStore,
-		markersStore
-	} from '$lib/stores';
+    import {
+        gpxTrackStore,
+        selectedRangeTrackStore,
+        tableDataDisplayStore,
+        tableDataStore,
+        mapInstanceStore,
+        markersStore
+    } from '$lib/stores';
 	import { get } from 'svelte/store';
-	import { displayType, type TableRow } from '$lib/results';
+    import { displayType, type TableRow } from '$lib/results';
+    import MapControls from './MapControls.svelte';
+    import { recomputeTableDataDisplay } from '$lib/util';
 
-	const markerSize = 15; // Size of the marker in pixels
+	const markerWidth = 32; // Size of the marker in pixels
+	const markerHeight = 36;
 	let mapContainer: HTMLDivElement;
 	let map: maplibregl.Map;
 	let lastMapState: { center: [number, number]; zoom: number } | null = null;
 
-	onMount(() => {
+    onMount(() => {
 		let mapOptions = {
 			container: mapContainer,
 			style: `https://api.maptiler.com/maps/openstreetmap/style.json?key=${import.meta.env.VITE_MAPTILER_API_KEY}`,
@@ -46,7 +50,9 @@
 				trackUserLocation: true
 			})
 		);
-		mapInstanceStore.set(map);
+        mapInstanceStore.set(map);
+        // ensure filtered table reflects current controls initially
+        recomputeTableDataDisplay();
 	});
 	onDestroy(() => {
 		if (map) {
@@ -68,9 +74,14 @@
 		}
 	});
 
-	tableDataDisplayStore.subscribe((tableData) => {
+    tableDataDisplayStore.subscribe((tableData) => {
 		addOrUpdateTableDataDisplay(tableData);
 	});
+
+    // Ensure the filtered view refreshes when new raw results arrive
+    tableDataStore.subscribe(() => {
+        recomputeTableDataDisplay();
+    });
 
 	function addOrUpdateSelectedRangeGpxTrack(
 		geojson: GeoJSON.FeatureCollection<Geometry, GeoJsonProperties>
@@ -187,10 +198,10 @@
 				el.className = 'marker';
 				el.style.backgroundImage = getIcon(row.category ? row.category : '');
 				el.style.position = 'absolute';
-				el.style.width = `${markerSize}px`;
-				el.style.height = `${markerSize}px`;
-				const popup = new maplibregl.Popup({ offset: markerSize });
-				popup.setHTML(buildHTML(row));
+				el.style.width = `${markerWidth}px`;
+				el.style.height = `${markerHeight}px`;
+				const popup = new maplibregl.Popup({ offset: markerHeight });
+				popup.setHTML(buildPopupHTML(row));
 				const marker = new maplibregl.Marker({ element: el })
 					.setLngLat([row.location.lon, row.location.lat])
 					.setPopup(popup)
@@ -208,20 +219,20 @@
 		}
 	}
 
-	function buildHTML(row: TableRow) {
+	function buildPopupHTML(row: TableRow) {
 		return `
-				<div style="font-weight: bold;">
+				<div style="font-weight: bold; font-size: 1rem; background: black; border-radius: 6px; padding: 2px 6px; margin-bottom: 4px;">
 					${displayType(row.type) || 'Unknown type'}
 				</div>
-				<div style="background: #f0f0f0; border-radius: 6px; padding: 2px 6px; margin-bottom: 4px;">
+				<div style="background: red; border-radius: 6px; padding: 2px 6px; margin-bottom: 4px;">
 					<span style="font-weight: bold;">Name: </span>
 					${row.name ? `<span>${row.name}</span>` : '<span>n/a</span>'}
 				</div>
-				<div style="background: #e6f9e6; border-radius: 6px; padding: 2px 6px; margin-bottom: 4px;">
+				<div style="background: green; border-radius: 6px; padding: 2px 6px; margin-bottom: 4px;">
 					<span style="font-weight: bold;">Distance on route: </span>
 					${row.distanceOnRoute !== undefined ? `<span>${row.distanceOnRoute.toFixed(1)} km</span>` : 'n/a'}
 				</div>
-				<div style="background: #e6f0fa; border-radius: 6px; padding: 2px 6px; margin-bottom: 4px;">
+				<div style="background: blue; border-radius: 6px; padding: 2px 6px; margin-bottom: 4px;">
 					<span style="font-weight: bold;">Distance from route: </span>
 					${row.distanceFromRoute !== undefined ? `<span>ca. ${row.distanceFromRoute.toFixed(0)} m</span>` : 'n/a'}
 				</div>
@@ -426,122 +437,73 @@
 				</a>
 			</div>`;
 	}
-	// simplifiedGpxTrackStore.subscribe((geojson) => {
-	// 	if (map && geojson) {
-	// 		if (!map.getSource('simplified-gpx-track')) {
-	// 			map.addSource('simplified-gpx-track', {
-	// 				type: 'geojson',
-	// 				data: geojson
-	// 			});
-
-	// 			map.addLayer({
-	// 				id: 'simplified-gpx-track-line',
-	// 				type: 'line',
-	// 				source: 'simplified-gpx-track',
-	// 				layout: {
-	// 					'line-join': 'round',
-	// 					'line-cap': 'round'
-	// 				},
-	// 				paint: {
-	// 					'line-color': '#0000ff', // Blue color for the simplified track
-	// 					'line-width': 2
-	// 				}
-	// 			});
-	// 		} else {
-	// 			const source = map.getSource('simplified-gpx-track') as maplibregl.GeoJSONSource;
-	// 			source.setData(geojson);
-	// 		}
-	// 	}
-	// });
-	// polyAroundTrackStore.subscribe((polygon) => {
-	// 	if (map && polygon) {
-	// 		if (!map.getSource('poly-around-track')) {
-	// 			map.addSource('poly-around-track', {
-	// 				type: 'geojson',
-	// 				data: polygon
-	// 			});
-
-	// 			map.addLayer({
-	// 				id: 'poly-around-track-fill',
-	// 				type: 'fill',
-	// 				source: 'poly-around-track',
-	// 				paint: {
-	// 					'fill-color': '#0000ff', // Blue color for the polygon around the track
-	// 					'fill-opacity': 0.3
-	// 				}
-	// 			});
-	// 		} else {
-	// 			const source = map.getSource('poly-around-track') as maplibregl.GeoJSONSource;
-	// 			source.setData(polygon);
-	// 		}
-	// 	}
-	// });
-
-	// selectedPointsStoreAlongTrackStore.subscribe((coordinates) => {
-	// 	if (coordinates) {
-	// 		if (!map.getSource('coordinates')) {
-	// 			map.addSource('coordinates', {
-	// 				type: 'geojson',
-	// 				data: coordinates
-	// 			});
-
-	// 			map.addLayer({
-	// 				id: 'coordinates-circle',
-	// 				type: 'circle',
-	// 				source: 'coordinates',
-	// 				paint: {
-	// 					'circle-radius': 4,
-	// 					'circle-color': '#0000ff', // Blue color for the coordinates
-	// 					'circle-opacity': 0.8
-	// 				}
-	// 			});
-	// 		} else {
-	// 			const source = map.getSource('coordinates') as maplibregl.GeoJSONSource;
-	// 			source.setData(coordinates);
-	// 		}
-	// 	}
-	// });
-	// searchBbox
-	// bboxAroundSelectedTrackStore.subscribe((bbox) => {
-	// 	if (bbox) {
-	// 		if (!map.getSource('bbox')) {
-	// 			map.addSource('bbox', {
-	// 				type: 'geojson',
-	// 				data: bbox
-	// 			});
-
-	// 			map.addLayer({
-	// 				id: 'bbox-circle',
-	// 				type: 'circle',
-	// 				source: 'bbox',
-	// 				paint: {
-	// 					'circle-radius': 4,
-	// 					'circle-color': '#0000ff', // Blue color for the coordinates
-	// 					'circle-opacity': 0.8
-	// 				}
-	// 			});
-	// 		} else {
-	// 			const source = map.getSource('bbox') as maplibregl.GeoJSONSource;
-	// 			source.setData(bbox);
-	// 		}
-	// 	}
-	// }
-	// );
 
 	function getIcon(category: string): string {
 		if (!category) {
-			return 'url(/icons/default.svg)'; // Default icon if type is not provided
+			return 'url(/icons/new_icons/default.png)'; // Default icon if type is not provided
 		}
-		return `url(/icons/${category}.svg)`;
+		return `url(/icons/new_icons/${category}.png)`;
 	}
 </script>
 
-<div bind:this={mapContainer} id="map"></div>
+<div class="map-wrapper">
+    <div bind:this={mapContainer} id="map"></div>
+    <MapControls />
+</div>
 
 <style>
-	#map {
-		width: 100%;
-		height: 100vh;
-		overflow: hidden;
-	}
+    .map-wrapper { position: relative; }
+    #map {
+        width: 100%;
+        height: min(100vh, 860px);
+        min-height: 420px;
+        overflow: hidden;
+    }
+
+    /* Ensure map popups are fully opaque and high-contrast */
+    :global(.maplibregl-popup) {
+        filter: none !important;
+        opacity: 1 !important;
+    }
+    :global(.maplibregl-popup-content) {
+        background: var(--bg-elevated) !important;
+        color: var(--text) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: var(--radius-md) !important;
+        box-shadow: var(--shadow-lg) !important;
+        font-family: var(--font-body) !important;
+    }
+    :global(.maplibregl-popup-close-button) {
+        color: var(--text) !important;
+        opacity: 1 !important;
+        font-weight: 700;
+    }
+    :global(.maplibregl-popup-tip) {
+        border-top-color: var(--bg-elevated) !important;
+        border-bottom-color: var(--bg-elevated) !important;
+    }
+
+    /* Structured, readable popup content */
+    :global(.sat-popup) { display: grid; gap: 8px; }
+    :global(.sat-header) { font-weight: 800; color: var(--primary-700); letter-spacing: .2px; }
+    :global(.sat-row) {
+        display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center;
+        padding: 8px 10px; border-radius: 10px; border: 1px solid var(--border);
+        background: var(--bg);
+    }
+    :global(.sat-success) { background: color-mix(in oklab, var(--accent) 12%, var(--bg) 88%); }
+    :global(.sat-info) { background: color-mix(in oklab, var(--primary) 12%, var(--bg) 88%); }
+    :global(.sat-label) { font-weight: 700; color: var(--text); opacity: .9; }
+    :global(.sat-value) { font-weight: 700; color: var(--text); }
+    :global(.sat-card) { border: 1px dashed var(--border); border-radius: 10px; padding: 8px 10px; background: var(--bg); }
+    :global(.sat-card-title) { font-weight: 800; margin-bottom: 4px; }
+    :global(.sat-card-body) { color: var(--text); opacity: .95; }
+    :global(.sat-link) { color: var(--primary-700); text-decoration: underline; font-weight: 600; }
+    :global(.sat-actions) { display: flex; gap: 8px; margin-top: 2px; }
+    :global(.sat-chip) {
+        display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px;
+        background: color-mix(in oklab, var(--primary) 12%, var(--bg-elevated) 88%);
+        color: var(--primary-700); border: 1px solid color-mix(in oklab, var(--primary) 35%, transparent);
+        text-decoration: none; font-weight: 700; font-size: .9rem;
+    }
 </style>

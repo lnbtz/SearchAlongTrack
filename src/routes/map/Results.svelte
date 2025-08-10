@@ -1,274 +1,37 @@
 <script lang="ts">
-	import { displayType, type TableRow } from '$lib/results';
-	import { OSMCategories, OSMCategoriesMap } from '$lib/osm-constants';
-	import {
-		mapInstanceStore,
-		markersStore,
-		selectedCategoriesStore,
-		selectedEndRangeStore,
-		selectedRadiusStore,
-		selectedStartRangeStore,
-		tableDataDisplayStore,
-		tableDataStore,
-		totalTrackLengthStore
-	} from '$lib/stores';
-	import { get } from 'svelte/store';
-	import { calculateSelectedRangeTrackStore, centerOnCoords } from '$lib/util';
-	import RangeSlider from 'svelte-range-slider-pips';
-	let tableData: TableRow[] = get(tableDataStore);
-	let tableDataDisplay: TableRow[] = get(tableDataDisplayStore);
-	let selectedCategories: string[] = get(selectedCategoriesStore).length === 0 ? 
-	Array.from(OSMCategoriesMap.keys()) : get(selectedCategoriesStore);
-	
-	let value = $selectedRadiusStore;
-	$: selectedRadiusStore.set(value);
+    import { displayType, type TableRow } from '$lib/results';
+    import { mapInstanceStore, markersStore, tableDataDisplayStore } from '$lib/stores';
+    import { get } from 'svelte/store';
+    import { centerOnCoords } from '$lib/util';
 
-	// Initialize local values from stores
-	let values = [$selectedStartRangeStore, $selectedEndRangeStore];
+    let tableDataDisplay: TableRow[] = get(tableDataDisplayStore);
 
-	// Update stores when slider changes
-	$: selectedStartRangeStore.set(values[0]);
-	$: selectedEndRangeStore.set(values[1]);
+    tableDataDisplayStore.subscribe((rows) => {
+        tableDataDisplay = rows || [];
+    });
 
-	// Update slider if stores change elsewhere
-	$: values = [$selectedStartRangeStore, $selectedEndRangeStore];
-
-	function checkBox(category: string, e: Event) {
-		const checked = (e.target as HTMLInputElement).checked;
-		if (checked) {
-			selectedCategories = [...selectedCategories, category];
-		} else {
-			selectedCategories = selectedCategories.filter((c) => c !== category);
-		}
-		selectedCategoriesStore.set(selectedCategories);
-	}
-
-	function handleShowOnMap(row: TableRow) {
-		const markers = get(markersStore);
-		const markerToPopup = markers.find((marker) => {
-			const lngLat = marker.getLngLat();
-			return lngLat.lat === row.location?.lat && lngLat.lng === row.location?.lon;
-		});
-		markerToPopup?.togglePopup();
-		const map = get(mapInstanceStore);
-		centerOnCoords(map, row.location ? row.location : { lat: 0, lon: 0 });
-	}
-
-	function filterTableData(
-		selectedCategories: string[],
-		tableData: TableRow[],
-		selectedRadius: number,
-		selectedStartRange: number,
-		selectedEndRange: number
-	): TableRow[] {
-		let types: string[] = [];
-		OSMCategoriesMap.forEach((values, key) => {
-			if (selectedCategories.includes(key)) {
-				types.push(...values);
-			}
-		});
-		const tableDataDisplay = tableData
-			.filter((row) => {
-				return (
-					types.includes(row.type) &&
-					row.distanceOnRoute <= selectedEndRange &&
-					row.distanceOnRoute >= selectedStartRange &&
-					row.distanceFromRoute <= selectedRadius
-				);
-			})
-			.sort((a, b) => {
-				// sort by distance on route
-				if (a.distanceOnRoute < b.distanceOnRoute) return -1;
-				if (a.distanceOnRoute > b.distanceOnRoute) return 1;
-				return 0;
-			});
-		tableDataDisplayStore.set(tableDataDisplay);
-		return tableDataDisplay;
-	}
+    function handleShowOnMap(row: TableRow) {
+        const markers = get(markersStore);
+        const markerToPopup = markers.find((marker) => {
+            const lngLat = marker.getLngLat();
+            return lngLat.lat === row.location?.lat && lngLat.lng === row.location?.lon;
+        });
+        markerToPopup?.togglePopup();
+        const map = get(mapInstanceStore);
+		const zoom = 50;
+        centerOnCoords(map, row.location ? row.location : { lat: 0, lon: 0 }, zoom);
+    }
 </script>
 
-<div class="slider-group">
-	<div>
-		<label for="selected-range-slider" class="slider-label"
-			>Select Range (in km): start: {$selectedStartRangeStore} km, end: {$selectedEndRangeStore} km
-		</label>
-		<RangeSlider
-			bind:values
-			min={0}
-			max={$totalTrackLengthStore}
-			pips
-			first="label"
-			last="label"
-			rest="pip"
-			on:change={() => {
-				calculateSelectedRangeTrackStore();
-			}}
-		/>
-	</div>
-	<div>
-		<label for="radius-slider" class="slider-label">Select Radius (in m): {$selectedRadiusStore} m</label>
-		<RangeSlider bind:value min={100} max={5000} step={100} pips first="label" last="label" />
-	</div>
-</div>
+<!-- Results table; filters and sliders are now in the map overlay -->
 
-<!--
-	Search along GPS track results page.
-	This page displays the results of the search along the GPS track.
-	It includes a table with the results and checkboxes to filter the results by category.
--->
-<fieldset class="category-group">
-	<legend>
-		<h3>Filter by Category</h3>
-		<p>Select the categories you want to display in the results table.</p>
-	</legend>
-
-<label>
-	<input
-		type="checkbox"
-		value={OSMCategories.value.VENDING_MACHINE}
-		checked={selectedCategories.includes(OSMCategories.value.VENDING_MACHINE)}
-		on:change={(e) => {
-			checkBox(OSMCategories.value.VENDING_MACHINE, e);
-		}}
-	/>
-	Vending Machines
-</label>
-<label>
-	<input
-		type="checkbox"
-		value={OSMCategories.value.FUEL}
-		checked={selectedCategories.includes(OSMCategories.value.FUEL)}
-		on:change={(e) => {
-			checkBox(OSMCategories.value.FUEL, e);
-		}}
-	/>
-	Gas Stations
-</label>
-<label>
-	<input
-		type="checkbox"
-		value={OSMCategories.value.SUPERMARKET}
-		checked={selectedCategories.includes(OSMCategories.value.SUPERMARKET)}
-		on:change={(e) => {
-			checkBox(OSMCategories.value.SUPERMARKET, e);
-		}}
-	/>
-	Supermarkets
-</label>
-<label>
-	<input
-		type="checkbox"
-		value={OSMCategories.value.SHELTER}
-		checked={selectedCategories.includes(OSMCategories.value.SHELTER)}
-		on:change={(e) => {
-			checkBox(OSMCategories.value.SHELTER, e);
-		}}
-	/>
-	Shelters
-</label>
-<label>
-	<input
-		type="checkbox"
-		value={OSMCategories.value.BAKERY}
-		checked={selectedCategories.includes(OSMCategories.value.BAKERY)}
-		on:change={(e) => {
-			checkBox(OSMCategories.value.BAKERY, e);
-		}}
-	/>
-	Bakery
-</label>
-<label>
-	<input
-		type="checkbox"
-		value={OSMCategories.value.KIOSK}
-		checked={selectedCategories.includes(OSMCategories.value.KIOSK)}
-		on:change={(e) => {
-			checkBox(OSMCategories.value.KIOSK, e);
-		}}
-	/>
-	Kiosks
-</label>
-<label>
-	<input
-		type="checkbox"
-		value={OSMCategories.value.DRINKING_WATER}
-		checked={selectedCategories.includes(OSMCategories.value.DRINKING_WATER)}
-		on:change={(e) => {
-			checkBox(OSMCategories.value.DRINKING_WATER, e);
-		}}
-	/>
-	Drinking Water
-</label>
-<label>
-	<input
-		type="checkbox"
-		value={OSMCategories.value.TOILETS}
-		checked={selectedCategories.includes(OSMCategories.value.TOILETS)}
-		on:change={(e) => {
-			checkBox(OSMCategories.value.TOILETS, e);
-		}}
-	/>
-	Toilets
-</label>
-<label>
-	<input
-		type="checkbox"
-		value={OSMCategories.key.ICE_CAFE}
-		checked={selectedCategories.includes(OSMCategories.key.ICE_CAFE)}
-		on:change={(e) => {
-			checkBox(OSMCategories.key.ICE_CAFE, e);
-		}}
-	/>
-	Cafés & Ice Cream
-</label>
-<label>
-	<input
-		type="checkbox"
-		value={OSMCategories.value.RESTAURANT}
-		checked={selectedCategories.includes(OSMCategories.value.RESTAURANT)}
-		on:change={(e) => {
-			checkBox(OSMCategories.value.RESTAURANT, e);
-		}}
-	/>
-	Restaurants
-</label>
-<label>
-	<input
-		type="checkbox"
-		value={OSMCategories.value.CAMP_SITE}
-		checked={selectedCategories.includes(OSMCategories.value.CAMP_SITE)}
-		on:change={(e) => {
-			checkBox(OSMCategories.value.CAMP_SITE, e);
-		}}
-	/>
-	Camp Sites
-</label>
-<label>
-	<input
-		type="checkbox"
-		value={OSMCategories.key.ACCOMMODATION}
-		checked={selectedCategories.includes(OSMCategories.key.ACCOMMODATION)}
-		on:change={(e) => {
-			checkBox(OSMCategories.key.ACCOMMODATION, e);
-		}}
-	/>
-	Accommodations
-</label>
-<label>
-	<input
-		type="checkbox"
-		value={OSMCategories.key.BICYCLE_REPAIR}
-		checked={selectedCategories.includes(OSMCategories.key.BICYCLE_REPAIR)}
-		on:change={(e) => {
-			checkBox(OSMCategories.key.BICYCLE_REPAIR, e);
-		}}
-	/>
-	Bicycle Repair
-</label>
-</fieldset>
-
-{#if tableDataDisplay}
-	<table>
+{#if tableDataDisplay && tableDataDisplay.length > 0}
+    <div class="results-card">
+    <header class="results-head">
+        <h3>Results along your track</h3>
+        <p class="muted">Click a row to highlight it on the map. Use the filters on the map to refine.</p>
+    </header>
+    <table class="sat-table">
 		<thead>
 			<tr>
 				<th>Type</th>
@@ -283,7 +46,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#each filterTableData(selectedCategories, tableData, $selectedRadiusStore, $selectedStartRangeStore, $selectedEndRangeStore) as row}
+            {#each tableDataDisplay as row}
 				<tr>
 					<td>{displayType(row.type)}</td>
 					<td>{row.name}</td>
@@ -561,8 +324,12 @@
 					</td>
 				</tr>
 			{/each}
-		</tbody>
-	</table>
+        </tbody>
+    </table>
+    </div>
+{/if}
+{#if !tableDataDisplay || tableDataDisplay.length === 0}
+    <p style="color: var(--text-muted); font-weight: 500;">No results for current filters.</p>
 {/if}
 
 <style>
@@ -598,130 +365,8 @@
 			margin: 0 1px;
 		}
 	}
-	.slider-group {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-		margin: 1.5rem 0;
-		padding: 1rem;
-		border: 1.5px solid #31497a;
-		border-radius: 12px;
-		background: #f6f8fc;
-		box-shadow: 0 2px 8px rgba(66, 103, 178, 0.08);
-	}
-	.slider-label {
-		font-size: 1rem;
-		font-weight: 500;
-		color: #31497a;
-		margin-bottom: 0.5rem;
-	}
-	.show-more {
+    .show-more {
 		position: relative;
-	}
-	.category-group {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 1rem 1.5rem;
-		padding: 1.5rem 1rem 1rem 1rem;
-		margin: 2rem 0;
-		border: 1.5px solid #31497a;
-		border-radius: 12px;
-		background: #f6f8fc;
-		box-shadow: 0 2px 8px rgba(66, 103, 178, 0.08);
-	}
-
-	.category-group legend {
-		width: 100%;
-		font-size: 1.15rem;
-		font-weight: 600;
-		color: #31497a;
-		margin-bottom: 0.7rem;
-		padding: 0 0.5rem;
-		letter-spacing: 0.2px;
-	}
-
-	.category-group label {
-		display: flex;
-		align-items: center;
-		gap: 0.7em;
-		font-size: 1.07rem;
-		font-weight: 500;
-		color: #31497a;
-		background: #fff;
-		border-radius: 8px;
-		box-shadow: 0 1px 4px rgba(66, 103, 178, 0.07);
-		padding: 0.6em 1.1em;
-		margin-bottom: 0.1em;
-		cursor: pointer;
-		transition:
-			background 0.18s,
-			box-shadow 0.18s,
-			color 0.18s,
-			transform 0.1s;
-		border: 1.5px solid #31497a;
-	}
-
-	.category-group label:hover,
-	.category-group input[type="checkbox"]:focus + span {
-		background: #e9eef8;
-		color: #4267b2;
-		box-shadow: 0 2px 8px rgba(66, 103, 178, 0.13);
-		transform: translateY(-1px) scale(1.01);
-	}
-
-	.category-group input[type="checkbox"] {
-		accent-color: #4267b2;
-		width: 1.2em;
-		height: 1.2em;
-		margin-right: 0.3em;
-		border-radius: 4px;
-		border: 2px solid #31497a;
-		box-shadow: 0 0 0 2px #e9eef8;
-		transition: border 0.15s;
-	}
-	@media (max-width: 700px) {
-		.category-group {
-			flex-direction: row;
-			flex-wrap: wrap;
-			justify-content: flex-start;
-			align-items: flex-start;
-			gap: 0.3rem 0.5rem;
-			padding: 0.3rem 0.2rem 0.2rem 0.2rem;
-			margin: 0.5rem 0;
-		}
-		.category-group label {
-			flex: 1 1 45%;
-			min-width: 120px;
-			max-width: 48%;
-			margin-bottom: 0.2em;
-			font-size: 0.8rem;
-			padding: 0.3em 0.6em;
-			border-radius: 6px;
-			box-sizing: border-box;
-		}
-	}
-	@media (max-width: 700px) {
-		.category-group {
-			gap: 0.3rem 0.5rem;
-			padding: 0.3rem 0.2rem 0.2rem 0.2rem;
-			margin: 0.5rem 0;
-			flex-direction: column;
-		}
-		.category-group legend {
-			font-size: 0.9rem;
-			margin-bottom: 0.3rem;
-			padding: 0 0.2rem;
-		}
-		.category-group label {
-			font-size: 0.8rem;
-			padding: 0.3em 0.6em;
-			border-radius: 6px;
-		}
-		.category-group input[type="checkbox"] {
-			width: 1em;
-			height: 1em;
-			margin-right: 0.2em;
-		}
 	}
 	.links-container {
 		display: flex;
@@ -762,18 +407,18 @@
 	.info-box {
 		transition: opacity 0.2s;
 	}
-	table {
-		width: 100%;
-		border-collapse: separate;
-		border-spacing: 0;
-		font-family: 'Inter', system-ui, sans-serif;
-		background: #f6f8fc;
-		box-shadow: 0 2px 8px rgba(66, 103, 178, 0.08);
-		border-radius: 12px;
-		overflow: auto;
-		margin: 2rem 0;
-		border: 1.5px solid #31497a;
-	}
+    .results-card { border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-elevated); box-shadow: var(--shadow-md); overflow: hidden; }
+    .results-head { padding: .85rem 1rem; border-bottom: 1px solid var(--border); background: color-mix(in oklab, var(--primary) 6%, var(--bg)); }
+    .results-head h3 { margin: 0; font-weight: 800; letter-spacing: .2px; }
+    .results-head .muted { margin: .25rem 0 0 0; color: var(--text-muted); }
+
+    table.sat-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-family: var(--font-body);
+        background: var(--bg-elevated);
+    }
 
 	th,
 	td {
@@ -781,14 +426,15 @@
 		text-align: left;
 	}
 
-	th {
-		background: #e9eef8;
-		font-weight: 600;
-		letter-spacing: 0.01em;
-		color: #31497a;
-		font-size: 1.07rem;
-		border-bottom: 2px solid #31497a;
-	}
+    th {
+        position: sticky; top: 0; z-index: 1;
+        background: var(--bg);
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        color: var(--text);
+        font-size: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
 
 	tr {
 		transition:
@@ -800,39 +446,13 @@
 		border-bottom: 1.5px solid #e9eef8;
 	}
 
-	tr:hover {
-		background: #e9eef8;
-		box-shadow: 0 2px 8px rgba(66, 103, 178, 0.13);
-	}
+    tr:hover { background: color-mix(in oklab, var(--primary) 6%, var(--bg)); }
 
-	td {
-		color: #31497a;
-		font-size: 0.98rem;
-		vertical-align: middle;
-	}
+    td { color: var(--text); font-size: 0.98rem; vertical-align: middle; }
 
-	td button,
-	td a {
-		background: #fff;
-		color: #2563eb;
-		cursor: pointer;
-		font-size: 0.98rem;
-		padding: 0.2em 0.7em;
-		transition:
-			background 0.18s,
-			color 0.18s,
-			box-shadow 0.18s,
-			transform 0.1s;
-		box-shadow: 0 1px 4px rgba(66, 103, 178, 0.07);
-	}
+    td button, td a { background: var(--bg-elevated); color: var(--primary-700); cursor: pointer; font-size: 0.95rem; padding: 0.2em 0.6em; border: 1px solid var(--border); border-radius: 8px; }
 
-	td button:hover,
-	td a:hover {
-		background: #e9eef8;
-		color: #4267b2;
-		box-shadow: 0 2px 8px rgba(66, 103, 178, 0.13);
-		transform: translateY(-1px) scale(1.01);
-	}
+    td button:hover, td a:hover { background: color-mix(in oklab, var(--primary) 6%, var(--bg)); }
 
 	.links-container {
 		display: flex;
@@ -847,32 +467,32 @@
 		}
 	}
 
-	@media (max-width: 700px) {
-		table {
+    @media (max-width: 700px) {
+        table.sat-table {
 			display: block;
 			width: 100%;
 			overflow-x: auto;
-			border-radius: 12px;
-			margin: 1rem 0;
-			border: 1.5px solid #31497a;
-			background: #f6f8fc;
-			box-shadow: 0 2px 8px rgba(66, 103, 178, 0.08);
+            border-radius: 0;
+            margin: 0;
+            border: none;
+            background: var(--bg-elevated);
+            box-shadow: none;
 		}
-		thead {
+        thead {
 			display: table-header-group;
-			background: #e9eef8;
+            background: var(--bg);
 			position: sticky;
 			top: 0;
 			z-index: 2;
 		}
 		th {
-			font-size: 0.5rem;
+            font-size: 0.7rem;
 			padding: 0.7rem 0.5rem;
-			background: #e9eef8;
+            background: var(--bg);
 			position: sticky;
 			top: 0;
 			z-index: 2;
-			border-bottom: 2px solid #31497a;
+            border-bottom: 1px solid var(--border);
 		}
 		tbody,
 		tr,
@@ -883,17 +503,15 @@
 		tr {
 			display: table-row;
 			margin-bottom: 0;
-			box-shadow: none;
-			border-radius: 0;
-			background: #f6f8fc;
-			border: none;
+            background: var(--bg-elevated);
+            border: none;
 		}
 		td {
 			display: table-cell;
 			padding: 0.7rem 0.5rem;
-			border-bottom: 1px solid #e9eef8;
+            border-bottom: 1px solid var(--border);
 			position: relative;
-			font-size: 0.5rem;
+            font-size: 0.7rem;
 			vertical-align: top;
 			word-break: break-word;
 		}
@@ -912,10 +530,5 @@
 	}
 
 	/* Optional: Make table horizontally scrollable on very small screens */
-	@media (max-width: 700px) {
-		.table-responsive {
-			width: 100%;
-			overflow-x: auto;
-		}
-	}
+    /* Removed unused .table-responsive */
 </style>
