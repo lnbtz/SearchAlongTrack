@@ -206,18 +206,44 @@
 
 	function buildPopupHTML(row: TableRow) {
 		return `
-				<div style="font-weight: bold; font-size: 1rem; background: black; border-radius: 6px; padding: 2px 6px; margin-bottom: 4px;">
+				<div style="
+					font-weight: bold;
+					font-size: 1rem;
+					border-radius: 6px;
+					padding: 2px 6px;
+					margin-bottom: 4px;
+					color: var(--text, #fff);
+					background: var(--bg-elevated, #fff); /* adapts to theme */
+				">
 					${displayType(row.type) || 'Unknown type'}
 				</div>
-				<div style="background: red; border-radius: 6px; padding: 2px 6px; margin-bottom: 4px;">
+				<div style="
+					background: rgba(255, 80, 80, 0.7); /* moderate semi-transparent red */
+					border-radius: 6px;
+					padding: 2px 6px;
+					margin-bottom: 4px;
+					color: var(--text, #fff); /* uses theme text color */
+				">
 					<span style="font-weight: bold;">Name: </span>
 					${row.name ? `<span>${row.name}</span>` : '<span>n/a</span>'}
 				</div>
-				<div style="background: green; border-radius: 6px; padding: 2px 6px; margin-bottom: 4px;">
+				<div style="
+					background: rgba(80, 255, 80, 0.7); /* moderate semi-transparent green */
+					border-radius: 6px;
+					padding: 2px 6px;
+					margin-bottom: 4px;
+					color: var(--text, #fff); /* uses theme text color */
+				">
 					<span style="font-weight: bold;">Distance on route: </span>
 					${row.distanceOnRoute !== undefined ? `<span>${row.distanceOnRoute.toFixed(1)} km</span>` : 'n/a'}
 				</div>
-				<div style="background: blue; border-radius: 6px; padding: 2px 6px; margin-bottom: 4px;">
+				<div style="
+					background: rgba(80, 160, 255, 0.7); /* moderate semi-transparent blue */
+					border-radius: 6px;
+					padding: 2px 6px;
+					margin-bottom: 4px;
+					color: var(--text, #fff); /* uses theme text color */
+				">
 					<span style="font-weight: bold;">Distance from route: </span>
 					${row.distanceFromRoute !== undefined ? `<span>ca. ${row.distanceFromRoute.toFixed(0)} m</span>` : 'n/a'}
 				</div>
