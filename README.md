@@ -24,7 +24,6 @@ SearchAlongTrack is a web application designed to help users search for points o
 
 ## Screenshots
 
-
 ![Home Screen](/screenshots/Homescreen.png)
 ![Map](/screenshots/Map.png)
 ![Display Settings](/screenshots/DisplaySettings.png)

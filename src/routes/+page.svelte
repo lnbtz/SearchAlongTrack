@@ -5,7 +5,3 @@
 <section>
 	<FileLoader />
 </section>
-
-
-
-

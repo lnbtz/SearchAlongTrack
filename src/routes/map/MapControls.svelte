@@ -8,31 +8,33 @@
 		totalTrackLengthStore
 	} from '$lib/stores';
 	import { calculateSelectedRangeTrackStore, recomputeTableDataDisplay } from '$lib/util';
-    import RangeSlider from 'svelte-range-slider-pips';
-    import { onMount } from 'svelte';
-    import { getCategoryIconUrl } from '$lib/icons';
+	import RangeSlider from 'svelte-range-slider-pips';
+	import { onMount } from 'svelte';
+	import { getCategoryIconUrl } from '$lib/icons';
 
-let panelOpen = $state(true);
+	let panelOpen = $state(true);
 
-let selectedCategories: string[] = $state(
-	$selectedCategoriesStore.length === 0 ? Array.from(OSMCategoriesMap.keys()) : $selectedCategoriesStore
-);
+	let selectedCategories: string[] = $state(
+		$selectedCategoriesStore.length === 0
+			? Array.from(OSMCategoriesMap.keys())
+			: $selectedCategoriesStore
+	);
 
-let radiusValue: number = $state($selectedRadiusStore);
-    $effect(() => {
-        selectedRadiusStore.set(radiusValue);
-    });
+	let radiusValue: number = $state($selectedRadiusStore);
+	$effect(() => {
+		selectedRadiusStore.set(radiusValue);
+	});
 
-let values: number[] = $state([$selectedStartRangeStore, $selectedEndRangeStore]);
-    $effect(() => {
-        selectedStartRangeStore.set(values[0]);
-    });
-    $effect(() => {
-        selectedEndRangeStore.set(values[1]);
-    });
-    $effect(() => {
-        values = [$selectedStartRangeStore, $selectedEndRangeStore];
-    });
+	let values: number[] = $state([$selectedStartRangeStore, $selectedEndRangeStore]);
+	$effect(() => {
+		selectedStartRangeStore.set(values[0]);
+	});
+	$effect(() => {
+		selectedEndRangeStore.set(values[1]);
+	});
+	$effect(() => {
+		values = [$selectedStartRangeStore, $selectedEndRangeStore];
+	});
 
 	function togglePanel() {
 		panelOpen = !panelOpen;
@@ -58,25 +60,30 @@ let values: number[] = $state([$selectedStartRangeStore, $selectedEndRangeStore]
 		recomputeTableDataDisplay();
 	}
 
-    // Initialize defaults on first mount so results show immediately
-    onMount(() => {
-        if ($selectedCategoriesStore.length === 0) {
-            const all = Array.from(OSMCategoriesMap.keys());
-            selectedCategoriesStore.set(all);
-            selectedCategories = all;
-        }
-        if ($selectedRadiusStore === 0) {
-            selectedRadiusStore.set(1000);
-            radiusValue = 1000;
-        }
-        // Trigger an initial recompute
-        calculateSelectedRangeTrackStore();
-        recomputeTableDataDisplay();
-    });
+	// Initialize defaults on first mount so results show immediately
+	onMount(() => {
+		if ($selectedCategoriesStore.length === 0) {
+			const all = Array.from(OSMCategoriesMap.keys());
+			selectedCategoriesStore.set(all);
+			selectedCategories = all;
+		}
+		if ($selectedRadiusStore === 0) {
+			selectedRadiusStore.set(1000);
+			radiusValue = 1000;
+		}
+		// Trigger an initial recompute
+		calculateSelectedRangeTrackStore();
+		recomputeTableDataDisplay();
+	});
 </script>
 
 <div class="controls">
-    <button class="toggle" onclick={togglePanel} aria-expanded={panelOpen} aria-controls="controls-panel">
+	<button
+		class="toggle"
+		onclick={togglePanel}
+		aria-expanded={panelOpen}
+		aria-controls="controls-panel"
+	>
 		{panelOpen ? 'Hide filters' : 'Show filters'}
 	</button>
 	{#if panelOpen}
@@ -84,10 +91,10 @@ let values: number[] = $state([$selectedStartRangeStore, $selectedEndRangeStore]
 			<section class="sliders">
 				<div class="slider-group">
 					<label for="selected-range-slider" class="slider-label">
-						Select Range (in km): start: {$selectedStartRangeStore} km, end: {$selectedEndRangeStore} km
+						Select Range (in km): start: {$selectedStartRangeStore} km, end: {$selectedEndRangeStore}
+						km
 					</label>
-                    <!-- svelte-ignore event_directive_deprecated -->
-                    <RangeSlider
+					<RangeSlider
 						bind:values
 						min={0}
 						max={$totalTrackLengthStore}
@@ -95,15 +102,23 @@ let values: number[] = $state([$selectedStartRangeStore, $selectedEndRangeStore]
 						first="label"
 						last="label"
 						rest="pip"
-                        on:change={onRangeChange}
+						on:change={onRangeChange}
 					/>
 				</div>
 				<div class="slider-group">
 					<label for="radius-slider" class="slider-label">
 						Select Radius (in m): {$selectedRadiusStore} m
 					</label>
-                    <!-- svelte-ignore event_directive_deprecated -->
-                    <RangeSlider bind:value={radiusValue} min={100} max={5000} step={100} pips first="label" last="label" on:change={onRadiusChange} />
+					<RangeSlider
+						bind:value={radiusValue}
+						min={100}
+						max={5000}
+						step={100}
+						pips
+						first="label"
+						last="label"
+						on:change={onRadiusChange}
+					/>
 				</div>
 			</section>
 			<fieldset class="category-group">
@@ -113,130 +128,186 @@ let values: number[] = $state([$selectedStartRangeStore, $selectedEndRangeStore]
 				</legend>
 
 				<label>
-                    <input
+					<input
 						type="checkbox"
 						value={OSMCategories.value.VENDING_MACHINE}
 						checked={selectedCategories.includes(OSMCategories.value.VENDING_MACHINE)}
-                        onchange={(e) => checkBox(OSMCategories.value.VENDING_MACHINE, e)}
+						onchange={(e) => checkBox(OSMCategories.value.VENDING_MACHINE, e)}
 					/>
-                    Vending Machines<img src={getCategoryIconUrl(OSMCategories.value.VENDING_MACHINE)} alt="Vending Machines" style="width: 24px; height: 24px;" />
+					Vending Machines<img
+						src={getCategoryIconUrl(OSMCategories.value.VENDING_MACHINE)}
+						alt="Vending Machines"
+						style="width: 24px; height: 24px;"
+					/>
 				</label>
 				<label>
-                    <input
+					<input
 						type="checkbox"
 						value={OSMCategories.value.FUEL}
 						checked={selectedCategories.includes(OSMCategories.value.FUEL)}
-                        onchange={(e) => checkBox(OSMCategories.value.FUEL, e)}
+						onchange={(e) => checkBox(OSMCategories.value.FUEL, e)}
 					/>
-					Gas Stations<img src={getCategoryIconUrl(OSMCategories.value.FUEL)} alt="Gas Stations" style="width: 24px; height: 24px;" />
+					Gas Stations<img
+						src={getCategoryIconUrl(OSMCategories.value.FUEL)}
+						alt="Gas Stations"
+						style="width: 24px; height: 24px;"
+					/>
 				</label>
 				<label>
-                    <input
+					<input
 						type="checkbox"
 						value={OSMCategories.value.SUPERMARKET}
 						checked={selectedCategories.includes(OSMCategories.value.SUPERMARKET)}
-                        onchange={(e) => checkBox(OSMCategories.value.SUPERMARKET, e)}
+						onchange={(e) => checkBox(OSMCategories.value.SUPERMARKET, e)}
 					/>
-					Supermarkets<img src={getCategoryIconUrl(OSMCategories.value.SUPERMARKET)} alt="Supermarkets" style="width: 24px; height: 24px;" />
+					Supermarkets<img
+						src={getCategoryIconUrl(OSMCategories.value.SUPERMARKET)}
+						alt="Supermarkets"
+						style="width: 24px; height: 24px;"
+					/>
 				</label>
 				<label>
-                    <input
+					<input
 						type="checkbox"
 						value={OSMCategories.value.SHELTER}
 						checked={selectedCategories.includes(OSMCategories.value.SHELTER)}
-                        onchange={(e) => checkBox(OSMCategories.value.SHELTER, e)}
+						onchange={(e) => checkBox(OSMCategories.value.SHELTER, e)}
 					/>
-					Shelters<img src={getCategoryIconUrl(OSMCategories.value.SHELTER)} alt="Shelters" style="width: 24px; height: 24px;" />
+					Shelters<img
+						src={getCategoryIconUrl(OSMCategories.value.SHELTER)}
+						alt="Shelters"
+						style="width: 24px; height: 24px;"
+					/>
 				</label>
 				<label>
-                    <input
+					<input
 						type="checkbox"
 						value={OSMCategories.value.BAKERY}
 						checked={selectedCategories.includes(OSMCategories.value.BAKERY)}
-                        onchange={(e) => checkBox(OSMCategories.value.BAKERY, e)}
+						onchange={(e) => checkBox(OSMCategories.value.BAKERY, e)}
 					/>
-					Bakery<img src={getCategoryIconUrl(OSMCategories.value.BAKERY)} alt="Bakery" style="width: 24px; height: 24px;" />
+					Bakery<img
+						src={getCategoryIconUrl(OSMCategories.value.BAKERY)}
+						alt="Bakery"
+						style="width: 24px; height: 24px;"
+					/>
 				</label>
 				<label>
-                    <input
+					<input
 						type="checkbox"
 						value={OSMCategories.value.KIOSK}
 						checked={selectedCategories.includes(OSMCategories.value.KIOSK)}
-                        onchange={(e) => checkBox(OSMCategories.value.KIOSK, e)}
+						onchange={(e) => checkBox(OSMCategories.value.KIOSK, e)}
 					/>
-					Kiosks<img src={getCategoryIconUrl(OSMCategories.value.KIOSK)} alt="Kiosks" style="width: 24px; height: 24px;" />
+					Kiosks<img
+						src={getCategoryIconUrl(OSMCategories.value.KIOSK)}
+						alt="Kiosks"
+						style="width: 24px; height: 24px;"
+					/>
 				</label>
 				<label>
-                    <input
+					<input
 						type="checkbox"
 						value={OSMCategories.value.DRINKING_WATER}
 						checked={selectedCategories.includes(OSMCategories.value.DRINKING_WATER)}
-                        onchange={(e) => checkBox(OSMCategories.value.DRINKING_WATER, e)}
+						onchange={(e) => checkBox(OSMCategories.value.DRINKING_WATER, e)}
 					/>
-					Drinking Water<img src={getCategoryIconUrl(OSMCategories.value.DRINKING_WATER)} alt="Drinking Water" style="width: 24px; height: 24px;" />
+					Drinking Water<img
+						src={getCategoryIconUrl(OSMCategories.value.DRINKING_WATER)}
+						alt="Drinking Water"
+						style="width: 24px; height: 24px;"
+					/>
 				</label>
 				<label>
-                    <input
+					<input
 						type="checkbox"
 						value={OSMCategories.value.TOILETS}
 						checked={selectedCategories.includes(OSMCategories.value.TOILETS)}
-                        onchange={(e) => checkBox(OSMCategories.value.TOILETS, e)}
+						onchange={(e) => checkBox(OSMCategories.value.TOILETS, e)}
 					/>
-					Toilets<img src={getCategoryIconUrl(OSMCategories.value.TOILETS)} alt="Toilets" style="width: 24px; height: 24px;" />
+					Toilets<img
+						src={getCategoryIconUrl(OSMCategories.value.TOILETS)}
+						alt="Toilets"
+						style="width: 24px; height: 24px;"
+					/>
 				</label>
 				<label>
-                    <input
+					<input
 						type="checkbox"
 						value={OSMCategories.key.ICE_CAFE}
 						checked={selectedCategories.includes(OSMCategories.key.ICE_CAFE)}
-                        onchange={(e) => checkBox(OSMCategories.key.ICE_CAFE, e)}
+						onchange={(e) => checkBox(OSMCategories.key.ICE_CAFE, e)}
 					/>
-					Cafés & Ice Cream<img src={getCategoryIconUrl(OSMCategories.key.ICE_CAFE)} alt="Cafés & Ice Cream" style="width: 24px; height: 24px;" />
+					Cafés & Ice Cream<img
+						src={getCategoryIconUrl(OSMCategories.key.ICE_CAFE)}
+						alt="Cafés & Ice Cream"
+						style="width: 24px; height: 24px;"
+					/>
 				</label>
 				<label>
-                    <input
+					<input
 						type="checkbox"
 						value={OSMCategories.value.RESTAURANT}
 						checked={selectedCategories.includes(OSMCategories.value.RESTAURANT)}
-                        onchange={(e) => checkBox(OSMCategories.value.RESTAURANT, e)}
+						onchange={(e) => checkBox(OSMCategories.value.RESTAURANT, e)}
 					/>
-					Restaurants<img src={getCategoryIconUrl(OSMCategories.value.RESTAURANT)} alt="Restaurants" style="width: 24px; height: 24px;" />
+					Restaurants<img
+						src={getCategoryIconUrl(OSMCategories.value.RESTAURANT)}
+						alt="Restaurants"
+						style="width: 24px; height: 24px;"
+					/>
 				</label>
 				<label>
-                    <input
+					<input
 						type="checkbox"
 						value={OSMCategories.value.FAST_FOOD}
 						checked={selectedCategories.includes(OSMCategories.value.FAST_FOOD)}
-                        onchange={(e) => checkBox(OSMCategories.value.FAST_FOOD, e)}
+						onchange={(e) => checkBox(OSMCategories.value.FAST_FOOD, e)}
 					/>
-					Fast Food<img src={getCategoryIconUrl(OSMCategories.value.FAST_FOOD)} alt="Fast Food" style="width: 24px; height: 24px;" />
+					Fast Food<img
+						src={getCategoryIconUrl(OSMCategories.value.FAST_FOOD)}
+						alt="Fast Food"
+						style="width: 24px; height: 24px;"
+					/>
 				</label>
 				<label>
-                    <input
+					<input
 						type="checkbox"
 						value={OSMCategories.value.CAMP_SITE}
 						checked={selectedCategories.includes(OSMCategories.value.CAMP_SITE)}
-                        onchange={(e) => checkBox(OSMCategories.value.CAMP_SITE, e)}
+						onchange={(e) => checkBox(OSMCategories.value.CAMP_SITE, e)}
 					/>
-					Camp Sites<img src={getCategoryIconUrl(OSMCategories.value.CAMP_SITE)} alt="Camp Sites" style="width: 24px; height: 24px;" />
+					Camp Sites<img
+						src={getCategoryIconUrl(OSMCategories.value.CAMP_SITE)}
+						alt="Camp Sites"
+						style="width: 24px; height: 24px;"
+					/>
 				</label>
 				<label>
-                    <input
+					<input
 						type="checkbox"
 						value={OSMCategories.key.ACCOMMODATION}
 						checked={selectedCategories.includes(OSMCategories.key.ACCOMMODATION)}
-                        onchange={(e) => checkBox(OSMCategories.key.ACCOMMODATION, e)}
+						onchange={(e) => checkBox(OSMCategories.key.ACCOMMODATION, e)}
 					/>
-					Accommodations<img src={getCategoryIconUrl(OSMCategories.key.ACCOMMODATION)} alt="Accommodations" style="width: 24px; height: 24px;" />
+					Accommodations<img
+						src={getCategoryIconUrl(OSMCategories.key.ACCOMMODATION)}
+						alt="Accommodations"
+						style="width: 24px; height: 24px;"
+					/>
 				</label>
 				<label>
-                    <input
+					<input
 						type="checkbox"
 						value={OSMCategories.key.BICYCLE_REPAIR}
 						checked={selectedCategories.includes(OSMCategories.key.BICYCLE_REPAIR)}
-                        onchange={(e) => checkBox(OSMCategories.key.BICYCLE_REPAIR, e)}
+						onchange={(e) => checkBox(OSMCategories.key.BICYCLE_REPAIR, e)}
 					/>
-					Bicycle Repair<img src={getCategoryIconUrl(OSMCategories.key.BICYCLE_REPAIR)} alt="Bicycle Repair" style="width: 24px; height: 24px;" />
+					Bicycle Repair<img
+						src={getCategoryIconUrl(OSMCategories.key.BICYCLE_REPAIR)}
+						alt="Bicycle Repair"
+						style="width: 24px; height: 24px;"
+					/>
 				</label>
 			</fieldset>
 		</div>
@@ -263,75 +334,111 @@ let values: number[] = $state([$selectedStartRangeStore, $selectedEndRangeStore]
 		cursor: pointer;
 		font-weight: 600;
 	}
-	.toggle:hover { box-shadow: var(--shadow-md); }
-
-    .panel {
-        margin-top: 8px;
-        padding: 0.5rem 0.6rem;
-        min-width: 300px;
-        max-width: min(88vw, 500px);
-        /* keep the panel compact to avoid internal scrollbar */
-        max-height: none;
-        overflow: visible;
-        border: 1px solid var(--border);
-        border-radius: var(--radius-md);
-        background: color-mix(in oklab, var(--bg-elevated) 90%, transparent);
-        backdrop-filter: blur(6px) saturate(140%);
-        box-shadow: var(--shadow-md);
-    }
-
-    .sliders { display: grid; gap: 0.4rem; }
-	.slider-group {
-        background: var(--bg);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-sm);
-        padding: 0.35rem 0.45rem;
+	.toggle:hover {
+		box-shadow: var(--shadow-md);
 	}
-    .slider-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 700; }
 
-    /* Compact the range slider component height and visuals */
-    :global(.range-slider) { height: 22px; padding: 6px 2px; }
-    :global(.range-slider__range) { height: 4px; }
-    :global(.range-slider__thumb) { width: 12px; height: 12px; }
-    :global(.range-slider__pip) { transform: translateY(-2px); }
-    :global(.range-slider__pip-label) { font-size: 10px; }
+	.panel {
+		margin-top: 8px;
+		padding: 0.5rem 0.6rem;
+		min-width: 300px;
+		max-width: min(88vw, 500px);
+		/* keep the panel compact to avoid internal scrollbar */
+		max-height: none;
+		overflow: visible;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		background: color-mix(in oklab, var(--bg-elevated) 90%, transparent);
+		backdrop-filter: blur(6px) saturate(140%);
+		box-shadow: var(--shadow-md);
+	}
 
-    .category-group {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.35rem 0.5rem;
-        padding: 0.4rem;
-        margin-top: 0.4rem;
-        border: 1px dashed var(--border);
-        border-radius: var(--radius-sm);
-        background: var(--bg);
-    }
-	.category-group legend { width: 100%; margin: 0 0 0.25rem 0; }
-	.category-group h3 { margin: 0; font-size: 1rem; }
-    .category-group p { margin: 0.15rem 0 0 0; font-size: 0.8rem; color: var(--text-muted); }
+	.sliders {
+		display: grid;
+		gap: 0.4rem;
+	}
+	.slider-group {
+		background: var(--bg);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-sm);
+		padding: 0.35rem 0.45rem;
+	}
+	.slider-label {
+		font-size: 0.8rem;
+		color: var(--text-muted);
+		font-weight: 700;
+	}
+
+	/* Compact the range slider component height and visuals */
+	:global(.range-slider) {
+		height: 22px;
+		padding: 6px 2px;
+	}
+	:global(.range-slider__range) {
+		height: 4px;
+	}
+	:global(.range-slider__thumb) {
+		width: 12px;
+		height: 12px;
+	}
+	:global(.range-slider__pip) {
+		transform: translateY(-2px);
+	}
+	:global(.range-slider__pip-label) {
+		font-size: 10px;
+	}
+
+	.category-group {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.35rem 0.5rem;
+		padding: 0.4rem;
+		margin-top: 0.4rem;
+		border: 1px dashed var(--border);
+		border-radius: var(--radius-sm);
+		background: var(--bg);
+	}
+	.category-group legend {
+		width: 100%;
+		margin: 0 0 0.25rem 0;
+	}
+	.category-group h3 {
+		margin: 0;
+		font-size: 1rem;
+	}
+	.category-group p {
+		margin: 0.15rem 0 0 0;
+		font-size: 0.8rem;
+		color: var(--text-muted);
+	}
 	.category-group label {
 		display: inline-flex;
 		align-items: center;
-        gap: 0.4em;
-        font-size: 0.75rem;
+		gap: 0.4em;
+		font-size: 0.75rem;
 		font-weight: 500;
 		color: var(--text);
 		background: var(--bg-elevated);
 		border-radius: 8px;
 		box-shadow: var(--shadow-sm);
-        padding: 0.25em 0.45em;
+		padding: 0.25em 0.45em;
 		cursor: pointer;
 		border: 1px solid var(--border);
 	}
 	.category-group input[type='checkbox'] {
 		accent-color: var(--primary);
-        width: 0.95em;
-        height: 0.95em;
+		width: 0.95em;
+		height: 0.95em;
 		border-radius: 4px;
 	}
-    .category-group label img { width: 18px; height: 18px; }
+	.category-group label img {
+		width: 18px;
+		height: 18px;
+	}
 
-    @media (max-width: 560px) {
-        .panel { min-width: 260px; }
-    }
+	@media (max-width: 560px) {
+		.panel {
+			min-width: 260px;
+		}
+	}
 </style>
