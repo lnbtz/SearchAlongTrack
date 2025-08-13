@@ -1,5 +1,4 @@
 <script lang="ts">
-
 	import { gpxTrackStore, tableDataStore } from '$lib/stores';
 	import { get } from 'svelte/store';
 	import { onMount } from 'svelte';
@@ -7,7 +6,6 @@
 	import type { TableRow } from '$lib/results';
 	import { handleGpxTrack } from '$lib/util';
 	import { goto } from '$app/navigation';
-
 
 	let allTracks: Record<string, FeatureCollection<Geometry, GeoJsonProperties>> = $state({});
 	let allTables: Record<string, TableRow[]> = $state({});
@@ -63,7 +61,6 @@
 		return `track-${Math.abs(hash)}`;
 	}
 
-
 	function loadTrack(trackName: string) {
 		const track = allTracks[trackName];
 		if (track) {
@@ -76,7 +73,6 @@
 		}
 		goto('/map');
 	}
-
 
 	function deleteTrack(trackName: string) {
 		if (allTracks[trackName]) {
@@ -102,9 +98,7 @@
 			<li>
 				<span class="highlight">1. Upload</span> a GPX file. Come back here to view and manage your tracks.
 			</li>
-			<li>
-				Your uploaded tracks will appear here for easy access.
-			</li>
+			<li>Your uploaded tracks will appear here for easy access.</li>
 		</ul>
 	{:else}
 		<p class="no-tracks-message">Manage your previously uploaded GPX tracks:</p>
@@ -120,19 +114,19 @@
 </div>
 
 <div class="tracks-card">
-    <header class="tracks-head">
-        <h3>Your tracks</h3>
-        <p class="muted">Load to view on map or delete to remove from storage.</p>
-    </header>
-    <ul class="track-list">
-		{#each Object.entries(allTracks) as [trackName, track]}
+	<header class="tracks-head">
+		<h3>Your tracks</h3>
+		<p class="muted">Load to view on map or delete to remove from storage.</p>
+	</header>
+	<ul class="track-list">
+		{#each Object.entries(allTracks) as [trackName, track] (trackName)}
 			<li class="track-item">
 				<span class="track-name">{track.features[0]?.properties?.name || trackName}</span>
 				<div class="track-actions">
 					<button
 						class="load-btn"
 						onclick={() => {
-							loadTrack(trackName)
+							loadTrack(trackName);
 						}}
 					>
 						Load
@@ -140,13 +134,24 @@
 					<button
 						class="delete-btn"
 						onclick={() => {
-							deleteTrack(trackName)
+							deleteTrack(trackName);
 						}}
 						aria-label="Delete track"
 					>
-						<svg class="trash-icon" viewBox="0 0 24 24" aria-hidden="true" style="display: block; margin: auto;">
-							<path d="M3 6h18M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14zM10 11v6m4-6v6"
-								stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+						<svg
+							class="trash-icon"
+							viewBox="0 0 24 24"
+							aria-hidden="true"
+							style="display: block; margin: auto;"
+						>
+							<path
+								d="M3 6h18M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14zM10 11v6m4-6v6"
+								stroke="#fff"
+								stroke-width="2"
+								fill="none"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							/>
 						</svg>
 					</button>
 				</div>
@@ -156,77 +161,155 @@
 </div>
 
 <style>
-	.no-tracks-message{
+	.no-tracks-message {
 		text-align: center;
 		font-size: 1.1rem;
 		color: #4f5fff;
 		margin: 1rem 0;
 	}
 	.info-banner {
-        position: relative;
-        background: var(--bg-elevated);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-md);
-        padding: 1.25rem 1.5rem 1.25rem 1.75rem;
-        margin: 1.25rem auto;
-        max-width: 620px;
-        box-shadow: var(--shadow-sm);
-        text-align: center;
-    }
-    .info-banner::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 6px;
-        border-radius: var(--radius-md) 0 0 var(--radius-md);
-        background: linear-gradient(180deg, var(--primary) 0%, var(--primary-700) 100%);
-    }
-    .info-banner h2 {
-        margin: 0 0 0.5rem 0;
-        font-size: 1.35rem;
-        color: var(--text);
-        font-weight: 800;
-        letter-spacing: 0.01em;
-    }
-    .info-banner p {
-        color: var(--text);
-        opacity: 0.9;
-        font-size: 1.02rem;
-        margin-bottom: 0.5rem;
-    }
-    .info-banner ul {
-        list-style: disc inside;
-        color: var(--text);
-        opacity: 0.9;
-        font-size: 0.98rem;
-        margin: 0.5rem 0 0 0;
-        padding: 0;
-        text-align: left;
-        display: inline-block;
-    }
-    .tracks-card { border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-elevated); box-shadow: var(--shadow-md); max-width: 820px; margin: 1.5rem auto; overflow: hidden; }
-    .tracks-head { padding: .85rem 1rem; border-bottom: 1px solid var(--border); background: color-mix(in oklab, var(--primary) 6%, var(--bg)); text-align: center; }
-    .tracks-head h3 { margin: 0; font-weight: 800; }
-    .tracks-head .muted { margin: .25rem 0 0 0; color: var(--text-muted); }
-    .track-list { margin: 1rem auto; padding: 1rem; list-style: none; max-width: 720px; display: grid; gap: 1rem; }
+		position: relative;
+		background: var(--bg-elevated);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		padding: 1.25rem 1.5rem 1.25rem 1.75rem;
+		margin: 1.25rem auto;
+		max-width: 620px;
+		box-shadow: var(--shadow-sm);
+		text-align: center;
+	}
+	.info-banner::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0;
+		bottom: 0;
+		width: 6px;
+		border-radius: var(--radius-md) 0 0 var(--radius-md);
+		background: linear-gradient(180deg, var(--primary) 0%, var(--primary-700) 100%);
+	}
+	.info-banner h2 {
+		margin: 0 0 0.5rem 0;
+		font-size: 1.35rem;
+		color: var(--text);
+		font-weight: 800;
+		letter-spacing: 0.01em;
+	}
+	.info-banner p {
+		color: var(--text);
+		opacity: 0.9;
+		font-size: 1.02rem;
+		margin-bottom: 0.5rem;
+	}
+	.info-banner ul {
+		list-style: disc inside;
+		color: var(--text);
+		opacity: 0.9;
+		font-size: 0.98rem;
+		margin: 0.5rem 0 0 0;
+		padding: 0;
+		text-align: left;
+		display: inline-block;
+	}
+	.tracks-card {
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		background: var(--bg-elevated);
+		box-shadow: var(--shadow-md);
+		max-width: 820px;
+		margin: 1.5rem auto;
+		overflow: hidden;
+	}
+	.tracks-head {
+		padding: 0.85rem 1rem;
+		border-bottom: 1px solid var(--border);
+		background: color-mix(in oklab, var(--primary) 6%, var(--bg));
+		text-align: center;
+	}
+	.tracks-head h3 {
+		margin: 0;
+		font-weight: 800;
+	}
+	.tracks-head .muted {
+		margin: 0.25rem 0 0 0;
+		color: var(--text-muted);
+	}
+	.track-list {
+		margin: 1rem auto;
+		padding: 1rem;
+		list-style: none;
+		max-width: 720px;
+		display: grid;
+		gap: 1rem;
+	}
 
-    .track-item { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1rem; background: var(--bg); border-radius: 12px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); transition: box-shadow .18s, transform .12s, border .18s; }
+	.track-item {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 1rem 1rem;
+		background: var(--bg);
+		border-radius: 12px;
+		box-shadow: var(--shadow-sm);
+		border: 1px solid var(--border);
+		transition:
+			box-shadow 0.18s,
+			transform 0.12s,
+			border 0.18s;
+	}
 
-    .track-item:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); border-color: color-mix(in oklab, var(--primary) 35%, var(--border)); }
+	.track-item:hover {
+		box-shadow: var(--shadow-md);
+		transform: translateY(-1px);
+		border-color: color-mix(in oklab, var(--primary) 35%, var(--border));
+	}
 
-    .track-name { font-weight: 700; font-size: 1.02rem; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60%; letter-spacing: .01em; }
+	.track-name {
+		font-weight: 700;
+		font-size: 1.02rem;
+		color: var(--text);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		max-width: 60%;
+		letter-spacing: 0.01em;
+	}
 
-    .track-actions { display: flex; gap: .5rem; }
+	.track-actions {
+		display: flex;
+		gap: 0.5rem;
+	}
 
-    .load-btn { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-700) 100%); color: #fff; border: 1px solid color-mix(in oklab, var(--primary) 40%, transparent); padding: .4rem .85rem; border-radius: 10px; cursor: pointer; font-size: .95rem; box-shadow: 0 10px 18px rgba(59,130,246,.25); }
+	.load-btn {
+		background: linear-gradient(135deg, var(--primary) 0%, var(--primary-700) 100%);
+		color: #fff;
+		border: 1px solid color-mix(in oklab, var(--primary) 40%, transparent);
+		padding: 0.4rem 0.85rem;
+		border-radius: 10px;
+		cursor: pointer;
+		font-size: 0.95rem;
+		box-shadow: 0 10px 18px rgba(59, 130, 246, 0.25);
+	}
 
-    .load-btn:hover { transform: translateY(-1px); }
+	.load-btn:hover {
+		transform: translateY(-1px);
+	}
 
-    .delete-btn { background: #ef4444; color: #fff; border: 1px solid #ef4444; padding: .4rem .7rem; border-radius: 10px; cursor: pointer; display: flex; align-items: center; box-shadow: 0 10px 18px rgba(239,68,68,.18); }
+	.delete-btn {
+		background: #ef4444;
+		color: #fff;
+		border: 1px solid #ef4444;
+		padding: 0.4rem 0.7rem;
+		border-radius: 10px;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		box-shadow: 0 10px 18px rgba(239, 68, 68, 0.18);
+	}
 
-    .delete-btn:hover { transform: translateY(-1px); }
+	.delete-btn:hover {
+		transform: translateY(-1px);
+	}
 
 	.delete-btn .trash-icon {
 		stroke: #fff;
@@ -239,7 +322,13 @@
 		stroke: currentColor;
 		fill: none;
 	}
-    @media (max-width: 600px) { .track-item { padding: .8rem .7rem; } .track-name { max-width: 60%; font-size: 1rem; } }
-
-
+	@media (max-width: 600px) {
+		.track-item {
+			padding: 0.8rem 0.7rem;
+		}
+		.track-name {
+			max-width: 60%;
+			font-size: 1rem;
+		}
+	}
 </style>

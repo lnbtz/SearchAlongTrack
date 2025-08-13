@@ -22,22 +22,21 @@
 
 		try {
 			const result = await searchAlongTrack();
-			
+
 			if (result.success) {
 				// Handle successful response
 				console.log('Search completed successfully:', result.data);
 				await buildTableData();
 				loadingState = 'done';
-				
 			} else {
 				// Handle error response
 				const error = result.error;
 				console.error('Search failed:', error.message);
-				
+
 				// Show user-friendly error message
 				errorMessage = error.userMessage;
 				loadingState = 'error';
-				
+
 				// Handle specific error types for better UX
 				if (error.statusCode === 429) {
 					// Rate limited - could add retry logic later
@@ -47,7 +46,6 @@
 					errorMessage += ' Consider using a shorter route.';
 				}
 			}
-			
 		} catch (error) {
 			// This should rarely happen with the new error handling
 			console.error('Unexpected error in search:', error);
@@ -94,53 +92,54 @@
 		reader.onload = async () => {
 			try {
 				const xml = new DOMParser().parseFromString(reader.result as string, 'application/xml');
-				
+
 				// Check for XML parsing errors
 				const parseError = xml.querySelector('parsererror');
 				if (parseError) {
 					throw new Error('Invalid GPX file format');
 				}
-				
+
 				const geojson = toGeoJSON.gpx(xml);
-				
+
 				// Check if the conversion was successful and contains track data
 				if (!geojson || !geojson.features || geojson.features.length === 0) {
 					throw new Error('No valid track data found in the GPX file');
 				}
-				
+
 				gpxTrackStore.set(geojson);
 				handleGpxTrack();
-				
+
 				if (get(totalTrackLengthStore) > 1000) {
-					errorMessage = 'GPX track is too long (over 1000km). Please use a shorter track for better performance.';
+					errorMessage =
+						'GPX track is too long (over 1000km). Please use a shorter track for better performance.';
 					loadingState = 'error';
 					loading = false;
 					return;
 				}
-				
+
 				loading = false;
 				progress = 100;
 				await search();
-				
 			} catch (error) {
 				console.error('Error processing GPX file:', error);
 				loading = false;
 				loadingState = 'error';
-				
+
 				if (error instanceof Error) {
 					errorMessage = error.message;
 				} else {
-					errorMessage = 'Failed to process the GPX file. Please check the file format and try again.';
+					errorMessage =
+						'Failed to process the GPX file. Please check the file format and try again.';
 				}
 			}
 		};
-		
+
 		reader.onerror = () => {
 			loading = false;
 			loadingState = 'error';
 			errorMessage = 'Failed to read the file. Please try again.';
 		};
-		
+
 		reader.readAsText(file);
 	}
 </script>
@@ -192,7 +191,8 @@
 			<div class="error-icon">❌</div>
 			<div class="error-message">{errorMessage}</div>
 			<button class="retry-btn" onclick={() => search()}>Try Again</button>
-			<button class="back-btn" onclick={() => loadingState = 'idle'}>Upload Different File</button>
+			<button class="back-btn" onclick={() => (loadingState = 'idle')}>Upload Different File</button
+			>
 		</div>
 	{:else if loadingState === 'done'}
 		<div class="state state-done">
@@ -311,7 +311,8 @@
 		max-width: 400px;
 		text-align: center;
 	}
-	.retry-btn, .back-btn {
+	.retry-btn,
+	.back-btn {
 		margin: 0.25rem;
 		padding: 0.5rem 1rem;
 		border-radius: 8px;

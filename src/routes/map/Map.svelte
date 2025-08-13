@@ -1,19 +1,19 @@
 <script lang="ts">
 	import type { Geometry, GeoJsonProperties } from 'geojson';
 	import { onDestroy, onMount } from 'svelte';
-    import {
-        gpxTrackStore,
-        selectedRangeTrackStore,
-        tableDataDisplayStore,
-        tableDataStore,
-        mapInstanceStore,
-        markersStore
-    } from '$lib/stores';
+	import {
+		gpxTrackStore,
+		selectedRangeTrackStore,
+		tableDataDisplayStore,
+		tableDataStore,
+		mapInstanceStore,
+		markersStore
+	} from '$lib/stores';
 	import { get } from 'svelte/store';
-    import { displayType, type TableRow } from '$lib/results';
-    import MapControls from './MapControls.svelte';
-    import { getCategoryIconUrl } from '$lib/icons';
-    import { recomputeTableDataDisplay } from '$lib/util';
+	import { displayType, type TableRow } from '$lib/results';
+	import MapControls from './MapControls.svelte';
+	import { getCategoryIconUrl } from '$lib/icons';
+	import { recomputeTableDataDisplay } from '$lib/util';
 	import maplibregl from 'maplibre-gl';
 
 	const markerWidth = 32; // Size of the marker in pixels
@@ -22,18 +22,17 @@
 	let map: maplibregl.Map;
 	let lastMapState: { center: [number, number]; zoom: number } | null = null;
 
-    onMount(async () => {
+	onMount(async () => {
 		const maplibrePkg = await import('maplibre-gl');
-        const maplibregl = maplibrePkg.default ?? maplibrePkg; // CJS default
-        const { GeolocateControl } = maplibregl as any;
-        await import('maplibre-gl/dist/maplibre-gl.css');
-		let mapOptions = {
+		const maplibregl = maplibrePkg.default ?? maplibrePkg; // CJS default
+		const { GeolocateControl } = maplibregl;
+		await import('maplibre-gl/dist/maplibre-gl.css');
+		map = new maplibregl.Map({
 			container: mapContainer,
 			style: `https://api.maptiler.com/maps/openstreetmap/style.json?key=${import.meta.env.VITE_MAPTILER_API_KEY}`,
 			zoom: 1,
-			attributionControl: false as false
-		};
-		map = new maplibregl.Map(mapOptions);
+			attributionControl: false
+		});
 		map.on('style.load', () => {
 			const gpxTrack = get(gpxTrackStore);
 			if (gpxTrack) {
@@ -54,9 +53,9 @@
 				trackUserLocation: true
 			})
 		);
-        mapInstanceStore.set(map);
-        // ensure filtered table reflects current controls initially
-        recomputeTableDataDisplay();
+		mapInstanceStore.set(map);
+		// ensure filtered table reflects current controls initially
+		recomputeTableDataDisplay();
 	});
 	onDestroy(() => {
 		if (map) {
@@ -78,14 +77,14 @@
 		}
 	});
 
-    tableDataDisplayStore.subscribe((tableData) => {
+	tableDataDisplayStore.subscribe((tableData) => {
 		addOrUpdateTableDataDisplay(tableData);
 	});
 
-    // Ensure the filtered view refreshes when new raw results arrive
-    tableDataStore.subscribe(() => {
-        recomputeTableDataDisplay();
-    });
+	// Ensure the filtered view refreshes when new raw results arrive
+	tableDataStore.subscribe(() => {
+		recomputeTableDataDisplay();
+	});
 
 	function addOrUpdateSelectedRangeGpxTrack(
 		geojson: GeoJSON.FeatureCollection<Geometry, GeoJsonProperties>
@@ -143,8 +142,8 @@
 			}
 			const geometry = geojson.features[0].geometry;
 			let bbox: number[] | undefined = undefined;
-			if (geometry.type === 'LineString' && Array.isArray((geometry as any).coordinates)) {
-				bbox = (geometry as { coordinates: number[][] }).coordinates.reduce(
+			if (geometry.type === 'LineString' && Array.isArray(geometry.coordinates)) {
+				bbox = geometry.coordinates.reduce(
 					(acc: number[], coord: number[]) => {
 						acc[0] = Math.min(acc[0], coord[0]);
 						acc[1] = Math.min(acc[1], coord[1]);
@@ -181,7 +180,7 @@
 			tableData.forEach((row) => {
 				const el = document.createElement('div');
 				el.className = 'marker';
-                el.style.backgroundImage = `url(${getCategoryIconUrl(row.category ? row.category : '')})`;
+				el.style.backgroundImage = `url(${getCategoryIconUrl(row.category ? row.category : '')})`;
 				el.style.position = 'absolute';
 				el.style.width = `${markerWidth}px`;
 				el.style.height = `${markerHeight}px`;
@@ -448,68 +447,117 @@
 				</a>
 			</div>`;
 	}
-
-    
 </script>
 
 <div class="map-wrapper">
-    <div bind:this={mapContainer} id="map"></div>
-    <MapControls />
+	<div bind:this={mapContainer} id="map"></div>
+	<MapControls />
 </div>
 
 <style>
-    .map-wrapper { position: relative; }
-    #map {
-        width: 100%;
-        height: min(100vh, 860px);
-        min-height: 420px;
-        overflow: hidden;
-    }
+	.map-wrapper {
+		position: relative;
+	}
+	#map {
+		width: 100%;
+		height: min(100vh, 860px);
+		min-height: 420px;
+		overflow: hidden;
+	}
 
-    /* Ensure map popups are fully opaque and high-contrast */
-    :global(.maplibregl-popup) {
-        filter: none !important;
-        opacity: 1 !important;
-    }
-    :global(.maplibregl-popup-content) {
-        background: var(--bg-elevated) !important;
-        color: var(--text) !important;
-        border: 1px solid var(--border) !important;
-        border-radius: var(--radius-md) !important;
-        box-shadow: var(--shadow-lg) !important;
-        font-family: var(--font-body) !important;
-    }
-    :global(.maplibregl-popup-close-button) {
-        color: var(--text) !important;
-        opacity: 1 !important;
-        font-weight: 700;
-    }
-    :global(.maplibregl-popup-tip) {
-        border-top-color: var(--bg-elevated) !important;
-        border-bottom-color: var(--bg-elevated) !important;
-    }
+	/* Ensure map popups are fully opaque and high-contrast */
+	:global(.maplibregl-popup) {
+		filter: none !important;
+		opacity: 1 !important;
+	}
+	:global(.maplibregl-popup-content) {
+		background: var(--bg-elevated) !important;
+		color: var(--text) !important;
+		border: 1px solid var(--border) !important;
+		border-radius: var(--radius-md) !important;
+		box-shadow: var(--shadow-lg) !important;
+		font-family: var(--font-body) !important;
+	}
+	:global(.maplibregl-popup-close-button) {
+		color: var(--text) !important;
+		opacity: 1 !important;
+		font-weight: 700;
+	}
+	:global(.maplibregl-popup-tip) {
+		border-top-color: var(--bg-elevated) !important;
+		border-bottom-color: var(--bg-elevated) !important;
+	}
 
-    /* Structured, readable popup content */
-    :global(.sat-popup) { display: grid; gap: 8px; }
-    :global(.sat-header) { font-weight: 800; color: var(--primary-700); letter-spacing: .2px; }
-    :global(.sat-row) {
-        display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center;
-        padding: 8px 10px; border-radius: 10px; border: 1px solid var(--border);
-        background: var(--bg);
-    }
-    :global(.sat-success) { background: color-mix(in oklab, var(--accent) 12%, var(--bg) 88%); }
-    :global(.sat-info) { background: color-mix(in oklab, var(--primary) 12%, var(--bg) 88%); }
-    :global(.sat-label) { font-weight: 700; color: var(--text); opacity: .9; }
-    :global(.sat-value) { font-weight: 700; color: var(--text); }
-    :global(.sat-card) { border: 1px dashed var(--border); border-radius: 10px; padding: 8px 10px; background: var(--bg); }
-    :global(.sat-card-title) { font-weight: 800; margin-bottom: 4px; }
-    :global(.sat-card-body) { color: var(--text); opacity: .95; }
-    :global(.sat-link) { color: var(--primary-700); text-decoration: underline; font-weight: 600; }
-    :global(.sat-actions) { display: flex; gap: 8px; margin-top: 2px; }
-    :global(.sat-chip) {
-        display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px;
-        background: color-mix(in oklab, var(--primary) 12%, var(--bg-elevated) 88%);
-        color: var(--primary-700); border: 1px solid color-mix(in oklab, var(--primary) 35%, transparent);
-        text-decoration: none; font-weight: 700; font-size: .9rem;
-    }
+	/* Structured, readable popup content */
+	:global(.sat-popup) {
+		display: grid;
+		gap: 8px;
+	}
+	:global(.sat-header) {
+		font-weight: 800;
+		color: var(--primary-700);
+		letter-spacing: 0.2px;
+	}
+	:global(.sat-row) {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		gap: 10px;
+		align-items: center;
+		padding: 8px 10px;
+		border-radius: 10px;
+		border: 1px solid var(--border);
+		background: var(--bg);
+	}
+	:global(.sat-success) {
+		background: color-mix(in oklab, var(--accent) 12%, var(--bg) 88%);
+	}
+	:global(.sat-info) {
+		background: color-mix(in oklab, var(--primary) 12%, var(--bg) 88%);
+	}
+	:global(.sat-label) {
+		font-weight: 700;
+		color: var(--text);
+		opacity: 0.9;
+	}
+	:global(.sat-value) {
+		font-weight: 700;
+		color: var(--text);
+	}
+	:global(.sat-card) {
+		border: 1px dashed var(--border);
+		border-radius: 10px;
+		padding: 8px 10px;
+		background: var(--bg);
+	}
+	:global(.sat-card-title) {
+		font-weight: 800;
+		margin-bottom: 4px;
+	}
+	:global(.sat-card-body) {
+		color: var(--text);
+		opacity: 0.95;
+	}
+	:global(.sat-link) {
+		color: var(--primary-700);
+		text-decoration: underline;
+		font-weight: 600;
+	}
+	:global(.sat-actions) {
+		display: flex;
+		gap: 8px;
+		margin-top: 2px;
+	}
+	:global(.sat-chip) {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		padding: 4px 10px;
+		border-radius: 999px;
+		background: color-mix(in oklab, var(--primary) 12%, var(--bg-elevated) 88%);
+		color: var(--primary-700);
+		border: 1px solid color-mix(in oklab, var(--primary) 35%, transparent);
+		text-decoration: none;
+		font-weight: 700;
+		font-size: 0.9rem;
+	}
 </style>
