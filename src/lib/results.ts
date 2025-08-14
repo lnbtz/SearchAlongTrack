@@ -124,6 +124,15 @@ function buildTableRow(
 			OSMCategoriesMap.get(key)?.includes(type)
 		);
 		description = element.tags.description;
+		if (element.tags.vending && !description) {
+			description = element.tags.vending
+				.split(';')
+				.map((s) => s.trim())
+				.filter(Boolean)
+				.map((s) => s.replace(/_/g, ' '))
+				.map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+				.join(', ');
+		}
 		name = element.tags.name;
 		website = element.tags.website;
 		phoneNumber = element.tags.phone;
@@ -173,7 +182,6 @@ function buildLocationMap(
 			const firstNodeId = element.nodes[0];
 			const firstNode = locationMap.get(firstNodeId);
 			if (firstNode) {
-				console.log(element.tags);
 				locationMap.set(element.id, {
 					lat: firstNode.lat,
 					lon: firstNode.lon,
