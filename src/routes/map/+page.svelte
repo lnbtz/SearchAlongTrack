@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Map from './Map.svelte';
-	import Results from './Results.svelte';
+	// import Results from './Results.svelte';
 </script>
 
 <section class="map-section">
@@ -13,9 +13,9 @@
 	>
 </section>
 
-<section class="results-section">
+<!-- <section class="results-section">
 	<Results />
-</section>
+</section> -->
 
 <style>
 	.map-section {
@@ -26,9 +26,9 @@
 		box-shadow: var(--shadow-md);
 		background: var(--bg-elevated);
 	}
-	.results-section {
+	/* .results-section {
 		margin-top: 1rem;
-	}
+	} */
 
 	.fab {
 		position: fixed;

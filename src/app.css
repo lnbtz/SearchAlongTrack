@@ -151,3 +151,71 @@ button:focus:not(:focus-visible) {
 	width: 1px;
 	white-space: nowrap;
 }
+
+/* --- Mobile baseline tweaks --- */
+html {
+	/* Prevent unexpected font auto-zoom on iOS */
+	-webkit-text-size-adjust: 100%;
+	text-size-adjust: 100%;
+	scroll-behavior: smooth;
+}
+
+/* Respect iOS safe areas (enabled by viewport-fit=cover in app.html) */
+body {
+	padding-top: max(env(safe-area-inset-top), 0px);
+	padding-right: max(env(safe-area-inset-right), 0px);
+	padding-bottom: max(env(safe-area-inset-bottom), 0px);
+	padding-left: max(env(safe-area-inset-left), 0px);
+	-webkit-tap-highlight-color: transparent;
+}
+
+/* Ensure comfortable tap targets */
+button,
+input[type='button'],
+input[type='submit'],
+input[type='reset'],
+label,
+a.buttonlike {
+	min-height: 44px; /* Apple HIG min */
+	min-width: 44px;
+	touch-action: manipulation;
+}
+
+/* Avoid input zoom on iOS by keeping font-size >= 16px */
+input,
+select,
+textarea {
+	font-size: 16px;
+}
+
+/* Media elements scale down but don't overflow */
+img,
+svg,
+video,
+canvas {
+	max-width: 100%;
+	height: auto;
+}
+
+/* Reduce motion when users prefer it */
+@media (prefers-reduced-motion: reduce) {
+	* {
+		animation-duration: 0.001ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.001ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
+/* Utilities */
+/* Stack a flex row on mobile when desired */
+.stack-mobile {
+	display: flex;
+	gap: 0.5rem;
+}
+@media (max-width: 640px) {
+	.stack-mobile {
+		flex-direction: column;
+		align-items: stretch;
+	}
+}
