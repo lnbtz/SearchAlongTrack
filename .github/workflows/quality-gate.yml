@@ -51,7 +51,7 @@ jobs:
         run: |
           echo "⚡ Performance validation..."
           # Add any performance checks here
-          ls -la build/
+          ls -la .svelte-kit/output || ls -la .svelte-kit
 
       - name: Comment PR
         uses: actions/github-script@v7
