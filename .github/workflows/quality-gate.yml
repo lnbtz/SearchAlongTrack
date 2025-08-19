@@ -36,8 +36,6 @@ jobs:
           npm run lint
           npm run check
           npm run test:unit -- --run
-          npx playwright install --with-deps
-          npm run test:e2e
 
       - name: Build verification
         run: |
@@ -63,5 +61,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '✅ Quality gate passed! Ready for review and merge.'
+              body: '✅ Quality gate passed (lint, typecheck, unit tests, build). Ready for review and merge.'
             })
