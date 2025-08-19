@@ -414,6 +414,8 @@
 		width: 100%;
 		overflow-x: auto;
 		-webkit-overflow-scrolling: touch;
+		/* avoid inner elements being cut off */
+		contain: layout paint;
 	}
 	.results-head {
 		padding: 0.85rem 1rem;
@@ -476,6 +478,8 @@
 		border-spacing: 0;
 		font-family: var(--font-body);
 		background: var(--bg-elevated);
+		/* ensure mobile gets horizontal scroll instead of squeezing columns */
+		min-width: 560px;
 	}
 	.type-cell {
 		display: inline-flex;
@@ -488,6 +492,10 @@
 		border-radius: 4px;
 		box-shadow: var(--shadow-sm);
 	}
+	/* constrain the name column */
+	.name-cell {
+		max-width: 320px;
+	}
 	.name-btn {
 		background: transparent;
 		border: none;
@@ -495,6 +503,10 @@
 		text-decoration: underline;
 		cursor: pointer;
 		font-weight: 600;
+		max-width: 320px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 	.metric {
 		display: inline-flex;
@@ -580,58 +592,30 @@
 		.table-scroll {
 			margin: 0;
 		}
-		table.sat-table {
-			min-width: 720px;
-		}
-		thead {
-			display: table-header-group;
-			background: var(--bg);
-			position: sticky;
-			top: 0;
-			z-index: 2;
-		}
+		/* rely on horizontal scroll; keep normal table semantics */
 		th {
-			font-size: 0.7rem;
-			padding: 0.7rem 0.5rem;
-			background: var(--bg);
-			position: sticky;
-			top: 0;
-			z-index: 2;
-			border-bottom: 1px solid var(--border);
-		}
-		tbody,
-		tr,
-		td {
-			display: table-row-group;
-			width: 100%;
-		}
-		tr {
-			display: table-row;
-			margin-bottom: 0;
-			background: var(--bg-elevated);
-			border: none;
+			font-size: 0.85rem;
+			padding: 0.55rem 0.5rem;
 		}
 		td {
-			display: table-cell;
-			padding: 0.7rem 0.5rem;
-			border-bottom: 1px solid var(--border);
-			position: relative;
-			font-size: 0.7rem;
-			vertical-align: top;
-			word-break: break-word;
+			font-size: 0.85rem;
+			padding: 0.55rem 0.5rem;
+			white-space: nowrap;
 		}
-		td:before {
-			display: none;
+		/* prevent vertical letter stacking like in the screenshot */
+		.type-cell,
+		.metric {
+			white-space: nowrap;
 		}
 	}
 
 	@media (max-width: 500px) {
 		table {
-			font-size: 0.5rem;
+			font-size: 0.78rem;
 		}
 		th,
 		td {
-			padding: 0.5rem 0.3rem;
+			padding: 0.5rem 0.4rem;
 		}
 	}
 

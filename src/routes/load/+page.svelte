@@ -8,6 +8,11 @@
 	import { goto } from '$app/navigation';
 	import { saveTable, saveTrack, loadAll, deleteTrackData, saveLastTrackName } from '$lib/storage';
 
+	function shorten(text: string, max = 30) {
+		if (!text) return '';
+		return text.length > max ? text.slice(0, max - 1) + '…' : text;
+	}
+
 	let allTracks: Record<string, FeatureCollection<Geometry, GeoJsonProperties>> = $state({});
 	let allTables: Record<string, TableRow[]> = $state({});
 	let gpxTrack: FeatureCollection<Geometry, GeoJsonProperties> | null = null;
@@ -124,7 +129,13 @@
 	<ul class="track-list">
 		{#each Object.entries(allTracks) as [trackName, track] (trackName)}
 			<li class="track-item">
-				<span class="track-name">{track.features[0]?.properties?.name || trackName}</span>
+				<span
+					class="track-name"
+					title={track.features[0]?.properties?.name || trackName}
+					aria-label={track.features[0]?.properties?.name || trackName}
+				>
+					{shorten(track.features[0]?.properties?.name || trackName)}
+				</span>
 				<div class="track-actions">
 					<button
 						class="load-btn"
@@ -221,7 +232,7 @@
 		box-shadow: var(--shadow-md);
 		max-width: 820px;
 		margin: 1.5rem auto;
-		overflow: hidden;
+		overflow: visible;
 	}
 	.tracks-head {
 		padding: 0.85rem 1rem;
@@ -250,7 +261,9 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		gap: 0.75rem;
 		padding: 1rem 1rem;
+		width: 100%;
 		background: var(--bg);
 		border-radius: 12px;
 		box-shadow: var(--shadow-sm);
@@ -259,6 +272,8 @@
 			box-shadow 0.18s,
 			transform 0.12s,
 			border 0.18s;
+		/* allow buttons to remain fully visible */
+		overflow: visible;
 	}
 
 	.track-item:hover {
@@ -274,13 +289,20 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
-		max-width: 60%;
+		/* allow the name to shrink while actions stay visible */
+		flex: 1 1 auto;
+		min-width: 0;
 		letter-spacing: 0.01em;
 	}
 
 	.track-actions {
 		display: flex;
 		gap: 0.5rem;
+		flex: 0 0 auto;
+	}
+	.track-actions .load-btn,
+	.track-actions .delete-btn {
+		flex: 0 0 auto;
 	}
 
 	.load-btn {
@@ -328,10 +350,42 @@
 	@media (max-width: 600px) {
 		.track-item {
 			padding: 0.8rem 0.7rem;
+			gap: 0.5rem;
 		}
 		.track-name {
-			max-width: 60%;
 			font-size: 1rem;
+		}
+		.load-btn {
+			padding: 0.35rem 0.65rem;
+			font-size: 0.9rem;
+		}
+		.delete-btn {
+			padding: 0.35rem 0.6rem;
+		}
+	}
+
+	@media (max-width: 380px) {
+		.load-btn {
+			padding: 0.3rem 0.56rem;
+			font-size: 0.85rem;
+		}
+		.delete-btn {
+			padding: 0.3rem 0.5rem;
+		}
+	}
+
+	/* Portrait-first safety: on very narrow screens, stack actions below the name */
+	@media (max-width: 420px) {
+		.track-item {
+			flex-wrap: wrap;
+		}
+		.track-name {
+			flex-basis: 100%;
+			margin-bottom: 0.25rem;
+		}
+		.track-actions {
+			width: 100%;
+			justify-content: flex-end;
 		}
 	}
 </style>

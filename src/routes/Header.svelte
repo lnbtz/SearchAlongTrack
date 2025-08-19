@@ -1,27 +1,53 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	let mobileOpen = $state(false);
+	function closeMenu() {
+		mobileOpen = false;
+	}
+	const isActive = (path: string) => (page.url.pathname === path ? 'page' : undefined);
 </script>
 
 <header>
 	<nav>
 		<div class="brand">
-			<a class="brand-link" href="/">
+			<a class="brand-link" href="/" onclick={closeMenu}>
 				<span class="logo">▵</span>
 				<span class="title">SearchAlongTrack</span>
 			</a>
 		</div>
-		<ul class="links">
-			<li aria-current={page.url.pathname === '/' ? 'page' : undefined}>
-				<a href="/">Upload & Search</a>
+
+		<button
+			class="menu-btn"
+			aria-label="Menu"
+			aria-expanded={mobileOpen}
+			onclick={() => (mobileOpen = !mobileOpen)}
+		>
+			<svg
+				width="22"
+				height="22"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
+				<path d="M3 6h18M3 12h18M3 18h18" />
+			</svg>
+		</button>
+
+		<ul class="links" class:open={mobileOpen}>
+			<li aria-current={isActive('/')}>
+				<a href="/" onclick={closeMenu}>Upload & Search</a>
 			</li>
-			<li aria-current={page.url.pathname === '/map' ? 'page' : undefined}>
-				<a href="/map">Map & Results</a>
+			<li aria-current={isActive('/map')}>
+				<a href="/map" onclick={closeMenu}>Map & Results</a>
 			</li>
-			<li aria-current={page.url.pathname === '/load' ? 'page' : undefined}>
-				<a href="/load">Load Tracks</a>
+			<li aria-current={isActive('/load')}>
+				<a href="/load" onclick={closeMenu}>Load Tracks</a>
 			</li>
-			<li aria-current={page.url.pathname === '/about' ? 'page' : undefined}>
-				<a href="/about">About</a>
+			<li aria-current={isActive('/about')}>
+				<a href="/about" onclick={closeMenu}>About</a>
 			</li>
 		</ul>
 	</nav>
@@ -30,12 +56,14 @@
 <style>
 	header {
 		position: sticky;
-		top: 0;
-		z-index: 30;
+		top: env(safe-area-inset-top, 0);
+		z-index: 100;
 		backdrop-filter: saturate(180%) blur(12px);
-		background: color-mix(in oklab, var(--bg-elevated) 75%, transparent);
+		background: color-mix(in oklab, var(--bg-elevated) 85%, transparent);
 		border-bottom: 1px solid var(--border);
 		box-shadow: var(--shadow-sm);
+		/* keep clear of iOS notch and ensure full visibility */
+		padding-top: env(safe-area-inset-top, 0);
 	}
 
 	nav {
@@ -48,6 +76,7 @@
 		justify-content: space-between;
 		gap: 1rem;
 		box-sizing: border-box;
+		position: relative; /* anchor for mobile dropdown */
 	}
 
 	.brand-link {
@@ -123,18 +152,51 @@
 		nav {
 			padding: 0.5rem 0.75rem;
 			gap: 0.5rem;
-			flex-wrap: wrap;
+			flex-wrap: nowrap;
 		}
 		.title {
 			font-size: 0.95rem;
 		}
+		/* Mobile menu: hide links until opened */
+		.menu-btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			background: transparent;
+			border: 1px solid var(--border);
+			border-radius: 10px;
+			padding: 0.35rem;
+			color: var(--text);
+		}
 		.links {
-			width: 100%;
-			overflow-x: auto;
-			-webkit-overflow-scrolling: touch;
-			white-space: nowrap;
-			justify-content: flex-start;
+			display: none;
+			position: absolute;
+			left: 0;
+			right: 0;
+			top: 100%;
+			background: var(--bg-elevated);
+			border-bottom: 1px solid var(--border);
+			box-shadow: var(--shadow-md);
+			padding: 0.5rem;
 			gap: 0.25rem;
+			flex-direction: column;
+			align-items: stretch;
+		}
+		.links.open {
+			display: flex;
+		}
+		.links li {
+			width: 100%;
+		}
+		.links a {
+			width: 100%;
+			justify-content: flex-start;
+		}
+		/* keep active route visibly highlighted in the mobile list */
+		.links li[aria-current='page'] a {
+			background: color-mix(in oklab, var(--primary) 12%, transparent);
+			box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--primary) 25%, transparent);
+			color: var(--primary-700);
 		}
 		.links li {
 			flex: 0 0 auto;
@@ -142,6 +204,12 @@
 		nav a {
 			padding: 0.45rem 0.6rem;
 			font-size: 0.9rem;
+		}
+	}
+
+	@media (min-width: 641px) {
+		.menu-btn {
+			display: none;
 		}
 	}
 </style>
