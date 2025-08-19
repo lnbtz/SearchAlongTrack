@@ -76,28 +76,25 @@
 		}
 	});
 
-		// If nothing in stores yet, try restoring last loaded track + its POIs from IndexedDB
-		onMount(async () => {
-			if (!get(gpxTrackStore)) {
-				try {
-					const lastName = await getLastTrackName();
-					if (lastName) {
-						const [track, table] = await Promise.all([
-							getTrack(lastName),
-							getTable(lastName)
-						]);
-						if (track) {
-							gpxTrackStore.set(track);
-						}
-						if (table) {
-							tableDataStore.set(table);
-						}
+	// If nothing in stores yet, try restoring last loaded track + its POIs from IndexedDB
+	onMount(async () => {
+		if (!get(gpxTrackStore)) {
+			try {
+				const lastName = await getLastTrackName();
+				if (lastName) {
+					const [track, table] = await Promise.all([getTrack(lastName), getTable(lastName)]);
+					if (track) {
+						gpxTrackStore.set(track);
 					}
-				} catch (e) {
-					console.warn('Restore last session failed', e);
+					if (table) {
+						tableDataStore.set(table);
+					}
 				}
+			} catch (e) {
+				console.warn('Restore last session failed', e);
 			}
-		});
+		}
+	});
 	gpxTrackStore.subscribe((geojson) => {
 		if (map && geojson) {
 			addOrUpdateGpxTrack(geojson);
