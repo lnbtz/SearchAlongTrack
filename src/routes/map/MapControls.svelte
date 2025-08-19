@@ -20,22 +20,6 @@
 			: $selectedCategoriesStore
 	);
 
-	let radiusValue: number = $state($selectedRadiusStore);
-	$effect(() => {
-		selectedRadiusStore.set(radiusValue);
-	});
-
-	let values: number[] = $state([$selectedStartRangeStore, $selectedEndRangeStore]);
-	$effect(() => {
-		selectedStartRangeStore.set(values[0]);
-	});
-	$effect(() => {
-		selectedEndRangeStore.set(values[1]);
-	});
-	$effect(() => {
-		values = [$selectedStartRangeStore, $selectedEndRangeStore];
-	});
-
 	function togglePanel() {
 		panelOpen = !panelOpen;
 	}
@@ -69,7 +53,6 @@
 		}
 		if ($selectedRadiusStore === 0) {
 			selectedRadiusStore.set(1000);
-			radiusValue = 1000;
 		}
 		// Trigger an initial recompute
 		calculateSelectedRangeTrackStore();
@@ -95,14 +78,19 @@
 						km
 					</label>
 					<RangeSlider
-						bind:values
+						values={[$selectedStartRangeStore, $selectedEndRangeStore]}
 						min={0}
 						max={$totalTrackLengthStore}
 						pips
 						first="label"
 						last="label"
 						rest="pip"
-						on:change={onRangeChange}
+						on:change={(e) => {
+							const vs = (e as CustomEvent & { detail: { values: number[] } }).detail.values;
+							selectedStartRangeStore.set(vs[0]);
+							selectedEndRangeStore.set(vs[1]);
+							onRangeChange();
+						}}
 					/>
 				</div>
 				<div class="slider-group">
@@ -110,14 +98,18 @@
 						Select Radius (in m): {$selectedRadiusStore} m
 					</label>
 					<RangeSlider
-						bind:value={radiusValue}
+						value={$selectedRadiusStore}
 						min={100}
 						max={5000}
 						step={100}
 						pips
 						first="label"
 						last="label"
-						on:change={onRadiusChange}
+						on:change={(e) => {
+							const v = (e as CustomEvent & { detail: { value: number } }).detail.value;
+							selectedRadiusStore.set(v);
+							onRadiusChange();
+						}}
 					/>
 				</div>
 			</section>

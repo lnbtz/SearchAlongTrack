@@ -15,6 +15,7 @@
 	import { getCategoryIconUrl } from '$lib/icons';
 	import { recomputeTableDataDisplay } from '$lib/util';
 	import maplibregl from 'maplibre-gl';
+	import { getLastTrackName, getMapState, saveMapState, getTrack, getTable } from '$lib/storage';
 
 	const markerWidth = 32; // Size of the marker in pixels
 	const markerHeight = 36;
@@ -27,12 +28,17 @@
 		const maplibregl = maplibrePkg.default ?? maplibrePkg; // CJS default
 		const { GeolocateControl } = maplibregl;
 		await import('maplibre-gl/dist/maplibre-gl.css');
+		// Seed with last map state if available
+		const restored = await getMapState().catch(() => undefined);
 		map = new maplibregl.Map({
 			container: mapContainer,
 			style: `https://api.maptiler.com/maps/openstreetmap/style.json?key=${import.meta.env.VITE_MAPTILER_API_KEY}`,
-			zoom: 1,
+			zoom: restored?.zoom ?? 1,
 			attributionControl: false
 		});
+		if (restored?.center) {
+			map.setCenter({ lng: restored.center[0], lat: restored.center[1] });
+		}
 		map.on('style.load', () => {
 			const gpxTrack = get(gpxTrackStore);
 			if (gpxTrack) {
@@ -57,12 +63,36 @@
 		// ensure filtered table reflects current controls initially
 		recomputeTableDataDisplay();
 	});
-	onDestroy(() => {
+	onDestroy(async () => {
 		if (map) {
 			const center = map.getCenter();
 			const zoom = map.getZoom();
 			lastMapState = { center: [center.lng, center.lat], zoom };
-			localStorage.setItem('mapState', JSON.stringify(lastMapState));
+			try {
+				await saveMapState(lastMapState);
+			} catch (e) {
+				console.warn('Failed to persist map state', e);
+			}
+		}
+	});
+
+	// If nothing in stores yet, try restoring last loaded track + its POIs from IndexedDB
+	onMount(async () => {
+		if (!get(gpxTrackStore)) {
+			try {
+				const lastName = await getLastTrackName();
+				if (lastName) {
+					const [track, table] = await Promise.all([getTrack(lastName), getTable(lastName)]);
+					if (track) {
+						gpxTrackStore.set(track);
+					}
+					if (table) {
+						tableDataStore.set(table);
+					}
+				}
+			} catch (e) {
+				console.warn('Restore last session failed', e);
+			}
 		}
 	});
 	gpxTrackStore.subscribe((geojson) => {

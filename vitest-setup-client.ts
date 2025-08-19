@@ -1,34 +1,8 @@
 import '@testing-library/jest-dom/vitest';
-import { defineConfig } from 'vite';
 import { vi } from 'vitest';
-import { svelteTesting } from '@testing-library/svelte/vite';
-export default defineConfig({
-	test: {
-		workspace: [
-			{
-				extends: './vite.config.ts',
-				plugins: [svelteTesting()],
-				test: {
-					name: 'client',
-					environment: 'jsdom',
-					clearMocks: true,
-					include: ['src/**/*.svelte.{test,spec}.{js,ts}'],
-					exclude: ['src/lib/server/**'],
-					setupFiles: ['./vitest-setup-client.ts']
-				}
-			},
-			{
-				extends: './vite.config.ts',
-				test: {
-					name: 'server',
-					environment: 'node',
-					include: ['src/**/*.{test,spec}.{js,ts}'],
-					exclude: ['src/**/*.svelte.{test,spec}.{js,ts}']
-				}
-			}
-		]
-	}
-});
+// Polyfill IndexedDB for jsdom tests
+import 'fake-indexeddb/auto';
+
 // required for svelte5 + jsdom as jsdom does not support matchMedia
 Object.defineProperty(window, 'matchMedia', {
 	writable: true,

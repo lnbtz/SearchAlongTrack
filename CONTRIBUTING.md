@@ -58,7 +58,6 @@ We use **Git Flow** with the following branches:
    ```
 
 2. **Make your changes:**
-
    - Write code
    - Add tests
    - Update documentation
