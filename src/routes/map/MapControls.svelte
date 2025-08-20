@@ -1,12 +1,6 @@
 <script lang="ts">
 	import { OSMCategories, OSMCategoriesMap } from '$lib/osm-constants';
-	import {
-		selectedCategoriesStore,
-		selectedEndRangeStore,
-		selectedRadiusStore,
-		selectedStartRangeStore,
-		totalTrackLengthStore
-	} from '$lib/stores';
+	import { selectedCategoriesStore, selectedRadiusStore } from '$lib/stores';
 	import { calculateSelectedRangeTrackStore, recomputeTableDataDisplay } from '$lib/util';
 	import RangeSlider from 'svelte-range-slider-pips';
 	import { onMount } from 'svelte';
@@ -22,11 +16,6 @@
 
 	function togglePanel() {
 		panelOpen = !panelOpen;
-	}
-
-	function onRangeChange() {
-		calculateSelectedRangeTrackStore();
-		recomputeTableDataDisplay();
 	}
 
 	function onRadiusChange() {
@@ -52,7 +41,7 @@
 			selectedCategories = all;
 		}
 		if ($selectedRadiusStore === 0) {
-			selectedRadiusStore.set(1000);
+			selectedRadiusStore.set(300);
 		}
 		// Trigger an initial recompute
 		calculateSelectedRangeTrackStore();
@@ -72,27 +61,6 @@
 	{#if panelOpen}
 		<div id="controls-panel" class="panel">
 			<section class="sliders">
-				<div class="slider-group">
-					<label for="selected-range-slider" class="slider-label">
-						Select Range (in km): start: {$selectedStartRangeStore} km, end: {$selectedEndRangeStore}
-						km
-					</label>
-					<RangeSlider
-						values={[$selectedStartRangeStore, $selectedEndRangeStore]}
-						min={0}
-						max={$totalTrackLengthStore}
-						pips
-						first="label"
-						last="label"
-						rest="pip"
-						on:change={(e) => {
-							const vs = (e as CustomEvent & { detail: { values: number[] } }).detail.values;
-							selectedStartRangeStore.set(vs[0]);
-							selectedEndRangeStore.set(vs[1]);
-							onRangeChange();
-						}}
-					/>
-				</div>
 				<div class="slider-group">
 					<label for="radius-slider" class="slider-label">
 						Select Radius (in m): {$selectedRadiusStore} m
