@@ -1,46 +1,40 @@
-name: CI/CD Pipeline
+name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [develop, main]
   pull_request:
-    branches: [main, develop]
+    branches: [develop, main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  test:
-    name: Test & Build
+  build:
+    name: Lint • Typecheck • Test • Build • Audit
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [20.x]
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
           cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run linting
-        run: npm run lint
-
-      - name: Run type checking
-        run: npm run check
-
-      - name: Run unit tests
-        run: npm run test:unit -- --run
-
-      - name: Build application
-        run: npm run build
-
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run check
+      - run: npm run test:unit -- --run
+      - run: npm run build
+      - name: Security audit
+        run: npm audit --audit-level moderate
       - name: Upload build artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: build-files
@@ -49,67 +43,35 @@ jobs:
 
   quality-gate:
     name: Quality Gate
-    runs-on: ubuntu-latest
-    needs: test
     if: github.event_name == 'pull_request'
-
+    needs: build
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Quality Gate Summary
+      - name: Job summary
         run: |
-          echo "🎉 All quality checks passed!"
-          echo "✅ Linting passed"
-          echo "✅ Type checking passed"
-          echo "✅ Unit tests passed"
-          echo "✅ Build successful"
-          echo ""
-          echo "🚀 Vercel will automatically deploy this PR as a preview."
-          echo "📦 Production deployment will happen automatically when merged to main."
+          echo "## 🎯 Quality Gate" >> $GITHUB_STEP_SUMMARY
+          echo "- Lint: ✅" >> $GITHUB_STEP_SUMMARY
+          echo "- Typecheck: ✅" >> $GITHUB_STEP_SUMMARY
+          echo "- Unit tests: ✅" >> $GITHUB_STEP_SUMMARY
+          echo "- Build: ✅" >> $GITHUB_STEP_SUMMARY
+          echo "- Security audit: ✅" >> $GITHUB_STEP_SUMMARY
 
-      - name: Comment PR
+      - name: Comment PR (same-repo only)
+        if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
         uses: actions/github-script@v7
         with:
           script: |
+            const body = `## 🎯 Quality Gate Report
+
+            ✅ All checks passed! This PR is ready for review.
+
+            _This comment updates on new commits._`;
             const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
+              owner: context.repo.owner, repo: context.repo.repo, issue_number: context.issue.number
             });
-
-            const botComment = comments.find(comment => 
-              comment.user.type === 'Bot' && comment.body.includes('Quality Gate')
-            );
-
-            const commentBody = `## 🎯 Quality Gate Report
-
-            ✅ **All checks passed!** This PR is ready for review.
-
-            ### Test Results:
-            - 🧪 Unit tests: ✅ Passed
-            - 🎭 E2E tests: ✅ Passed  
-            - 📝 Linting: ✅ Passed
-            - 🔍 Type checking: ✅ Passed
-            - 🔨 Build: ✅ Successful
-
-            ### Deployment:
-            🚀 Vercel will automatically create a preview deployment for this PR.
-
-            _This comment is automatically updated when new commits are pushed._`;
-
-            if (botComment) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: botComment.id,
-                body: commentBody
-              });
+            const bot = comments.find(c => c.user.type === 'Bot' && c.body.includes('Quality Gate Report'));
+            if (bot) {
+              await github.rest.issues.updateComment({ owner: context.repo.owner, repo: context.repo.repo, comment_id: bot.id, body });
             } else {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body: commentBody
-              });
+              await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: context.issue.number, body });
             }
