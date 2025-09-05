@@ -18,6 +18,8 @@ const TRACKS_STORE = 'tracks';
 const TABLES_STORE = 'tables';
 const META_STORE = 'meta';
 
+const STATE_STORE = 'state';
+
 async function getStores() {
 	await ensureSchema();
 	const lib = await ensureIDB();
@@ -26,7 +28,8 @@ async function getStores() {
 	const tracksStore = createStore(DB_NAME, TRACKS_STORE);
 	const tablesStore = createStore(DB_NAME, TABLES_STORE);
 	const metaStore = createStore(DB_NAME, META_STORE);
-	return { ...lib, tracksStore, tablesStore, metaStore };
+	const stateStore = createStore(DB_NAME, STATE_STORE);
+	return { ...lib, tracksStore, tablesStore, metaStore, stateStore };
 }
 
 let schemaReady = false;
@@ -40,6 +43,7 @@ async function ensureSchema() {
 		hasTracks: boolean;
 		hasTables: boolean;
 		hasMeta: boolean;
+		hasState: boolean;
 	}>((resolve, reject) => {
 		const req = indexedDB.open(DB_NAME);
 		req.onsuccess = () => {
@@ -47,9 +51,10 @@ async function ensureSchema() {
 			const hasTracks = db.objectStoreNames.contains(TRACKS_STORE);
 			const hasTables = db.objectStoreNames.contains(TABLES_STORE);
 			const hasMeta = db.objectStoreNames.contains(META_STORE);
+			const hasState = db.objectStoreNames.contains(STATE_STORE);
 			const version = db.version;
 			db.close();
-			resolve({ version, hasTracks, hasTables, hasMeta });
+			resolve({ version, hasTracks, hasTables, hasMeta, hasState });
 		};
 		req.onupgradeneeded = () => {
 			// Fresh DB, create all stores at version 1
@@ -57,12 +62,13 @@ async function ensureSchema() {
 			if (!db.objectStoreNames.contains(TRACKS_STORE)) db.createObjectStore(TRACKS_STORE);
 			if (!db.objectStoreNames.contains(TABLES_STORE)) db.createObjectStore(TABLES_STORE);
 			if (!db.objectStoreNames.contains(META_STORE)) db.createObjectStore(META_STORE);
+			if (!db.objectStoreNames.contains(STATE_STORE)) db.createObjectStore(STATE_STORE);
 		};
 		req.onerror = () => reject(req.error);
-		req.onblocked = () => resolve({ version: 1, hasTracks: true, hasTables: true, hasMeta: true });
+		req.onblocked = () => resolve({ version: 1, hasTracks: true, hasTables: true, hasMeta: true, hasState: true });
 	});
 
-	if (info.hasTracks && info.hasTables && info.hasMeta) {
+	if (info.hasTracks && info.hasTables && info.hasMeta && info.hasState) {
 		schemaReady = true;
 		return;
 	}
@@ -74,6 +80,7 @@ async function ensureSchema() {
 			if (!db.objectStoreNames.contains(TRACKS_STORE)) db.createObjectStore(TRACKS_STORE);
 			if (!db.objectStoreNames.contains(TABLES_STORE)) db.createObjectStore(TABLES_STORE);
 			if (!db.objectStoreNames.contains(META_STORE)) db.createObjectStore(META_STORE);
+			if (!db.objectStoreNames.contains(STATE_STORE)) db.createObjectStore(STATE_STORE);
 		};
 		req.onsuccess = () => {
 			req.result.close();
@@ -164,4 +171,35 @@ export async function saveLastTrackName(name: string) {
 export async function getLastTrackName(): Promise<string | undefined> {
 	const { get, metaStore } = await getStores();
 	return get('lastTrackName', metaStore);
+}
+
+// New app state persistence functions
+// State is any serializable object containing app state
+export type AppState = {
+	selectedCategories?: string[];
+	selectedRadius?: number;
+	selectedStartRange?: number;
+	selectedEndRange?: number;
+	lastSearchResults?: any; // Store last search results
+};
+
+export async function saveAppState(state: AppState) {
+	const { set, stateStore } = await getStores();
+	await set('appState', state, stateStore);
+}
+
+export async function getAppState(): Promise<AppState | undefined> {
+	const { get, stateStore } = await getStores();
+	return get('appState', stateStore);
+}
+
+// Function to save the current state of markers
+export async function saveMarkerState(markersData: any[]) {
+	const { set, stateStore } = await getStores();
+	await set('markersState', markersData, stateStore);
+}
+
+export async function getMarkerState(): Promise<any[] | undefined> {
+	const { get, stateStore } = await getStores();
+	return get('markersState', stateStore);
 }

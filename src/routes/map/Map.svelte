@@ -95,6 +95,26 @@
 			}
 		}
 	});
+	// When the map is ready, make sure we properly handle page visibility changes
+	function setupPageVisibilityHandling() {
+		// Handle visibility changes - save state when page is hidden, restore on visible
+		document.addEventListener('visibilitychange', async () => {
+			// When page becomes hidden, ensure we save all state
+			if (document.visibilityState === 'hidden' && map) {
+				// Save map state
+				const center = map.getCenter();
+				const zoom = map.getZoom();
+				const mapState = { center: [center.lng, center.lat], zoom };
+				try {
+					await saveMapState(mapState);
+					console.log('Saved map state on visibility change');
+				} catch (e) {
+					console.warn('Failed to save map state on visibility change', e);
+				}
+			}
+		});
+	}
+
 	gpxTrackStore.subscribe((geojson) => {
 		if (map && geojson) {
 			addOrUpdateGpxTrack(geojson);
@@ -114,6 +134,13 @@
 	// Ensure the filtered view refreshes when new raw results arrive
 	tableDataStore.subscribe(() => {
 		recomputeTableDataDisplay();
+	});
+	
+	// When the map is initialized
+	mapInstanceStore.subscribe((mapInstance) => {
+		if (mapInstance) {
+			setupPageVisibilityHandling();
+		}
 	});
 
 	function addOrUpdateSelectedRangeGpxTrack(

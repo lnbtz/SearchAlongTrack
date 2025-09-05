@@ -2,9 +2,18 @@
 	import Header from './Header.svelte';
 	import '../app.css';
 	import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
+	import { registerServiceWorker } from '$lib/serviceWorkerRegistration';
+	import { initPersistentStores } from '$lib/persistentStore';
+	import { onMount } from 'svelte';
 
 	injectSpeedInsights();
 	let { children } = $props();
+	
+	// Register service worker and initialize persistent stores
+	onMount(() => {
+		registerServiceWorker();
+		initPersistentStores();
+	});
 </script>
 
 <div class="app">
