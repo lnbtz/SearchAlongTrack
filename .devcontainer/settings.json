@@ -1,0 +1,17 @@
+{
+	"extensions.verifySignature": false,
+	"http.proxyStrictSSL": false,
+	"http.systemCertificates": false,
+	"remote.downloadExtensionsLocally": true,
+	"remote.extensionKind": {
+		"svelte.svelte-vscode": ["workspace"],
+		"dbaeumer.vscode-eslint": ["workspace"],
+		"esbenp.prettier-vscode": ["workspace"]
+	},
+	"editor.formatOnSave": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"eslint.validate": ["typescript", "javascript", "svelte"],
+	"svelte.enable-ts-plugin": true,
+	"svelte.plugin.typescript.enable": true,
+	"typescript.tsdk": "node_modules/typescript/lib"
+}

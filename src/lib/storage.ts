@@ -65,7 +65,8 @@ async function ensureSchema() {
 			if (!db.objectStoreNames.contains(STATE_STORE)) db.createObjectStore(STATE_STORE);
 		};
 		req.onerror = () => reject(req.error);
-		req.onblocked = () => resolve({ version: 1, hasTracks: true, hasTables: true, hasMeta: true, hasState: true });
+		req.onblocked = () =>
+			resolve({ version: 1, hasTracks: true, hasTables: true, hasMeta: true, hasState: true });
 	});
 
 	if (info.hasTracks && info.hasTables && info.hasMeta && info.hasState) {
@@ -180,7 +181,7 @@ export type AppState = {
 	selectedRadius?: number;
 	selectedStartRange?: number;
 	selectedEndRange?: number;
-	lastSearchResults?: any; // Store last search results
+	lastSearchResults?: Record<string, unknown>; // Store last search results
 };
 
 export async function saveAppState(state: AppState) {
@@ -194,12 +195,12 @@ export async function getAppState(): Promise<AppState | undefined> {
 }
 
 // Function to save the current state of markers
-export async function saveMarkerState(markersData: any[]) {
+export async function saveMarkerState(markersData: Record<string, unknown>[]) {
 	const { set, stateStore } = await getStores();
 	await set('markersState', markersData, stateStore);
 }
 
-export async function getMarkerState(): Promise<any[] | undefined> {
+export async function getMarkerState(): Promise<Record<string, unknown>[] | undefined> {
 	const { get, stateStore } = await getStores();
 	return get('markersState', stateStore);
 }

@@ -135,7 +135,7 @@
 	tableDataStore.subscribe(() => {
 		recomputeTableDataDisplay();
 	});
-	
+
 	// When the map is initialized
 	mapInstanceStore.subscribe((mapInstance) => {
 		if (mapInstance) {

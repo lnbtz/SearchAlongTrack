@@ -8,7 +8,7 @@
 
 	injectSpeedInsights();
 	let { children } = $props();
-	
+
 	// Register service worker and initialize persistent stores
 	onMount(() => {
 		registerServiceWorker();

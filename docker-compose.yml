@@ -1,0 +1,22 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app:cached,Z
+      - /app/node_modules
+      - vscode-extensions:/home/node/.vscode-server/extensions
+      - vscode-insiders-extensions:/home/node/.vscode-server-insiders/extensions
+      - vscode-data:/home/node/.vscode-server/data
+    ports:
+      - '5173:5173'
+    environment:
+      NODE_ENV: development
+      EDITOR: code
+    command: npm run dev -- --host 0.0.0.0
+
+volumes:
+  vscode-extensions:
+  vscode-insiders-extensions:
+  vscode-data:
