@@ -181,7 +181,7 @@ export type AppState = {
 	selectedRadius?: number;
 	selectedStartRange?: number;
 	selectedEndRange?: number;
-	lastSearchResults?: Record<string, unknown>; // Store last search results
+	lastSearchResults?: TableRow[]; // Store last search results
 };
 
 export async function saveAppState(state: AppState) {

@@ -15,7 +15,14 @@
 	import { getCategoryIconUrl } from '$lib/icons';
 	import { recomputeTableDataDisplay } from '$lib/util';
 	import maplibregl from 'maplibre-gl';
-	import { getLastTrackName, getMapState, saveMapState, getTrack, getTable } from '$lib/storage';
+	import {
+		getLastTrackName,
+		getMapState,
+		saveMapState,
+		getTrack,
+		getTable,
+		type MapState
+	} from '$lib/storage';
 
 	const markerWidth = 32; // Size of the marker in pixels
 	const markerHeight = 36;
@@ -104,7 +111,7 @@
 				// Save map state
 				const center = map.getCenter();
 				const zoom = map.getZoom();
-				const mapState = { center: [center.lng, center.lat], zoom };
+				const mapState: MapState = { center: [center.lng, center.lat], zoom };
 				try {
 					await saveMapState(mapState);
 					console.log('Saved map state on visibility change');
