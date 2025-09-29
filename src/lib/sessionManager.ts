@@ -174,22 +174,56 @@ export async function forceSave(): Promise<void> {
 	await saveCurrentState();
 } // Initialize session manager
 export function initSessionManager(): void {
-	// Set up auto-save on store changes
-	selectedRadiusStore.subscribe(() => scheduleAutoSave());
-	selectedCategoriesStore.subscribe(() => scheduleAutoSave());
-	tableDataStore.subscribe(() => scheduleAutoSave());
+	// Defer initialization to avoid interfering with other components
+	if (typeof window !== 'undefined') {
+		// Use setTimeout to ensure other components initialize first
+		setTimeout(() => {
+			// Set up auto-save on store changes
+			selectedRadiusStore.subscribe(() => scheduleAutoSave());
+			selectedCategoriesStore.subscribe(() => scheduleAutoSave());
+			tableDataStore.subscribe(() => scheduleAutoSave());
 
+			setupEventListeners();
+		}, 0);
+	}
+}
+
+function setupEventListeners(): void {
 	// Save on visibility change and before unload
 	if (typeof document !== 'undefined') {
-		document.addEventListener('visibilitychange', () => {
-			if (document.visibilityState === 'hidden') {
-				if (autoSaveTimeout) {
-					clearTimeout(autoSaveTimeout);
-					autoSaveTimeout = null;
+		// Check if we're on mobile to avoid touch interference
+		const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+			navigator.userAgent
+		);
+
+		// On mobile, be more conservative with event listeners
+		let visibilityTimeout: ReturnType<typeof setTimeout> | null = null;
+
+		// Only add visibilitychange listener if not on mobile or use longer delay
+		const visibilityDelay = isMobile ? 500 : 100; // Longer delay on mobile
+
+		document.addEventListener(
+			'visibilitychange',
+			() => {
+				if (document.visibilityState === 'hidden') {
+					// Debounce visibility change to avoid interfering with touch events
+					if (visibilityTimeout) {
+						clearTimeout(visibilityTimeout);
+					}
+
+					visibilityTimeout = setTimeout(() => {
+						if (autoSaveTimeout) {
+							clearTimeout(autoSaveTimeout);
+							autoSaveTimeout = null;
+						}
+						saveCurrentState().catch((e) =>
+							console.warn('Failed to save on visibility change:', e)
+						);
+					}, visibilityDelay); // Longer delay on mobile devices
 				}
-				saveCurrentState().catch((e) => console.warn('Failed to save on visibility change:', e));
-			}
-		});
+			},
+			{ passive: true }
+		); // Use passive listener to improve performance
 
 		window.addEventListener('beforeunload', () => {
 			// Use forceSave for synchronous save on page unload
@@ -197,8 +231,12 @@ export function initSessionManager(): void {
 		});
 
 		// Also handle page refresh specifically
-		window.addEventListener('pagehide', () => {
-			forceSave().catch((e) => console.warn('Failed to save on page hide:', e));
-		});
+		window.addEventListener(
+			'pagehide',
+			() => {
+				forceSave().catch((e) => console.warn('Failed to save on page hide:', e));
+			},
+			{ passive: true }
+		);
 	}
 }
