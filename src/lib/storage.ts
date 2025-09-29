@@ -1,8 +1,30 @@
-// Simple IndexedDB wrapper for saving GPX tracks and result tables
+// Comprehensive IndexedDB wrapper for saving complete track sessions
 // Uses idb-keyval for minimal, reliable storage
 
 import type { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson';
 import type { TableRow } from './results';
+
+// Comprehensive track data structure
+export interface TrackSession {
+	id: string;
+	name: string;
+	createdAt: number;
+	lastModified: number;
+	// Track data
+	gpxTrack: FeatureCollection<Geometry, GeoJsonProperties>;
+	// Search parameters
+	searchRadius: number;
+	selectedCategories: string[];
+	// Results
+	tableData: TableRow[];
+	// Map state
+	mapState: {
+		center: [number, number];
+		zoom: number;
+	};
+	// UI state
+	panelOpen: boolean;
+}
 
 // Lazy import to avoid SSR issues
 let idb: typeof import('idb-keyval') | null = null;
@@ -14,22 +36,15 @@ async function ensureIDB() {
 }
 
 const DB_NAME = 'sat-db';
-const TRACKS_STORE = 'tracks';
-const TABLES_STORE = 'tables';
-const META_STORE = 'meta';
-
-const STATE_STORE = 'state';
+const SESSIONS_STORE = 'sessions';
 
 async function getStores() {
 	await ensureSchema();
 	const lib = await ensureIDB();
 	if (!lib) throw new Error('IndexedDB not available');
 	const { createStore } = lib;
-	const tracksStore = createStore(DB_NAME, TRACKS_STORE);
-	const tablesStore = createStore(DB_NAME, TABLES_STORE);
-	const metaStore = createStore(DB_NAME, META_STORE);
-	const stateStore = createStore(DB_NAME, STATE_STORE);
-	return { ...lib, tracksStore, tablesStore, metaStore, stateStore };
+	const sessionsStore = createStore(DB_NAME, SESSIONS_STORE);
+	return { ...lib, sessionsStore };
 }
 
 let schemaReady = false;
@@ -40,36 +55,26 @@ async function ensureSchema() {
 	// First open the DB to inspect existing stores
 	const info = await new Promise<{
 		version: number;
-		hasTracks: boolean;
-		hasTables: boolean;
-		hasMeta: boolean;
-		hasState: boolean;
+		hasSessions: boolean;
 	}>((resolve, reject) => {
 		const req = indexedDB.open(DB_NAME);
 		req.onsuccess = () => {
 			const db = req.result;
-			const hasTracks = db.objectStoreNames.contains(TRACKS_STORE);
-			const hasTables = db.objectStoreNames.contains(TABLES_STORE);
-			const hasMeta = db.objectStoreNames.contains(META_STORE);
-			const hasState = db.objectStoreNames.contains(STATE_STORE);
+			const hasSessions = db.objectStoreNames.contains(SESSIONS_STORE);
 			const version = db.version;
 			db.close();
-			resolve({ version, hasTracks, hasTables, hasMeta, hasState });
+			resolve({ version, hasSessions });
 		};
 		req.onupgradeneeded = () => {
 			// Fresh DB, create all stores at version 1
 			const db = req.result;
-			if (!db.objectStoreNames.contains(TRACKS_STORE)) db.createObjectStore(TRACKS_STORE);
-			if (!db.objectStoreNames.contains(TABLES_STORE)) db.createObjectStore(TABLES_STORE);
-			if (!db.objectStoreNames.contains(META_STORE)) db.createObjectStore(META_STORE);
-			if (!db.objectStoreNames.contains(STATE_STORE)) db.createObjectStore(STATE_STORE);
+			if (!db.objectStoreNames.contains(SESSIONS_STORE)) db.createObjectStore(SESSIONS_STORE);
 		};
 		req.onerror = () => reject(req.error);
-		req.onblocked = () =>
-			resolve({ version: 1, hasTracks: true, hasTables: true, hasMeta: true, hasState: true });
+		req.onblocked = () => resolve({ version: 1, hasSessions: true });
 	});
 
-	if (info.hasTracks && info.hasTables && info.hasMeta && info.hasState) {
+	if (info.hasSessions) {
 		schemaReady = true;
 		return;
 	}
@@ -78,10 +83,7 @@ async function ensureSchema() {
 		const req = indexedDB.open(DB_NAME, info.version + 1);
 		req.onupgradeneeded = () => {
 			const db = req.result;
-			if (!db.objectStoreNames.contains(TRACKS_STORE)) db.createObjectStore(TRACKS_STORE);
-			if (!db.objectStoreNames.contains(TABLES_STORE)) db.createObjectStore(TABLES_STORE);
-			if (!db.objectStoreNames.contains(META_STORE)) db.createObjectStore(META_STORE);
-			if (!db.objectStoreNames.contains(STATE_STORE)) db.createObjectStore(STATE_STORE);
+			if (!db.objectStoreNames.contains(SESSIONS_STORE)) db.createObjectStore(SESSIONS_STORE);
 		};
 		req.onsuccess = () => {
 			req.result.close();
@@ -93,114 +95,98 @@ async function ensureSchema() {
 	});
 }
 
-export async function saveTrack(
+// Helper function to generate a unique session ID
+function generateSessionId(track: FeatureCollection<Geometry, GeoJsonProperties>): string {
+	const str = JSON.stringify(track);
+	let hash = 0;
+	for (let i = 0; i < str.length; i++) {
+		const chr = str.charCodeAt(i);
+		hash = (hash << 5) - hash + chr;
+		hash |= 0; // Convert to 32bit integer
+	}
+	return `session-${Math.abs(hash)}`;
+}
+
+// Save a complete track session
+export async function saveTrackSession(session: TrackSession): Promise<void> {
+	const { set, sessionsStore } = await getStores();
+	session.lastModified = Date.now();
+	await set(session.id, session, sessionsStore);
+}
+
+// Get a track session by ID
+export async function getTrackSession(id: string): Promise<TrackSession | undefined> {
+	const { get, sessionsStore } = await getStores();
+	return get(id, sessionsStore);
+}
+
+// Create a new track session
+export async function createTrackSession(
 	name: string,
-	data: FeatureCollection<Geometry, GeoJsonProperties>
-) {
-	const { set, tracksStore } = await getStores();
-	await set(name, data, tracksStore);
-}
-
-export async function saveTable(name: string, data: TableRow[]) {
-	const { set, tablesStore } = await getStores();
-	await set(name, data, tablesStore);
-}
-
-export async function getTrack(
-	name: string
-): Promise<FeatureCollection<Geometry, GeoJsonProperties> | undefined> {
-	const { get, tracksStore } = await getStores();
-	return get(name, tracksStore);
-}
-
-export async function getTable(name: string): Promise<TableRow[] | undefined> {
-	const { get, tablesStore } = await getStores();
-	return get(name, tablesStore);
-}
-
-export async function deleteTrackData(name: string) {
-	const { del, tracksStore, tablesStore } = await getStores();
-	await Promise.all([del(name, tracksStore), del(name, tablesStore)]);
-}
-
-export async function listTrackNames(): Promise<string[]> {
-	const { keys, tracksStore } = await getStores();
-	const ks = (await keys(tracksStore)) as readonly IDBValidKey[];
-	return ks.map((k: IDBValidKey) => String(k));
-}
-
-export async function loadAll(): Promise<{
-	tracks: Record<string, FeatureCollection<Geometry, GeoJsonProperties>>;
-	tables: Record<string, TableRow[]>;
-}> {
-	const { get, keys, tracksStore, tablesStore } = await getStores();
-	const result = {
-		tracks: {} as Record<string, FeatureCollection<Geometry, GeoJsonProperties>>,
-		tables: {} as Record<string, TableRow[]>
+	gpxTrack: FeatureCollection<Geometry, GeoJsonProperties>,
+	searchRadius: number = 500,
+	selectedCategories: string[] = [],
+	tableData: TableRow[] = [],
+	mapState: { center: [number, number]; zoom: number } = { center: [0, 0], zoom: 1 },
+	panelOpen: boolean = true
+): Promise<TrackSession> {
+	const id = generateSessionId(gpxTrack);
+	const session: TrackSession = {
+		id,
+		name,
+		createdAt: Date.now(),
+		lastModified: Date.now(),
+		gpxTrack,
+		searchRadius,
+		selectedCategories,
+		tableData,
+		mapState,
+		panelOpen
 	};
-	const tKeys = (await keys(tracksStore)) as readonly IDBValidKey[];
-	const nameKeys: string[] = tKeys.map((k: IDBValidKey) => String(k));
-	const tracks = await Promise.all(nameKeys.map((name: string) => get(name, tracksStore)));
-	const tables = await Promise.all(nameKeys.map((name: string) => get(name, tablesStore)));
-	nameKeys.forEach((name: string, i: number) => {
-		const track = tracks[i] as FeatureCollection<Geometry, GeoJsonProperties> | undefined;
-		if (track) result.tracks[name] = track;
-		const table = tables[i] as TableRow[] | undefined;
-		if (table) result.tables[name] = table;
-	});
-	return result;
+
+	await saveTrackSession(session);
+	return session;
 }
 
-// Map state + last used track name
-export type MapState = { center: [number, number]; zoom: number };
+// Update an existing track session
+export async function updateTrackSession(
+	id: string,
+	updates: Partial<Omit<TrackSession, 'id' | 'createdAt'>>
+): Promise<void> {
+	const existingSession = await getTrackSession(id);
+	if (!existingSession) {
+		throw new Error(`Session ${id} not found`);
+	}
 
-export async function saveMapState(state: MapState) {
-	const { set, metaStore } = await getStores();
-	await set('lastMapState', state, metaStore);
+	const updatedSession: TrackSession = {
+		...existingSession,
+		...updates,
+		lastModified: Date.now()
+	};
+
+	await saveTrackSession(updatedSession);
 }
 
-export async function getMapState(): Promise<MapState | undefined> {
-	const { get, metaStore } = await getStores();
-	return get('lastMapState', metaStore);
+// Delete a track session
+export async function deleteTrackSession(id: string): Promise<void> {
+	const { del, sessionsStore } = await getStores();
+	await del(id, sessionsStore);
 }
 
-export async function saveLastTrackName(name: string) {
-	const { set, metaStore } = await getStores();
-	await set('lastTrackName', name, metaStore);
+// List all track sessions
+export async function listTrackSessions(): Promise<TrackSession[]> {
+	const { get, keys, sessionsStore } = await getStores();
+	const sessionKeys = (await keys(sessionsStore)) as readonly IDBValidKey[];
+	const sessions = await Promise.all(sessionKeys.map((key) => get(key, sessionsStore)));
+	return sessions.filter((session): session is TrackSession => session !== undefined);
 }
 
-export async function getLastTrackName(): Promise<string | undefined> {
-	const { get, metaStore } = await getStores();
-	return get('lastTrackName', metaStore);
-}
+// Get the most recently modified track session
+export async function getLastTrackSession(): Promise<TrackSession | undefined> {
+	const sessions = await listTrackSessions();
+	if (sessions.length === 0) return undefined;
 
-// New app state persistence functions
-// State is any serializable object containing app state
-export type AppState = {
-	selectedCategories?: string[];
-	selectedRadius?: number;
-	selectedStartRange?: number;
-	selectedEndRange?: number;
-	lastSearchResults?: TableRow[]; // Store last search results
-};
-
-export async function saveAppState(state: AppState) {
-	const { set, stateStore } = await getStores();
-	await set('appState', state, stateStore);
-}
-
-export async function getAppState(): Promise<AppState | undefined> {
-	const { get, stateStore } = await getStores();
-	return get('appState', stateStore);
-}
-
-// Function to save the current state of markers
-export async function saveMarkerState(markersData: Record<string, unknown>[]) {
-	const { set, stateStore } = await getStores();
-	await set('markersState', markersData, stateStore);
-}
-
-export async function getMarkerState(): Promise<Record<string, unknown>[] | undefined> {
-	const { get, stateStore } = await getStores();
-	return get('markersState', stateStore);
+	return sessions.reduce((latest, current) =>
+		current.lastModified > latest.lastModified ? current : latest
+	);
 }

@@ -3,16 +3,16 @@
 	import '../app.css';
 	import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
 	import { registerServiceWorker } from '$lib/serviceWorkerRegistration';
-	import { initPersistentStores } from '$lib/persistentStore';
+	import { initSessionManager } from '$lib/sessionManager';
 	import { onMount } from 'svelte';
 
 	injectSpeedInsights();
 	let { children } = $props();
 
-	// Register service worker and initialize persistent stores
+	// Register service worker and initialize session manager
 	onMount(() => {
 		registerServiceWorker();
-		initPersistentStores();
+		initSessionManager();
 	});
 </script>
 

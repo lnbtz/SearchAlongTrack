@@ -3,7 +3,6 @@
 	import { onDestroy, onMount } from 'svelte';
 	import {
 		gpxTrackStore,
-		selectedRangeTrackStore,
 		tableDataDisplayStore,
 		tableDataStore,
 		mapInstanceStore,
@@ -15,49 +14,44 @@
 	import { getCategoryIconUrl } from '$lib/icons';
 	import { recomputeTableDataDisplay } from '$lib/util';
 	import maplibregl from 'maplibre-gl';
-	import {
-		getLastTrackName,
-		getMapState,
-		saveMapState,
-		getTrack,
-		getTable,
-		type MapState
-	} from '$lib/storage';
+	import { loadLastSession, initSessionManager, scheduleAutoSave } from '$lib/sessionManager';
 
 	const markerWidth = 32; // Size of the marker in pixels
 	const markerHeight = 36;
 	let mapContainer: HTMLDivElement;
 	let map: maplibregl.Map;
-	let lastMapState: { center: [number, number]; zoom: number } | null = null;
 
 	onMount(async () => {
+		// Initialize session management
+		initSessionManager();
+
 		const maplibrePkg = await import('maplibre-gl');
 		const maplibregl = maplibrePkg.default ?? maplibrePkg; // CJS default
 		const { GeolocateControl } = maplibregl;
 		await import('maplibre-gl/dist/maplibre-gl.css');
-		// Seed with last map state if available
-		const restored = await getMapState().catch(() => undefined);
+
+		// Try to load the last session first
+		const sessionLoaded = await loadLastSession();
+
 		map = new maplibregl.Map({
 			container: mapContainer,
 			style: `https://api.maptiler.com/maps/openstreetmap/style.json?key=${import.meta.env.VITE_MAPTILER_API_KEY}`,
-			zoom: restored?.zoom ?? 1,
+			zoom: sessionLoaded ? undefined : 1,
 			attributionControl: false
 		});
-		if (restored?.center) {
-			map.setCenter({ lng: restored.center[0], lat: restored.center[1] });
-		}
 		map.on('style.load', () => {
 			const gpxTrack = get(gpxTrackStore);
 			if (gpxTrack) {
 				addOrUpdateGpxTrack(gpxTrack);
 			}
-			const selectedRangeTrack = get(selectedRangeTrackStore);
-			if (selectedRangeTrack) {
-				addOrUpdateSelectedRangeGpxTrack(selectedRangeTrack);
-			}
 			const tableData = get(tableDataDisplayStore);
 			addOrUpdateTableDataDisplay(tableData);
 		});
+
+		// Set up auto-save on map changes
+		map.on('moveend', () => scheduleAutoSave());
+		map.on('zoomend', () => scheduleAutoSave());
+
 		map.addControl(
 			new GeolocateControl({
 				positionOptions: {
@@ -71,56 +65,12 @@
 		recomputeTableDataDisplay();
 	});
 	onDestroy(async () => {
-		if (map) {
-			const center = map.getCenter();
-			const zoom = map.getZoom();
-			lastMapState = { center: [center.lng, center.lat], zoom };
-			try {
-				await saveMapState(lastMapState);
-			} catch (e) {
-				console.warn('Failed to persist map state', e);
-			}
-		}
+		// Map state is now saved automatically by the session manager
+		// No manual saving needed here
 	});
 
-	// If nothing in stores yet, try restoring last loaded track + its POIs from IndexedDB
-	onMount(async () => {
-		if (!get(gpxTrackStore)) {
-			try {
-				const lastName = await getLastTrackName();
-				if (lastName) {
-					const [track, table] = await Promise.all([getTrack(lastName), getTable(lastName)]);
-					if (track) {
-						gpxTrackStore.set(track);
-					}
-					if (table) {
-						tableDataStore.set(table);
-					}
-				}
-			} catch (e) {
-				console.warn('Restore last session failed', e);
-			}
-		}
-	});
-	// When the map is ready, make sure we properly handle page visibility changes
-	function setupPageVisibilityHandling() {
-		// Handle visibility changes - save state when page is hidden, restore on visible
-		document.addEventListener('visibilitychange', async () => {
-			// When page becomes hidden, ensure we save all state
-			if (document.visibilityState === 'hidden' && map) {
-				// Save map state
-				const center = map.getCenter();
-				const zoom = map.getZoom();
-				const mapState: MapState = { center: [center.lng, center.lat], zoom };
-				try {
-					await saveMapState(mapState);
-					console.log('Saved map state on visibility change');
-				} catch (e) {
-					console.warn('Failed to save map state on visibility change', e);
-				}
-			}
-		});
-	}
+	// Session loading is now handled in the main onMount above
+	// Page visibility handling is now done in the session manager
 
 	gpxTrackStore.subscribe((geojson) => {
 		if (map && geojson) {
@@ -128,11 +78,7 @@
 		}
 	});
 
-	selectedRangeTrackStore.subscribe((geojson) => {
-		if (geojson) {
-			addOrUpdateSelectedRangeGpxTrack(geojson);
-		}
-	});
+	// selectedRangeTrackStore removed as part of simplification
 
 	tableDataDisplayStore.subscribe((tableData) => {
 		addOrUpdateTableDataDisplay(tableData);
@@ -143,42 +89,9 @@
 		recomputeTableDataDisplay();
 	});
 
-	// When the map is initialized
-	mapInstanceStore.subscribe((mapInstance) => {
-		if (mapInstance) {
-			setupPageVisibilityHandling();
-		}
-	});
+	// When the map is initialized - page visibility is handled by session manager
 
-	function addOrUpdateSelectedRangeGpxTrack(
-		geojson: GeoJSON.FeatureCollection<Geometry, GeoJsonProperties>
-	) {
-		if (map) {
-			if (!map.getSource('selected-range-track')) {
-				map.addSource('selected-range-track', {
-					type: 'geojson',
-					data: geojson
-				});
-
-				map.addLayer({
-					id: 'selected-range-track-line',
-					type: 'line',
-					source: 'selected-range-track',
-					layout: {
-						'line-join': 'round',
-						'line-cap': 'round'
-					},
-					paint: {
-						'line-color': '#00ff00', // Green color for the selected range
-						'line-width': 4
-					}
-				});
-			} else {
-				const source = map.getSource('selected-range-track') as maplibregl.GeoJSONSource;
-				source.setData(geojson);
-			}
-		}
-	}
+	// Removed addOrUpdateSelectedRangeGpxTrack as part of simplification
 
 	function addOrUpdateGpxTrack(geojson: GeoJSON.FeatureCollection<Geometry, GeoJsonProperties>) {
 		if (map) {

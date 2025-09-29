@@ -3,102 +3,75 @@
 	import { get } from 'svelte/store';
 	import { onMount } from 'svelte';
 	import type { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson';
-	import type { TableRow } from '$lib/results';
 	import { handleGpxTrack } from '$lib/util';
 	import { goto } from '$app/navigation';
-	import { saveTable, saveTrack, loadAll, deleteTrackData, saveLastTrackName } from '$lib/storage';
+	import { listTrackSessions, deleteTrackSession, type TrackSession } from '$lib/storage';
+	import {
+		loadSession,
+		createSessionFromCurrentState,
+		getCurrentSessionId
+	} from '$lib/sessionManager';
 
 	function shorten(text: string, max = 30) {
 		if (!text) return '';
 		return text.length > max ? text.slice(0, max - 1) + '…' : text;
 	}
 
-	let allTracks: Record<string, FeatureCollection<Geometry, GeoJsonProperties>> = $state({});
-	let allTables: Record<string, TableRow[]> = $state({});
+	let allSessions: TrackSession[] = $state([]);
 	let gpxTrack: FeatureCollection<Geometry, GeoJsonProperties> | null = null;
-	let tableData: TableRow[] = [];
+
 	tableDataStore.subscribe(async (content) => {
 		if (content) {
-			tableData = content;
 			gpxTrack = get(gpxTrackStore);
-			let trackName = gpxTrack?.features[0]?.properties?.name || createTrackHash(gpxTrack);
-			if (trackName) {
-				// Persist into IndexedDB
+
+			// Auto-save current session or create new one if needed
+			const currentSessionId = getCurrentSessionId();
+			if (currentSessionId || gpxTrack) {
 				try {
-					await Promise.all([
-						saveTable(trackName, tableData),
-						gpxTrack ? saveTrack(trackName, gpxTrack) : Promise.resolve()
-					]);
+					if (!currentSessionId && gpxTrack) {
+						await createSessionFromCurrentState();
+					}
 				} catch (e) {
-					console.error('Failed saving to IndexedDB', e);
+					console.error('Failed auto-saving session', e);
 				}
 			}
-		} else {
-			tableData = [];
 		}
 	});
+
 	onMount(async () => {
 		try {
-			const { tracks, tables } = await loadAll();
-			allTracks = tracks;
-			allTables = tables;
+			allSessions = await listTrackSessions();
 		} catch (e) {
-			console.error('Failed loading from IndexedDB', e);
+			console.error('Failed loading sessions from IndexedDB', e);
 		}
 	});
 
-	function createTrackHash(
-		gpxTrack: FeatureCollection<Geometry, GeoJsonProperties> | null
-	): string {
-		if (!gpxTrack) {
-			return '';
-		}
-		const str = JSON.stringify(gpxTrack);
-		let hash = 0,
-			i,
-			chr;
-		for (i = 0; i < str.length; i++) {
-			chr = str.charCodeAt(i);
-			hash = (hash << 5) - hash + chr;
-			hash |= 0; // Convert to 32bit integer
-		}
-		return `track-${Math.abs(hash)}`;
-	}
-
-	async function loadTrack(trackName: string) {
-		const track = allTracks[trackName];
-		if (track) {
-			gpxTrackStore.set(track);
-			tableDataStore.set(allTables[trackName] || []);
+	async function loadTrack(sessionId: string) {
+		try {
+			await loadSession(sessionId);
 			handleGpxTrack();
-			await saveLastTrackName(trackName);
-			console.log(`Loaded track: ${trackName}`);
-		} else {
-			console.error(`Track not found: ${trackName}`);
+			console.log(`Loaded session: ${sessionId}`);
+			goto('/map');
+		} catch (e) {
+			console.error(`Failed to load session: ${sessionId}`, e);
 		}
-		goto('/map');
 	}
 
-	async function deleteTrack(trackName: string) {
-		if (allTracks[trackName]) {
-			delete allTracks[trackName];
-			gpxTrackStore.set(null);
-			tableDataStore.set([]);
-			try {
-				await deleteTrackData(trackName);
-				console.log(`Deleted track: ${trackName}`);
-			} catch (e) {
-				console.error('Failed deleting from IndexedDB', e);
-			}
-		} else {
-			console.error(`Track not found for deletion: ${trackName}`);
+	async function deleteTrack(sessionId: string) {
+		try {
+			await deleteTrackSession(sessionId);
+			// Refresh the sessions list
+			allSessions = await listTrackSessions();
+			console.log(`Deleted session: ${sessionId}`);
+		} catch (e) {
+			console.error(`Failed to delete session: ${sessionId}`, e);
 		}
 	}
 </script>
 
 <div class="info-banner">
 	<h2>Saved Tracks</h2>
-	{#if Object.keys(allTracks).length === 0}
+	{#if allSessions.length === 0}
 		<p class="no-tracks-message">
 			<strong>No saved tracks found.</strong>
 		</p>
@@ -127,20 +100,24 @@
 		<p class="muted">Load to view on map or delete to remove from storage.</p>
 	</header>
 	<ul class="track-list">
-		{#each Object.entries(allTracks) as [trackName, track] (trackName)}
+		{#each allSessions as session (session.id)}
 			<li class="track-item">
-				<span
-					class="track-name"
-					title={track.features[0]?.properties?.name || trackName}
-					aria-label={track.features[0]?.properties?.name || trackName}
-				>
-					{shorten(track.features[0]?.properties?.name || trackName)}
-				</span>
+				<div class="track-info">
+					<span class="track-name" title={session.name} aria-label={session.name}>
+						{shorten(session.name)}
+					</span>
+					<span class="track-meta">
+						Last modified: {new Date(session.lastModified).toLocaleDateString()}
+						{#if session.tableData.length > 0}
+							• {session.tableData.length} POIs
+						{/if}
+					</span>
+				</div>
 				<div class="track-actions">
 					<button
 						class="load-btn"
 						onclick={() => {
-							loadTrack(trackName);
+							loadTrack(session.id);
 						}}
 					>
 						Load
@@ -148,7 +125,7 @@
 					<button
 						class="delete-btn"
 						onclick={() => {
-							deleteTrack(trackName);
+							deleteTrack(session.id);
 						}}
 						aria-label="Delete track"
 					>
@@ -282,6 +259,14 @@
 		border-color: color-mix(in oklab, var(--primary) 35%, var(--border));
 	}
 
+	.track-info {
+		flex: 1 1 auto;
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
 	.track-name {
 		font-weight: 700;
 		font-size: 1.02rem;
@@ -289,10 +274,13 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
-		/* allow the name to shrink while actions stay visible */
-		flex: 1 1 auto;
-		min-width: 0;
 		letter-spacing: 0.01em;
+	}
+
+	.track-meta {
+		font-size: 0.85rem;
+		color: var(--text-muted);
+		opacity: 0.8;
 	}
 
 	.track-actions {
@@ -379,7 +367,7 @@
 		.track-item {
 			flex-wrap: wrap;
 		}
-		.track-name {
+		.track-info {
 			flex-basis: 100%;
 			margin-bottom: 0.25rem;
 		}

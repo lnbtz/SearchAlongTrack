@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { OSMCategories, OSMCategoriesMap } from '$lib/osm-constants';
 	import { selectedCategoriesStore, selectedRadiusStore } from '$lib/stores';
-	import { calculateSelectedRangeTrackStore, recomputeTableDataDisplay } from '$lib/util';
-	import RangeSlider from 'svelte-range-slider-pips';
+	import { recomputeTableDataDisplay } from '$lib/util';
 	import { onMount } from 'svelte';
 	import { getCategoryIconUrl } from '$lib/icons';
 
@@ -41,10 +40,9 @@
 			selectedCategories = all;
 		}
 		if ($selectedRadiusStore === 0) {
-			selectedRadiusStore.set(300);
+			selectedRadiusStore.set(500);
 		}
 		// Trigger an initial recompute
-		calculateSelectedRangeTrackStore();
 		recomputeTableDataDisplay();
 	});
 </script>
@@ -60,25 +58,28 @@
 	</button>
 	{#if panelOpen}
 		<div id="controls-panel" class="panel">
-			<section class="sliders">
-				<div class="slider-group">
-					<label for="radius-slider" class="slider-label">
-						Select Radius (in m): {$selectedRadiusStore} m
+			<section class="radius-section">
+				<div class="radius-group">
+					<label for="radius-input" class="radius-label">
+						Search Radius (meters): {$selectedRadiusStore}m
 					</label>
-					<RangeSlider
+					<input
+						id="radius-input"
+						type="range"
+						min="100"
+						max="5000"
+						step="100"
 						value={$selectedRadiusStore}
-						min={100}
-						max={5000}
-						step={100}
-						pips
-						first="label"
-						last="label"
-						on:change={(e) => {
-							const v = (e as CustomEvent & { detail: { value: number } }).detail.value;
-							selectedRadiusStore.set(v);
+						oninput={(e) => {
+							const value = parseInt((e.target as HTMLInputElement).value);
+							selectedRadiusStore.set(value);
 							onRadiusChange();
 						}}
 					/>
+					<div class="radius-bounds">
+						<span>100m</span>
+						<span>5000m</span>
+					</div>
 				</div>
 			</section>
 			<fieldset class="category-group">
@@ -313,39 +314,62 @@
 		box-shadow: var(--shadow-md);
 	}
 
-	.sliders {
-		display: grid;
-		gap: 0.4rem;
+	.radius-section {
+		margin-bottom: 0.5rem;
 	}
-	.slider-group {
+
+	.radius-group {
 		background: var(--bg);
 		border: 1px solid var(--border);
 		border-radius: var(--radius-sm);
-		padding: 0.35rem 0.45rem;
-	}
-	.slider-label {
-		font-size: 0.8rem;
-		color: var(--text-muted);
-		font-weight: 700;
+		padding: 0.5rem;
 	}
 
-	/* Compact the range slider component height and visuals */
-	:global(.range-slider) {
-		height: 22px;
-		padding: 6px 2px;
+	.radius-label {
+		display: block;
+		font-size: 0.85rem;
+		color: var(--text-muted);
+		font-weight: 700;
+		margin-bottom: 0.5rem;
 	}
-	:global(.range-slider__range) {
-		height: 4px;
+
+	.radius-group input[type='range'] {
+		width: 100%;
+		height: 6px;
+		border-radius: 3px;
+		background: var(--border);
+		outline: none;
+		appearance: none;
+		margin: 0.25rem 0;
 	}
-	:global(.range-slider__thumb) {
-		width: 12px;
-		height: 12px;
+
+	.radius-group input[type='range']::-webkit-slider-thumb {
+		appearance: none;
+		width: 18px;
+		height: 18px;
+		border-radius: 50%;
+		background: var(--primary);
+		cursor: pointer;
+		border: 2px solid white;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 	}
-	:global(.range-slider__pip) {
-		transform: translateY(-2px);
+
+	.radius-group input[type='range']::-moz-range-thumb {
+		width: 18px;
+		height: 18px;
+		border-radius: 50%;
+		background: var(--primary);
+		cursor: pointer;
+		border: 2px solid white;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 	}
-	:global(.range-slider__pip-label) {
-		font-size: 10px;
+
+	.radius-bounds {
+		display: flex;
+		justify-content: space-between;
+		font-size: 0.75rem;
+		color: var(--text-muted);
+		margin-top: 0.25rem;
 	}
 
 	.category-group {

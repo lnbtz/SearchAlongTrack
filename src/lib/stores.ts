@@ -19,13 +19,7 @@ export const simplifiedGpxTrackStore = writable<LineString | null>(null); // Sto
 export const polyAroundTrackStore = writable<
 	Feature<Polygon | MultiPolygon, GeoJsonProperties> | undefined
 >(undefined); // Store to hold the polygon around the track
-export const selectedRangeTrackStore = writable<FeatureCollection<
-	Geometry,
-	GeoJsonProperties
-> | null>(null); // Store to hold the selected range along the track
 export const selectedCategoriesStore = writable<string[]>([]); // Store to hold the selected categories for Overpass API query
-export const selectedStartRangeStore = writable<number>(0); // Store to hold the selected range along the track
-export const selectedEndRangeStore = writable<number>(0); // Store to hold the selected range along the track
 export const selectedRadiusStore = writable<number>(0); // Store to hold the selected radius for Overpass API query
 export const totalTrackLengthStore = writable<number>(0); // Store to hold the total length of the track
 export const searchResultsCacheStore = writable<Map<string, OverpassJson>>(new Map()); // Store to cache search results from Overpass API

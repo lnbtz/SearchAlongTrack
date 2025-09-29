@@ -1,19 +1,16 @@
 import {
 	totalTrackLengthStore,
 	gpxTrackStore,
-	selectedStartRangeStore,
-	selectedEndRangeStore,
 	selectedRadiusStore,
 	selectedCategoriesStore,
 	tableDataStore,
 	tableDataDisplayStore,
-	selectedRangeTrackStore,
 	simplifiedGpxTrackStore,
 	polyAroundTrackStore
 } from './stores';
 import { get } from 'svelte/store';
 import type { FeatureCollection, GeoJsonProperties, Geometry, LineString } from 'geojson';
-import { lineSliceAlong, simplify, buffer, length } from '@turf/turf';
+import { simplify, buffer, length } from '@turf/turf';
 import { OSMCategoriesMap, SEARCH_CORRIDOR_RADIUS } from './osm-constants';
 import type { TableRow } from './results';
 
@@ -50,30 +47,7 @@ function setTrackLengthStore() {
 	}
 	const totalKm = length(gpxTrack, { units: 'kilometers' });
 	const totalRoundedKm = Math.round(totalKm * 100) / 100; // Round to two decimal places
-	selectedEndRangeStore.set(totalRoundedKm);
 	totalTrackLengthStore.set(totalRoundedKm);
-}
-
-export function calculateSelectedRangeTrackStore() {
-	// calculate the the slice of the track based on the selected range and change the store
-	const gpxTrack: FeatureCollection<Geometry, GeoJsonProperties> | null = get(gpxTrackStore);
-	const startDist: number = get(selectedStartRangeStore);
-	const endDist: number = get(selectedEndRangeStore);
-	if (!gpxTrack || gpxTrack.features[0].geometry.type !== 'LineString') {
-		console.error('Invalid GPX track data');
-		return;
-	}
-	if (startDist < 0 || endDist < 0 || startDist > endDist) {
-		console.error('Invalid selected range');
-		return;
-	}
-	const line = gpxTrack.features[0].geometry as LineString;
-	const sliced = lineSliceAlong(line, startDist, endDist, { units: 'kilometers' });
-	const selectedRangeTrack: FeatureCollection<Geometry, GeoJsonProperties> = {
-		type: 'FeatureCollection',
-		features: [sliced]
-	};
-	selectedRangeTrackStore.set(selectedRangeTrack);
 }
 
 /**
@@ -83,8 +57,6 @@ export function calculateSelectedRangeTrackStore() {
 export function recomputeTableDataDisplay(): TableRow[] {
 	const selectedCategories = get(selectedCategoriesStore);
 	const selectedRadius = get(selectedRadiusStore);
-	const selectedStartRange = get(selectedStartRangeStore);
-	const selectedEndRange = get(selectedEndRangeStore);
 	const tableData = get(tableDataStore);
 
 	const types: string[] = [];
@@ -95,12 +67,7 @@ export function recomputeTableDataDisplay(): TableRow[] {
 	});
 
 	const tableDataDisplay = tableData.filter((row) => {
-		return (
-			types.includes(row.type) &&
-			(row.distanceOnRoute ?? 0) <= selectedEndRange &&
-			(row.distanceOnRoute ?? 0) >= selectedStartRange &&
-			(row.distanceFromRoute ?? Infinity) <= selectedRadius
-		);
+		return types.includes(row.type) && (row.distanceFromRoute ?? Infinity) <= selectedRadius;
 	});
 
 	tableDataDisplayStore.set(tableDataDisplay);
