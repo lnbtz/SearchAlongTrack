@@ -22,6 +22,7 @@ let currentSessionId: string | null = null;
 function prepareCurrentStateData() {
 	const gpxTrack = get(gpxTrackStore);
 	if (!gpxTrack) {
+		console.warn('No GPX track loaded, cannot prepare state data');
 		return null;
 	}
 
@@ -67,32 +68,12 @@ function prepareCurrentStateData() {
 		indexOfRoute: row.indexOfRoute ? Number(row.indexOfRoute) : undefined
 	}));
 
-	// Sanitize GPX track to ensure it's fully serializable
-	const sanitizedGpxTrack = {
-		type: gpxTrack.type,
-		features: gpxTrack.features.map((feature) => ({
-			type: feature.type,
-			geometry: feature.geometry,
-			properties: feature.properties
-				? Object.fromEntries(
-						Object.entries(feature.properties).filter(
-							([, value]) =>
-								typeof value === 'string' ||
-								typeof value === 'number' ||
-								typeof value === 'boolean' ||
-								value === null
-						)
-					)
-				: null
-		}))
-	};
-
 	return {
-		gpxTrack: sanitizedGpxTrack,
+		gpxTrack: gpxTrack,
 		searchRadius: currentRadius,
 		selectedCategories: currentCategories,
 		tableData: currentTableData,
-		mapState
+		mapState: mapState
 	};
 }
 
@@ -114,7 +95,7 @@ export async function createSessionFromCurrentState(name?: string): Promise<Trac
 			stateData.selectedCategories, // This will default to all categories in createTrackSession if empty
 			stateData.tableData,
 			stateData.mapState,
-			true // Default to panel open
+			false // Default to panel closed
 		);
 
 		currentSessionId = session.id;
@@ -130,6 +111,7 @@ export async function saveCurrentState(): Promise<void> {
 
 		// If no track is loaded, nothing to save
 		if (!stateData) {
+			console.warn('No GPX track loaded, cannot save state');
 			return;
 		}
 
