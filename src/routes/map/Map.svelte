@@ -65,8 +65,13 @@
 		recomputeTableDataDisplay();
 	});
 	onDestroy(async () => {
-		// Map state is now saved automatically by the session manager
-		// No manual saving needed here
+		// Force save current state when component is destroyed
+		const { forceSave } = await import('$lib/sessionManager');
+		try {
+			await forceSave();
+		} catch (e) {
+			console.warn('Failed to save state on component destroy:', e);
+		}
 	});
 
 	// Session loading is now handled in the main onMount above

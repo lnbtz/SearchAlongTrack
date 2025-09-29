@@ -7,11 +7,7 @@
 
 	let panelOpen = $state(true);
 
-	let selectedCategories: string[] = $state(
-		$selectedCategoriesStore.length === 0
-			? Array.from(OSMCategoriesMap.keys())
-			: $selectedCategoriesStore
-	);
+	let selectedCategories: string[] = $state($selectedCategoriesStore);
 
 	function togglePanel() {
 		panelOpen = !panelOpen;
@@ -34,6 +30,10 @@
 
 	// Initialize defaults on first mount so results show immediately
 	onMount(() => {
+		// Sync the local state with the store
+		selectedCategories = $selectedCategoriesStore;
+
+		// Set defaults if needed (these will be handled by session manager now)
 		if ($selectedCategoriesStore.length === 0) {
 			const all = Array.from(OSMCategoriesMap.keys());
 			selectedCategoriesStore.set(all);
@@ -44,6 +44,11 @@
 		}
 		// Trigger an initial recompute
 		recomputeTableDataDisplay();
+	});
+
+	// React to store changes (e.g., when session is loaded)
+	selectedCategoriesStore.subscribe((categories) => {
+		selectedCategories = categories;
 	});
 </script>
 

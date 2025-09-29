@@ -3,6 +3,7 @@
 
 import type { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson';
 import type { TableRow } from './results';
+import { OSMCategoriesMap } from './osm-constants';
 
 // Comprehensive track data structure
 export interface TrackSession {
@@ -120,6 +121,11 @@ export async function getTrackSession(id: string): Promise<TrackSession | undefi
 	return get(id, sessionsStore);
 }
 
+// Get all available categories as default
+function getAllCategories(): string[] {
+	return Array.from(OSMCategoriesMap.keys());
+}
+
 // Create a new track session
 export async function createTrackSession(
 	name: string,
@@ -131,6 +137,9 @@ export async function createTrackSession(
 	panelOpen: boolean = true
 ): Promise<TrackSession> {
 	const id = generateSessionId(gpxTrack);
+	// Use all categories as default if none provided
+	const finalCategories = selectedCategories.length > 0 ? selectedCategories : getAllCategories();
+
 	const session: TrackSession = {
 		id,
 		name,
@@ -138,7 +147,7 @@ export async function createTrackSession(
 		lastModified: Date.now(),
 		gpxTrack,
 		searchRadius,
-		selectedCategories,
+		selectedCategories: finalCategories,
 		tableData,
 		mapState,
 		panelOpen

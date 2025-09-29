@@ -35,22 +35,32 @@ export async function createSessionFromCurrentState(name?: string): Promise<Trac
 
 	const sessionName = name || gpxTrack.features[0]?.properties?.name || `Track ${Date.now()}`;
 
+	// Get current store values, with sensible defaults
+	const currentCategories = get(selectedCategoriesStore);
+	const currentRadius = get(selectedRadiusStore) || 500;
+	const currentTableData = get(tableDataStore) || [];
+
 	const session = await createTrackSession(
 		sessionName,
 		gpxTrack,
-		get(selectedRadiusStore) || 500,
-		get(selectedCategoriesStore) || [],
-		get(tableDataStore) || [],
+		currentRadius,
+		currentCategories, // This will default to all categories in createTrackSession if empty
+		currentTableData,
 		mapState,
 		true // Default to panel open
 	);
 
 	currentSessionId = session.id;
 	return session;
-}
-
-// Save current state to the active session
+} // Save current state to the active session
 export async function saveCurrentState(): Promise<void> {
+	const gpxTrack = get(gpxTrackStore);
+
+	// If no track is loaded, nothing to save
+	if (!gpxTrack) {
+		return;
+	}
+
 	if (!currentSessionId) {
 		// If no session is active, create one
 		await createSessionFromCurrentState();
@@ -66,9 +76,9 @@ export async function saveCurrentState(): Promise<void> {
 		: { center: [0, 0] as [number, number], zoom: 1 };
 
 	await updateTrackSession(currentSessionId, {
-		searchRadius: get(selectedRadiusStore),
+		searchRadius: get(selectedRadiusStore) || 500,
 		selectedCategories: get(selectedCategoriesStore),
-		tableData: get(tableDataStore),
+		tableData: get(tableDataStore) || [],
 		mapState
 		// We don't update panelOpen here as it's handled separately
 	});
@@ -155,7 +165,14 @@ export function scheduleAutoSave(delayMs: number = 2000): void {
 	}, delayMs);
 }
 
-// Initialize session manager
+// Force immediate save (useful for onDestroy, page refresh, etc.)
+export async function forceSave(): Promise<void> {
+	if (autoSaveTimeout) {
+		clearTimeout(autoSaveTimeout);
+		autoSaveTimeout = null;
+	}
+	await saveCurrentState();
+} // Initialize session manager
 export function initSessionManager(): void {
 	// Set up auto-save on store changes
 	selectedRadiusStore.subscribe(() => scheduleAutoSave());
@@ -175,7 +192,13 @@ export function initSessionManager(): void {
 		});
 
 		window.addEventListener('beforeunload', () => {
-			saveCurrentState().catch((e) => console.warn('Failed to save before unload:', e));
+			// Use forceSave for synchronous save on page unload
+			forceSave().catch((e) => console.warn('Failed to save before unload:', e));
+		});
+
+		// Also handle page refresh specifically
+		window.addEventListener('pagehide', () => {
+			forceSave().catch((e) => console.warn('Failed to save on page hide:', e));
 		});
 	}
 }
